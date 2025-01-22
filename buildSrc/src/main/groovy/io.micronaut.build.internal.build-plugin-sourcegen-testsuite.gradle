@@ -3,6 +3,12 @@ plugins {
     id("io.micronaut.build.internal.common")
 }
 
+repositories {
+    maven {
+        setUrl("https://repo.gradle.org/gradle/libs-releases")
+    }
+}
+
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
 }

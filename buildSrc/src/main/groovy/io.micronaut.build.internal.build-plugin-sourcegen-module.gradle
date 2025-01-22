@@ -3,6 +3,12 @@ plugins {
     id "io.micronaut.build.internal.module"
 }
 
+repositories {
+    maven {
+        setUrl("https://repo.gradle.org/gradle/libs-releases")
+    }
+}
+
 micronautBuild {
     binaryCompatibility {
         enabled = false

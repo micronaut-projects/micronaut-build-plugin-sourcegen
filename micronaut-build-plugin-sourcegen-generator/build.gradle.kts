@@ -12,11 +12,11 @@ dependencies {
     testImplementation(mn.micronaut.inject.java.test)
     testImplementation(mnSourcegen.micronaut.sourcegen.generator.java)
 
-    testImplementation("dev.gradleplugins:gradle-api:8.11.1") {
+    testImplementation(libs.gradle.plugins.api) {
         exclude( "org.codehaus.groovy", "groovy")
         exclude( "org.codehaus.groovy", "groovy-all")
     }
-    testImplementation("org.apache.maven.plugin-tools:maven-plugin-annotations:3.9.0")
-    testImplementation("org.apache.maven:maven-plugin-api:3.9.4")
+    testImplementation(libs.maven.plugin.annotations)
+    testImplementation(libs.maven.plugin.api)
 }
 
