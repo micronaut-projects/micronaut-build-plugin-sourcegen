@@ -19,6 +19,7 @@
 micronaut = "4.7.10"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.6.2"
+micronaut-sourcegen = "1.6.1"
 groovy = "4.0.24"
 spock = "2.3-groovy-4.0"
 
@@ -29,6 +30,7 @@ spock = "2.3-groovy-4.0"
 [libraries]
 # Core
 micronaut-core = { module = 'io.micronaut:micronaut-core-bom', version.ref = 'micronaut' }
+micronaut-sourcegen = { module = 'io.micronaut.sourcegen:micronaut-sourcegen-bom', version.ref = 'micronaut-sourcegen' }
 
 #
 # Managed dependencies appear in the BOM

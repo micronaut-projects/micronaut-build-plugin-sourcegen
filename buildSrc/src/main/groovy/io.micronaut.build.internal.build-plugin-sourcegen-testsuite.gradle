@@ -1,0 +1,12 @@
+plugins {
+    id("io.micronaut.build.internal.build-plugin-sourcegen-base")
+    id("io.micronaut.build.internal.common")
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+tasks.withType(Checkstyle).configureEach {
+    enabled = false
+}
