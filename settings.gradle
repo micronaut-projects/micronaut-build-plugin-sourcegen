@@ -9,7 +9,7 @@ plugins {
     id 'io.micronaut.build.shared.settings' version '7.3.1'
 }
 
-rootProject.name = 'project-template-parent'
+rootProject.name = 'micronaut-build-plugin-sourcegen'
 
 include 'micronaut-build-plugin-sourcegen-bom'
 include 'micronaut-build-plugin-sourcegen-annotations'
