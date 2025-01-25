@@ -20,12 +20,15 @@ micronaut = "4.7.10"
 micronaut-docs = "2.0.0"
 micronaut-test = "4.6.2"
 micronaut-sourcegen = "1.6.1"
+
 groovy = "4.0.24"
 spock = "2.3-groovy-4.0"
 gradle-plugins-api = "8.11.1"
 maven-plugin-annotations = "3.9.0"
 maven-core = "3.9.4"
 maven-plugin-testing-harness = "3.3.0"
+
+sonatype-scan = "3.0.0"
 
 # Managed versions appear in the BOM
 # managed-somelib = "1.0"
@@ -41,6 +44,8 @@ maven-plugin-annotations = { module = 'org.apache.maven.plugin-tools:maven-plugi
 maven-plugin-api = { module = 'org.apache.maven:maven-plugin-api', version.ref = 'maven-core' }
 maven-core = { module = 'org.apache.maven:maven-core', version.ref = 'maven-core' }
 maven-plugin-testing-harness = { module = 'org.apache.maven.plugin-testing:maven-plugin-testing-harness', version.ref = 'maven-plugin-testing-harness' }
+
+sonatype-scan = { module = "org.sonatype.gradle.plugins:scan-gradle-plugin", version.ref = "sonatype-scan" }
 
 #
 # Managed dependencies appear in the BOM
