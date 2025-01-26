@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2025 original authors
+ * Copyright 2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,13 +83,13 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
         for (GradleTaskConfig taskConfig: pluginConfig.tasks()) {
             ClassTypeDef specificationType = ClassTypeDef.of(pluginConfig.packageName()
                 + "." + taskConfig.namePrefix() + GradleSpecificationBuilder.SPECIFICATION_NAME_SUFFIX);
+            ClassTypeDef actionType = TypeDef.parameterized(
+                ClassTypeDef.of("org.gradle.api.Action"), TypeDef.wildcardSupertypeOf(specificationType));
 
             builder.addMethod(MethodDef.builder(taskConfig.extensionMethodName())
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addParameter("name", String.class)
-                .addParameter(ParameterDef.builder("action",
-                    TypeDef.parameterized(ClassTypeDef.of("org.gradle.api.Action"), specificationType)
-                ).build())
+                .addParameter(ParameterDef.builder("action", actionType).build())
                 .addJavadoc("Create a task for " + taskConfig.extensionMethodName() + "." +
                     "\n" + taskConfig.methodJavadoc() +
                     "\n@param name The unique identifier used to derive task names" +
@@ -134,7 +134,8 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
         for (GradleTaskConfig taskConfig: pluginConfig.tasks()) {
             ClassTypeDef specificationType = ClassTypeDef.of(pluginConfig.packageName()
                 + "." + taskConfig.namePrefix() + GradleSpecificationBuilder.SPECIFICATION_NAME_SUFFIX);
-            ClassTypeDef actionType = TypeDef.parameterized(ClassTypeDef.of("org.gradle.api.Action"), specificationType);
+            ClassTypeDef actionType = TypeDef.parameterized(
+                ClassTypeDef.of("org.gradle.api.Action"), TypeDef.wildcardSupertypeOf(specificationType));
 
             builder.addMethod(MethodDef.builder(taskConfig.extensionMethodName())
                 .overrides()

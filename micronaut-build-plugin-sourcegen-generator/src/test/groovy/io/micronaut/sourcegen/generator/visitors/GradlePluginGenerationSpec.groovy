@@ -131,7 +131,7 @@ public interface WolfExtension {
    * @param name The unique identifier used to derive task names
    * @param spec The configurable specification
    */
-  void awooo(String name, Action<WolfSpec> action);
+  void awooo(String name, Action<? super WolfSpec> action);
 }"""
 
         var defaultExtensionContent = stripImports(files.get("test.DefaultWolfExtension").getCharContent(false))
@@ -148,7 +148,7 @@ public interface WolfExtension {
     this.classpath = classpath;
   }
 
-  public void awooo(String name, Action<WolfSpec> action) {
+  public void awooo(String name, Action<? super WolfSpec> action) {
     if (!this.names.add(name)) {
       throw new org.gradle.api.GradleException(String.format("An awooo definition with name '%s' was already created", name));
     }

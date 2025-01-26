@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2023 original authors
+ * Copyright 2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import java.util.Set;
  * Visitor for generating maven mojos.
  *
  * @author Andriy Dmytruk
- * @since 1.6.x
+ * @since 1.0.x
  */
 @Internal
 public final class MavenMojoGenerationTriggerAnnotationVisitor implements TypeElementVisitor<Object, Object> {

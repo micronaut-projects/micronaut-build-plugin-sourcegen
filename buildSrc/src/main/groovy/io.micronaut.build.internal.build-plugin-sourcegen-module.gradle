@@ -12,7 +12,7 @@ repositories {
 
 micronautBuild {
     binaryCompatibility {
-        enabled = false
+        enabledAfter("1.0.0")
     }
 }
 
