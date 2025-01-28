@@ -128,17 +128,20 @@ public class JavadocUtils {
             }
         }
         for (PropertyElement property: element.getBeanProperties()) {
-            if (property.getDocumentation().isPresent()) {
-                elements.put(property.getName(), property.getDocumentation().get());
-            } else if (property.getField().flatMap(Element::getDocumentation).isPresent()) {
-                elements.put(property.getName(), property.getField().get().getDocumentation().get());
+            Optional<String> propertyDoc = property.getDocumentation();
+            Optional<String> fieldDoc = property.getField().flatMap(Element::getDocumentation);
+            if (propertyDoc.isPresent()) {
+                elements.put(property.getName(), propertyDoc.get());
+            } else if (fieldDoc.isPresent()) {
+                elements.put(property.getName(), fieldDoc.get());
             }
         }
         for (MethodElement method: element.getMethods()) {
-            if (method.getDocumentation().isPresent()) {
+            Optional<String> methodDoc = method.getDocumentation();
+            if (methodDoc.isPresent()) {
                 String key = method.getName() + Arrays.stream(method.getParameters()).map(p -> p.getType().getName())
                     .collect(Collectors.joining(",")) + "()";
-                elements.put(key, method.getDocumentation().get());
+                elements.put(key, methodDoc.get());
             }
         }
         if (javadoc.isEmpty()) {

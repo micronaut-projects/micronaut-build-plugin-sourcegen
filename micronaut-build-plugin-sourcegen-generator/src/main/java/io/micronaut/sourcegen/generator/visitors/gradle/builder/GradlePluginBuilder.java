@@ -23,6 +23,7 @@ import io.micronaut.sourcegen.model.ClassDef;
 import io.micronaut.sourcegen.model.ClassDef.ClassDefBuilder;
 import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
+import io.micronaut.sourcegen.model.FieldDef;
 import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.ObjectDef;
 import io.micronaut.sourcegen.model.StatementDef;
@@ -50,6 +51,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
     private static final String MICRONAUT_PLUGINS_HELPER = "io.micronaut.gradle.PluginsHelper";
     private static final ClassTypeDef PROJECT_TYPE = ClassTypeDef.of("org.gradle.api.Project");
     private static final ClassTypeDef CONFIGURATION_TYPE = ClassTypeDef.of("org.gradle.api.artifacts.Configuration");
+    private static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
 
     @Override
     public Type getType() {
@@ -83,7 +85,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
                 if (pluginConfig.micronautPlugin()) {
                     params.get(0)
                         .invoke("getPluginManager", ClassTypeDef.of("org.gradle.api.plugins.PluginManager"))
-                        .invoke("apply", TypeDef.VOID, ClassTypeDef.of(MICRONAUT_BASE_PLUGIN).getStaticField("class", TypeDef.CLASS));
+                        .invoke("apply", TypeDef.VOID, ClassTypeDef.of(MICRONAUT_BASE_PLUGIN).getStaticField(CLASS_STATIC_FIELD));
                 }
                 ExpressionDef configurations = params.get(0).invoke("getConfigurations", TypeDef.of("org.gradle.api.artifacts.ConfigurationContainer"));
                 ExpressionDef dependencyHandler = params.get(0).invoke("getDependencies", TypeDef.of("org.gradle.api.artifacts.dsl.DependencyHandler"));
@@ -134,9 +136,9 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
                 }
                 ExpressionDef extensions = root.invoke("getExtensions", ClassTypeDef.of("org.gradle.api.plugins.ExtensionContainer"));
                 return new StatementDef.Return(extensions.invoke("create", extensionType,
-                    extensionType.getStaticField("class", TypeDef.CLASS),
+                    extensionType.getStaticField(CLASS_STATIC_FIELD),
                     ExpressionDef.constant(pluginConfig.namePrefix()),
-                    defaultExtensionType.getStaticField("class", TypeDef.CLASS),
+                    defaultExtensionType.getStaticField(CLASS_STATIC_FIELD),
                     params.get(0),
                     params.get(1)
                 ));

@@ -20,6 +20,7 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.inject.ast.ClassElement;
+import io.micronaut.inject.ast.FieldElement;
 import io.micronaut.inject.ast.MethodElement;
 import io.micronaut.inject.ast.ParameterElement;
 import io.micronaut.inject.ast.PropertyElement;
@@ -115,7 +116,7 @@ public class PluginUtils {
      * @param statements A mutable statements list
      * @return The local variable representing the instantiated type
      */
-    static VariableDef.Local instantiateType(
+    public static VariableDef.Local instantiateType(
         ClassElement element, String name, Map<String, ExpressionDef> arguments, List<StatementDef> statements
     )  {
         ClassTypeDef taskType = ClassTypeDef.of(element);
@@ -139,31 +140,48 @@ public class PluginUtils {
             List<ExpressionDef> constructorArgs = new ArrayList<>();
             for (ParameterElement param : constructor.getParameters()) {
                 fulfilledArgs.add(param.getName());
-                constructorArgs.add(arguments.containsValue(param.getName())
+                constructorArgs.add(arguments.containsKey(param.getName())
                     ? arguments.get(param.getName()) : ExpressionDef.constant(null));
             }
             statements.add(local.defineAndAssign(
                 taskType.instantiate(constructor, constructorArgs)));
 
             for (PropertyElement property : element.getBeanProperties()) {
-                if (fulfilledArgs.contains(property.getName())
-                    || !arguments.containsKey(property.getName())
-                ) {
-                    continue;
-                }
-                Optional<MethodElement> writeMethod = property.getWriteMethod();
-                if (writeMethod.isPresent()) {
-                    statements.add(local.invoke(writeMethod.get(), arguments.get(property.getName())));
-                    fulfilledArgs.add(property.getName());
-                } else if (property.getField().isPresent()
-                    && (property.isPublic() || property.isPackagePrivate())
-                ) {
-                    statements.add(local.field(property.getField().get()).assign(arguments.get(property.getName())));
-                    fulfilledArgs.add(property.getName());
-                }
+                setProperty(property, fulfilledArgs, arguments, local, statements);
             }
         }
         return local;
+    }
+
+    /**
+     * Set a property.
+     *
+     * @param property The property
+     * @param fulfilledArgs The values that were fulfilled already
+     * @param arguments The argument values
+     * @param owner The owner to set property to
+     * @param statements The modifiable statements
+     */
+    private static void setProperty(
+        PropertyElement property, Set<String> fulfilledArgs,
+        Map<String, ExpressionDef> arguments, Local owner, List<StatementDef> statements
+    ) {
+        if (fulfilledArgs.contains(property.getName())
+            || !arguments.containsKey(property.getName())
+        ) {
+            return;
+        }
+        Optional<MethodElement> writeMethod = property.getWriteMethod();
+        Optional<FieldElement> field = property.getField();
+        if (writeMethod.isPresent()) {
+            statements.add(owner.invoke(writeMethod.get(), arguments.get(property.getName())));
+            fulfilledArgs.add(property.getName());
+        } else if (field.isPresent()
+            && (property.isPublic() || property.isPackagePrivate())
+        ) {
+            statements.add(owner.field(field.get()).assign(arguments.get(property.getName())));
+            fulfilledArgs.add(property.getName());
+        }
     }
 
     /**
@@ -179,7 +197,7 @@ public class PluginUtils {
     ) {
         List<StatementDef> statements = new ArrayList<>();
         Local task = instantiateType(source, "task", arguments, statements);
-        statements.add(task.invoke(methodName, ClassTypeDef.VOID));
+        statements.add(task.invoke(methodName, TypeDef.VOID));
         return StatementDef.multi(statements);
     }
 

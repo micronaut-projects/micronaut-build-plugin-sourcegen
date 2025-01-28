@@ -24,6 +24,7 @@ import io.micronaut.inject.processing.ProcessingException;
 import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.GenerateGradleTask;
+import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils;
@@ -33,6 +34,7 @@ import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
 import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -69,7 +71,7 @@ public final class GradlePluginUtils {
             annotation.stringValue("taskGroup").orElse(null),
             annotation.booleanValue("micronautPlugin").orElse(true),
             annotation.stringValue("dependency").orElse(null),
-            annotation.getRequiredValue("types", GenerateGradlePlugin.Type[].class)
+            Arrays.stream(annotation.getRequiredValue("types", Type[].class)).toList()
         );
     }
 
@@ -131,7 +133,7 @@ public final class GradlePluginUtils {
         String taskGroup,
         boolean micronautPlugin,
         String dependency,
-        GenerateGradlePlugin.Type[] types
+        List<GenerateGradlePlugin.Type> types
     ) {
     }
 

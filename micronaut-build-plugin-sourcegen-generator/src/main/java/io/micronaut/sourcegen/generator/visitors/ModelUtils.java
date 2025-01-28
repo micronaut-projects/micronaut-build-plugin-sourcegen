@@ -59,6 +59,8 @@ import java.util.Set;
 @Internal
 public class ModelUtils {
 
+    private static final String CONVERT_METHOD_PREFIX = "convert";
+
     /**
      * A utility method for getting a parameter type.
      * Complex types, like enums and POJOs get copied and re-mapped.
@@ -108,8 +110,7 @@ public class ModelUtils {
     private static ClassTypeDef copyEnum(
             VisitorContext context, String packageName, ClassElement element, List<GeneratedModel> objects
     ) {
-        EnumDefBuilder enumDefBuilder = EnumDef.builder(packageName + "."
-                + element.getSimpleName().replaceAll(".+\\$", ""))
+        EnumDefBuilder enumDefBuilder = EnumDef.builder(packageName + "." + getSimpleName(element))
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(JavadocUtils.getTaskJavadoc(context, element).javadoc().orElse(element.getName() + " enum."));
         if (element instanceof EnumElement enumElement) {
@@ -136,8 +137,7 @@ public class ModelUtils {
             VisitorContext context, String packageName, ClassElement element, List<GeneratedModel> objects
     ) {
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
-        ClassDefBuilder classDefBuilder = ClassDef.builder(packageName + "."
-                + element.getSimpleName().replaceAll(".+\\$", ""))
+        ClassDefBuilder classDefBuilder = ClassDef.builder(packageName + "." + getSimpleName(element))
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(javadoc.javadoc().orElse(element.getName() + " class."))
             .addSuperinterface(TypeDef.of(Serializable.class));
@@ -186,9 +186,9 @@ public class ModelUtils {
         if (isModel(type)) {
             ClassTypeDef requiredType = ClassTypeDef.of(type);
             VariableDef.Local param = new VariableDef.Local(name, requiredType);
-            String simpleName = type.getSimpleName().replaceAll(".+\\$", "");
+            String simpleName = getSimpleName(type);
             statements.add(param.defineAndAssign(new VariableDef.This()
-                .invoke("convert" + simpleName, requiredType, paramExpression)));
+                .invoke(CONVERT_METHOD_PREFIX + simpleName, requiredType, paramExpression)));
             return param;
         }
         Map<String, ClassElement> typeArgs = type.getTypeArguments();
@@ -202,7 +202,7 @@ public class ModelUtils {
     private static ExpressionDef convertCollectionParameter(
         Local localVar, ClassElement arg, ExpressionDef paramExpression, List<StatementDef> statements, boolean isSet
     ) {
-        String simpleName = arg.getSimpleName().replaceAll(".+\\$", "");
+        String simpleName = getSimpleName(arg);
         statements.add(localVar.defineAndAssign(ExpressionDef.constant(null)));
         List<StatementDef> innerStatements = new ArrayList<>();
         innerStatements.add(localVar.assign(
@@ -215,7 +215,7 @@ public class ModelUtils {
             i.compare(OpType.LESS_THAN, paramExpression.invoke("size", TypeDef.primitive(int.class))),
             StatementDef.multi(
                 localVar.invoke("add", TypeDef.VOID,
-                    new VariableDef.This().invoke("convert" + simpleName, TypeDef.of(arg),
+                    new VariableDef.This().invoke(CONVERT_METHOD_PREFIX + simpleName, TypeDef.of(arg),
                         paramExpression.invoke("get", TypeDef.OBJECT, i)
                     )
                 ),
@@ -259,9 +259,9 @@ public class ModelUtils {
     }
 
     private static MethodDef convertEnumMethod(TypeDef type, ClassElement requiredType) {
-        String simpleName = requiredType.getSimpleName().replaceAll(".+\\$", "");
+        String simpleName = getSimpleName(requiredType);
         ClassTypeDef outputType = ClassTypeDef.of(requiredType);
-        return MethodDef.builder("convert" + simpleName)
+        return MethodDef.builder(CONVERT_METHOD_PREFIX + simpleName)
             .returns(TypeDef.of(requiredType))
             .addParameter("value", type)
             .build((t, params) -> new StatementDef.IfElse(
@@ -274,8 +274,8 @@ public class ModelUtils {
     }
 
     private static MethodDef convertPOJOMethod(TypeDef type, ClassElement requiredType) {
-        String simpleName = requiredType.getSimpleName().replaceAll(".+\\$", "");
-        return MethodDef.builder("convert" + simpleName)
+        String simpleName = getSimpleName(requiredType);
+        return MethodDef.builder(CONVERT_METHOD_PREFIX + simpleName)
             .returns(TypeDef.of(requiredType))
             .addParameter("value", type)
             .build((t, params) -> {
@@ -298,6 +298,15 @@ public class ModelUtils {
                     StatementDef.multi(statements)
                 );
             });
+    }
+
+    private static String getSimpleName(ClassElement element) {
+        String simpleName = element.getSimpleName();
+        int index = simpleName.indexOf("$");
+        if (index >= 0) {
+            simpleName = simpleName.substring(index + 1);
+        }
+        return simpleName;
     }
 
     /**

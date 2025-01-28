@@ -65,6 +65,11 @@ import java.util.Set;
 public class GradleTaskBuilder implements GradleTypeBuilder {
 
     public static final String TASK_SUFFIX = "Task";
+    public static final String WORK_ACTION_SUFFIX = "WorkAction";
+    public static final String WORK_ACTION_PARAMETERS_SUFFIX = "WorkActionParameters";
+
+    private static final String GET_CLASSPATH_METHOD = "getClasspath";
+    private static final String EXECUTE_METHOD = "execute";
 
     @Override
     public Type getType() {
@@ -133,7 +138,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
         }
 
         TypeDef classpathType = TypeDef.of("org.gradle.api.file.ConfigurableFileCollection");
-        builder.addMethod(MethodDef.builder("getClasspath")
+        builder.addMethod(MethodDef.builder(GET_CLASSPATH_METHOD)
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .returns(classpathType)
             .addAnnotation("org.gradle.api.tasks.Classpath")
@@ -148,7 +153,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .build()
         );
 
-        builder.addMethod(MethodDef.builder("execute")
+        builder.addMethod(MethodDef.builder(EXECUTE_METHOD)
             .returns(TypeDef.VOID)
             .addModifiers(Modifier.PUBLIC)
             .addAnnotation("org.gradle.api.tasks.TaskAction")
@@ -160,7 +165,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                         ClassTypeDef.of(taskConfig.namePrefix() + "ClasspathConfigurator").instantiate(t)
                     )
                     .invoke("submit", TypeDef.VOID,
-                        ClassTypeDef.of(taskConfig.namePrefix() + "WorkAction").getStaticField("class", TypeDef.CLASS),
+                        ClassTypeDef.of(taskConfig.namePrefix() + WORK_ACTION_SUFFIX).getStaticField("class", TypeDef.CLASS),
                         ClassTypeDef.of(taskConfig.namePrefix() + "WorkActionParameterConfigurator").instantiate(t)
                     )
             )
@@ -170,7 +175,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
     }
 
     private ClassDef createWorkActionParameterConfigurator(TypeDef taskType, GradleTaskConfig taskConfig) {
-        TypeDef parametersType = TypeDef.of(taskConfig.namePrefix() + "WorkActionParameters");
+        TypeDef parametersType = TypeDef.of(taskConfig.namePrefix() + WORK_ACTION_PARAMETERS_SUFFIX);
         FieldDef taskField = FieldDef.builder("task").ofType(taskType).build();
         return ClassDef.builder(taskConfig.namePrefix() + "WorkActionParameterConfigurator")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -180,7 +185,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             ))
             .addField(taskField)
             .addAllFieldsConstructor(Modifier.PUBLIC)
-            .addMethod(MethodDef.builder("execute")
+            .addMethod(MethodDef.builder(EXECUTE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeDef.VOID)
                 .overrides()
@@ -241,22 +246,22 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             ))
             .addField(taskField)
             .addAllFieldsConstructor(Modifier.PUBLIC)
-            .addMethod(MethodDef.builder("execute")
+            .addMethod(MethodDef.builder(EXECUTE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeDef.VOID)
                 .overrides()
                 .addParameter(ParameterDef.of("spec", specType))
                 .build((t, params) ->
                     params.get(0)
-                        .invoke("getClasspath", classpathType)
-                        .invoke("from", TypeDef.VOID, t.field(taskField).invoke("getClasspath", classpathType))
+                        .invoke(GET_CLASSPATH_METHOD, classpathType)
+                        .invoke("from", TypeDef.VOID, t.field(taskField).invoke(GET_CLASSPATH_METHOD, classpathType))
                 )
             )
             .build();
     }
 
     private InterfaceDef createWorkActionParameters(GradleTaskConfig taskConfig) {
-        InterfaceDefBuilder builder = InterfaceDef.builder(taskConfig.namePrefix() + "WorkActionParameters")
+        InterfaceDefBuilder builder = InterfaceDef.builder(taskConfig.namePrefix() + WORK_ACTION_PARAMETERS_SUFFIX)
             .addModifiers(Modifier.PUBLIC)
             .addSuperinterface(ClassTypeDef.of("org.gradle.workers.WorkParameters"));
         for (ParameterConfig parameter: taskConfig.parameters()) {
@@ -270,14 +275,14 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
     }
 
     private ClassDef createWorkAction(GradleTaskConfig taskConfig) {
-        ClassTypeDef parametersType = ClassTypeDef.of(taskConfig.namePrefix() + "WorkActionParameters");
+        ClassTypeDef parametersType = ClassTypeDef.of(taskConfig.namePrefix() + WORK_ACTION_PARAMETERS_SUFFIX);
         MethodDef executeMethod = MethodDef
-            .builder("execute")
+            .builder(EXECUTE_METHOD)
             .returns(TypeDef.VOID)
             .addModifiers(Modifier.PUBLIC)
             .overrides()
             .build((t, params) -> runTask(taskConfig, t, parametersType));
-        return ClassDef.builder(taskConfig.namePrefix() + "WorkAction")
+        return ClassDef.builder(taskConfig.namePrefix() + WORK_ACTION_SUFFIX)
             .addSuperinterface(TypeDef.parameterized(
                 ClassTypeDef.of("org.gradle.workers.WorkAction"),
                 parametersType
