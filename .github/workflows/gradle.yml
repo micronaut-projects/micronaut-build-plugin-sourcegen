@@ -73,7 +73,7 @@ jobs:
       - name: "🔎 Run static analysis"
         if: env.SONAR_TOKEN != '' && matrix.java == '17'
         run: |
-          ./gradlew sonar --debug
+          ./gradlew --stop && ./gradlew clean sonar --debug --no-build-cache --rerun-tasks
 
       - name: "📊 Publish Test Report"
         if: always()
