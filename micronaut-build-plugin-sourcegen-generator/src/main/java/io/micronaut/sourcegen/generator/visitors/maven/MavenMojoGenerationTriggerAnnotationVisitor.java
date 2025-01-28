@@ -85,10 +85,8 @@ public final class MavenMojoGenerationTriggerAnnotationVisitor implements TypeEl
                 sourceGenerator.write(definition, context, element);
             }
         } catch (ProcessingException e) {
-            e.printStackTrace();
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             SourceGenerators.handleFatalException(element, GenerateMavenMojo.class, e,
                 (exception -> {
                     processed.remove(element.getName());

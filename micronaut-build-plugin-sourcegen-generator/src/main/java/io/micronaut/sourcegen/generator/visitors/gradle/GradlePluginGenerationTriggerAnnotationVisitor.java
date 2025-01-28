@@ -95,10 +95,8 @@ public final class GradlePluginGenerationTriggerAnnotationVisitor implements Typ
                 sourceGenerator.write(definition, context, element);
             }
         } catch (ProcessingException e) {
-            e.printStackTrace();
             throw e;
         } catch (Exception e) {
-            e.printStackTrace();
             SourceGenerators.handleFatalException(element, GenerateGradlePlugin.class, e,
                 (exception -> {
                     processed.remove(element.getName());
@@ -115,7 +113,7 @@ public final class GradlePluginGenerationTriggerAnnotationVisitor implements Typ
             definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
         }
         for (Type type : pluginConfig.types()) {
-            List<ObjectDef> typeDefinitions = new ArrayList<>();
+            List<ObjectDef> typeDefinitions = null;
             for (GradleTypeBuilder gradleTypeBuilder : BUILDERS) {
                 if (gradleTypeBuilder.getType().equals(type)) {
                     typeDefinitions = gradleTypeBuilder.build(pluginConfig);
