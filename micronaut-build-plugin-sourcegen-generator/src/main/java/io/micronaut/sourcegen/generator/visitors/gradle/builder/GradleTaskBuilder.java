@@ -101,40 +101,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
         builder.addInnerType(createClasspathConfigurator(TypeDef.of(taskType), taskConfig));
 
         for (ParameterConfig parameter: taskConfig.parameters()) {
-            MethodDefBuilder propBuilder = MethodDef
-                .builder("get" + NameUtils.capitalize(parameter.source().getName()))
-                .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .addJavadoc(parameter.javadoc())
-                .returns(createGradleProperty(parameter));
-            if (parameter.output()) {
-                if (parameter.source().getType().isAssignable(File.class)) {
-                    if (parameter.directory()) {
-                        propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputDirectory")).build());
-                    } else {
-                        propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputFile")).build());
-                    }
-                }
-            } else {
-                propBuilder.addAnnotation("org.gradle.api.tasks.Input");
-                if (parameter.source().getType().isAssignable(File.class)) {
-                    if (parameter.directory()) {
-                        propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.InputDirectory")).build());
-                    } else {
-                        propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.InputFile")).build());
-                    }
-                    ClassTypeDef pathSensitivityType = ClassTypeDef.of("org.gradle.api.tasks.PathSensitivity");
-                    ClassTypeDef pathSensitiveType = ClassTypeDef.of("org.gradle.api.tasks.PathSensitive");
-                    propBuilder.addAnnotation(AnnotationDef.builder(pathSensitiveType)
-                        .addMember("value", pathSensitivityType.getStaticField(parameter.pathSensitivity().name(), pathSensitivityType))
-                        .build()
-                    );
-                }
-            }
-
-            if (!parameter.required()) {
-                propBuilder.addAnnotation("org.gradle.api.tasks.Optional");
-            }
-            builder.addMethod(propBuilder.build());
+            builder.addMethod(createParameterGetter(parameter));
         }
 
         TypeDef classpathType = TypeDef.of("org.gradle.api.file.ConfigurableFileCollection");
@@ -153,25 +120,45 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .build()
         );
 
-        builder.addMethod(MethodDef.builder(EXECUTE_METHOD)
-            .returns(TypeDef.VOID)
-            .addModifiers(Modifier.PUBLIC)
-            .addAnnotation("org.gradle.api.tasks.TaskAction")
-            .addJavadoc(taskConfig.methodJavadoc())
-            .build((t, params) ->
-                t.invoke("getWorkerExecutor", workerExecutorType)
-                    .invoke("classLoaderIsolation",
-                        workerExecutorType,
-                        ClassTypeDef.of(taskConfig.namePrefix() + "ClasspathConfigurator").instantiate(t)
-                    )
-                    .invoke("submit", TypeDef.VOID,
-                        ClassTypeDef.of(taskConfig.namePrefix() + WORK_ACTION_SUFFIX).getStaticField("class", TypeDef.CLASS),
-                        ClassTypeDef.of(taskConfig.namePrefix() + "WorkActionParameterConfigurator").instantiate(t)
-                    )
-            )
-        );
-
+        builder.addMethod(createExecuteMethod(taskConfig, workerExecutorType));
         return List.of(builder.build());
+    }
+
+    private MethodDef createParameterGetter(ParameterConfig parameter) {
+        MethodDefBuilder propBuilder = MethodDef
+            .builder("get" + NameUtils.capitalize(parameter.source().getName()))
+            .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+            .addJavadoc(parameter.javadoc())
+            .returns(createGradleProperty(parameter));
+        if (parameter.output()) {
+            if (parameter.source().getType().isAssignable(File.class)) {
+                if (parameter.directory()) {
+                    propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputDirectory")).build());
+                } else {
+                    propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputFile")).build());
+                }
+            }
+        } else {
+            propBuilder.addAnnotation("org.gradle.api.tasks.Input");
+            if (parameter.source().getType().isAssignable(File.class)) {
+                if (parameter.directory()) {
+                    propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.InputDirectory")).build());
+                } else {
+                    propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.InputFile")).build());
+                }
+                ClassTypeDef pathSensitivityType = ClassTypeDef.of("org.gradle.api.tasks.PathSensitivity");
+                ClassTypeDef pathSensitiveType = ClassTypeDef.of("org.gradle.api.tasks.PathSensitive");
+                propBuilder.addAnnotation(AnnotationDef.builder(pathSensitiveType)
+                    .addMember("value", pathSensitivityType.getStaticField(parameter.pathSensitivity().name(), pathSensitivityType))
+                    .build()
+                );
+            }
+        }
+
+        if (!parameter.required()) {
+            propBuilder.addAnnotation("org.gradle.api.tasks.Optional");
+        }
+        return propBuilder.build();
     }
 
     private ClassDef createWorkActionParameterConfigurator(TypeDef taskType, GradleTaskConfig taskConfig) {
@@ -226,10 +213,8 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
                 ConversionService.SHARED.convert(value, t)
             ).map(o -> new Constant(type, o)).orElse(null);
-        } else if (type instanceof ClassDefType classDefType) {
-            if (classDefType.objectDef() instanceof EnumDef enumDef) {
-                return classDefType.getStaticField(value, type);
-            }
+        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
+            return classDefType.getStaticField(value, type);
         }
         throw new UnsupportedOperationException("Cannot create default value of type " + type);
     }
@@ -291,6 +276,25 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.STATIC)
             .addMethod(executeMethod)
             .build();
+    }
+
+    private MethodDef createExecuteMethod(GradleTaskConfig taskConfig, TypeDef workerExecutorType) {
+        return MethodDef.builder(EXECUTE_METHOD)
+            .returns(TypeDef.VOID)
+            .addModifiers(Modifier.PUBLIC)
+            .addAnnotation("org.gradle.api.tasks.TaskAction")
+            .addJavadoc(taskConfig.methodJavadoc())
+            .build((t, params) ->
+                t.invoke("getWorkerExecutor", workerExecutorType)
+                    .invoke("classLoaderIsolation",
+                        workerExecutorType,
+                        ClassTypeDef.of(taskConfig.namePrefix() + "ClasspathConfigurator").instantiate(t)
+                    )
+                    .invoke("submit", TypeDef.VOID,
+                        ClassTypeDef.of(taskConfig.namePrefix() + WORK_ACTION_SUFFIX).getStaticField("class", TypeDef.CLASS),
+                        ClassTypeDef.of(taskConfig.namePrefix() + "WorkActionParameterConfigurator").instantiate(t)
+                    )
+            );
     }
 
     private StatementDef runTask(GradleTaskConfig taskConfig, VariableDef.This t, ClassTypeDef parametersType) {

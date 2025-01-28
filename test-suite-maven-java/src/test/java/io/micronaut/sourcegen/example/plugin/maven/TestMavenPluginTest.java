@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-public class TestMavenPluginTest extends AbstractMavenPluginTest {
+class TestMavenPluginTest extends AbstractMavenPluginTest {
 
     @Test
     void generateAndBuildSimpleRecord() throws Exception {

@@ -49,6 +49,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
 
     private static final String MICRONAUT_BASE_PLUGIN = "io.micronaut.gradle.MicronautBasePlugin";
     private static final String MICRONAUT_PLUGINS_HELPER = "io.micronaut.gradle.PluginsHelper";
+    private static final String CREATE_METHOD = "create";
     private static final ClassTypeDef PROJECT_TYPE = ClassTypeDef.of("org.gradle.api.Project");
     private static final ClassTypeDef CONFIGURATION_TYPE = ClassTypeDef.of("org.gradle.api.artifacts.Configuration");
     private static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
@@ -94,20 +95,20 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
                 Local dependencies = new Local("dependencies", CONFIGURATION_TYPE);
                 statements.add(new DefineAndAssign(
                     dependencies,
-                    configurations.invoke("create", CONFIGURATION_TYPE, ExpressionDef.constant(pluginConfig.namePrefix() + "Configuration"))
+                    configurations.invoke(CREATE_METHOD, CONFIGURATION_TYPE, ExpressionDef.constant(pluginConfig.namePrefix() + "Configuration"))
                 ));
                 statements.add(dependencies.invoke("setCanBeResolved", TypeDef.VOID, ExpressionDef.constant(false)));
                 statements.add(dependencies.invoke("setCanBeConsumed", TypeDef.VOID, ExpressionDef.constant(false)));
                 statements.add(dependencies.invoke("setDescription", TypeDef.VOID, ExpressionDef.constant("The " + pluginConfig.namePrefix() + " worker dependencies")));
                 if (pluginConfig.dependency() != null) {
                     statements.add(dependencies.invoke("getDependencies", TypeDef.of("org.gradle.api.artifacts.DependencySet"))
-                        .invoke("add", TypeDef.VOID, dependencyHandler.invoke("create", dependencyType, ExpressionDef.constant(pluginConfig.dependency()))));
+                        .invoke("add", TypeDef.VOID, dependencyHandler.invoke(CREATE_METHOD, dependencyType, ExpressionDef.constant(pluginConfig.dependency()))));
                 }
 
                 Local classpath = new Local("classpath", CONFIGURATION_TYPE);
                 statements.add(new DefineAndAssign(
                     classpath,
-                    configurations.invoke("create", CONFIGURATION_TYPE, ExpressionDef.constant(pluginConfig.namePrefix() + "Classpath"))
+                    configurations.invoke(CREATE_METHOD, CONFIGURATION_TYPE, ExpressionDef.constant(pluginConfig.namePrefix() + "Classpath"))
                 ));
                 statements.add(classpath.invoke("setCanBeResolved", TypeDef.VOID, ExpressionDef.constant(true)));
                 statements.add(classpath.invoke("setCanBeConsumed", TypeDef.VOID, ExpressionDef.constant(false)));
@@ -135,7 +136,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
                         .invokeStatic("findMicronautExtension", TypeDef.of("io.micronaut.gradle.MicronautExtension"), params.get(0));
                 }
                 ExpressionDef extensions = root.invoke("getExtensions", ClassTypeDef.of("org.gradle.api.plugins.ExtensionContainer"));
-                return new StatementDef.Return(extensions.invoke("create", extensionType,
+                return new StatementDef.Return(extensions.invoke(CREATE_METHOD, extensionType,
                     extensionType.getStaticField(CLASS_STATIC_FIELD),
                     ExpressionDef.constant(pluginConfig.namePrefix()),
                     defaultExtensionType.getStaticField(CLASS_STATIC_FIELD),

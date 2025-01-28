@@ -25,6 +25,7 @@ import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.Element;
 import io.micronaut.inject.ast.MethodElement;
 import io.micronaut.inject.ast.PropertyElement;
+import io.micronaut.inject.processing.ProcessingException;
 import io.micronaut.inject.visitor.VisitorContext;
 
 import java.io.BufferedReader;
@@ -81,7 +82,7 @@ public class JavadocUtils {
                 context.warn("Could not find javadoc META-INF file " + javadocMetaPath + " for type", element);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ProcessingException(element, "Could not read javadoc META-INF file " + javadocMetaPath + " for type" , e);
         }
 
         if (javadoc == null && elements.isEmpty()) {

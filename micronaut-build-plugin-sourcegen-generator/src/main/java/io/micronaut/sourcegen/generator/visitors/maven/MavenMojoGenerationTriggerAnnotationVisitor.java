@@ -71,13 +71,7 @@ public final class MavenMojoGenerationTriggerAnnotationVisitor implements TypeEl
         context.info("Creating plugin classes");
 
         try {
-            List<ObjectDef> definitions = new ArrayList<>();
-            List<MavenTaskConfig> taskConfigs = MavenPluginUtils.getTaskConfigs(element, context);
-            for (MavenTaskConfig taskConfig : taskConfigs) {
-                definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
-                definitions.add(new MavenMojoBuilder().build(taskConfig));
-            }
-
+            List<ObjectDef> definitions = createDefinitions(context, element);
             SourceGenerator sourceGenerator = SourceGenerators.findByLanguage(context.getLanguage()).orElse(null);
             if (sourceGenerator == null) {
                 throw new ProcessingException(element, "Could not find SourceGenerator for language " + context.getLanguage());
@@ -102,6 +96,16 @@ public final class MavenMojoGenerationTriggerAnnotationVisitor implements TypeEl
                 })
             );
         }
+    }
+
+    private List<ObjectDef> createDefinitions(VisitorContext context, ClassElement element) {
+        List<ObjectDef> definitions = new ArrayList<>();
+        List<MavenTaskConfig> taskConfigs = MavenPluginUtils.getTaskConfigs(element, context);
+        for (MavenTaskConfig taskConfig : taskConfigs) {
+            definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
+            definitions.add(new MavenMojoBuilder().build(taskConfig));
+        }
+        return definitions;
     }
 
 }

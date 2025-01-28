@@ -151,7 +151,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             builder.addMethod(MethodDef.builder("configureSpec")
                 .addModifiers(Modifier.PROTECTED)
                 .addParameter("spec", specificationType)
-                .build((t, params) -> buildConfigureSpecMethod(taskConfig, t, params))
+                .build((t, params) -> buildConfigureSpecMethod(taskConfig, params))
             );
 
             builder.addInnerType(buildTaskConfigurator(pluginConfig, taskConfig, specificationType));
@@ -225,7 +225,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             );
     }
 
-    private StatementDef buildConfigureSpecMethod(GradleTaskConfig taskConfig, VariableDef t, List<VariableDef.MethodParameter> params) {
+    private StatementDef buildConfigureSpecMethod(GradleTaskConfig taskConfig, List<VariableDef.MethodParameter> params) {
         List<StatementDef> statements = new ArrayList<>();
         for (ParameterConfig parameter: taskConfig.parameters()) {
             String getterName = "get" + NameUtils.capitalize(parameter.source().getName());

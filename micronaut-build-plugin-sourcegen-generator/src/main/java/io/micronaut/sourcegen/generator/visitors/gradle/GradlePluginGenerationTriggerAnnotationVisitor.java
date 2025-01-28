@@ -77,32 +77,11 @@ public final class GradlePluginGenerationTriggerAnnotationVisitor implements Typ
     @Override
     public void visitClass(ClassElement element, VisitorContext context) {
         context.info("Creating plugin classes");
-        if (processed.contains(element.getName())) {
+        if (processed.contains(element.getName()) || !element.hasAnnotation(GenerateGradlePlugin.class)) {
             return;
         }
         try {
-            if (!element.hasAnnotation(GenerateGradlePlugin.class)) {
-                return;
-            }
-
-            List<ObjectDef> definitions = new ArrayList<>();
-            GradlePluginConfig pluginConfig = GradlePluginUtils.getPluginConfig(element, context);
-            for (GradleTaskConfig taskConfig: pluginConfig.tasks()) {
-                definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
-            }
-            for (Type type: pluginConfig.types()) {
-                List<ObjectDef> typeDefinitions = new ArrayList<>();
-                for (GradleTypeBuilder gradleTypeBuilder : BUILDERS) {
-                    if (gradleTypeBuilder.getType().equals(type)) {
-                        typeDefinitions = gradleTypeBuilder.build(pluginConfig);
-                    }
-                }
-                if (typeDefinitions == null) {
-                    throw new ProcessingException(element, "Building plugin sources of type " + type + " not supported!");
-                }
-                definitions.addAll(typeDefinitions);
-            }
-
+            List<ObjectDef> definitions = createDefinitions(context, element);
             SourceGenerator sourceGenerator = SourceGenerators.findByLanguage(context.getLanguage()).orElse(null);
             if (sourceGenerator == null) {
                 throw new ProcessingException(element, "Could not find SourceGenerator for language " + context.getLanguage());
@@ -127,6 +106,28 @@ public final class GradlePluginGenerationTriggerAnnotationVisitor implements Typ
                 })
             );
         }
+    }
+
+    private List<ObjectDef> createDefinitions(VisitorContext context, ClassElement element) {
+        List<ObjectDef> definitions = new ArrayList<>();
+        GradlePluginConfig pluginConfig = GradlePluginUtils.getPluginConfig(element, context);
+        for (GradleTaskConfig taskConfig : pluginConfig.tasks()) {
+            definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
+        }
+        for (Type type : pluginConfig.types()) {
+            List<ObjectDef> typeDefinitions = new ArrayList<>();
+            for (GradleTypeBuilder gradleTypeBuilder : BUILDERS) {
+                if (gradleTypeBuilder.getType().equals(type)) {
+                    typeDefinitions = gradleTypeBuilder.build(pluginConfig);
+                }
+            }
+            if (typeDefinitions == null) {
+                throw new ProcessingException(element, "Building plugin sources of type " + type + " not supported!");
+            }
+            definitions.addAll(typeDefinitions);
+        }
+
+        return definitions;
     }
 
 }

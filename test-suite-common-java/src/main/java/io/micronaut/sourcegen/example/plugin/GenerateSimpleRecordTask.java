@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import io.micronaut.sourcegen.annotations.PluginTask;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a configuration for a plugin task run.
@@ -54,6 +56,8 @@ public record GenerateSimpleRecordTask(
     File outputFolder // <4>
 ) {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSimpleRecordTask.class);
+
     private static final String CONTENT = """
 package %s;
 
@@ -73,7 +77,7 @@ public record %s(
      */
     @PluginTaskExecutable // <5>
     public void generateSimpleRecord() {
-        System.out.println("Generating record " + typeName);
+        LOG.info("Generating record " + typeName);
 
         File packageFolder = new File(outputFolder, "src" + File.separator
             + "main" + File.separator + "java" + File.separator
@@ -98,7 +102,7 @@ public record %s(
             throw new RuntimeException(e);
         }
 
-        System.out.println("Finished record " + typeName);
+        LOG.info("Finished record " + typeName);
     }
 
 }
