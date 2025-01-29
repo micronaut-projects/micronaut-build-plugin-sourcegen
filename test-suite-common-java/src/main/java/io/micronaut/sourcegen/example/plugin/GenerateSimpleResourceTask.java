@@ -18,12 +18,13 @@ package io.micronaut.sourcegen.example.plugin;
 import io.micronaut.sourcegen.annotations.PluginTask;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * This is a configuration for another plugin task run.
@@ -34,7 +35,7 @@ import java.util.logging.Logger;
 @PluginTask
 public final class GenerateSimpleResourceTask {
 
-    private static final Logger LOG = Logger.getLogger(GenerateSimpleResourceTask.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSimpleResourceTask.class.getName());
 
     /**
      * The generated file name.
@@ -82,7 +83,7 @@ public final class GenerateSimpleResourceTask {
     }
 
     private void generateOne(String fileName, Ending ending) {
-        LOG.info("Generating resource " + fileName);
+        LOG.info("Generating resource {}", fileName);
 
         File outputFile = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
         outputFile.getParentFile().mkdirs();
@@ -92,7 +93,7 @@ public final class GenerateSimpleResourceTask {
             throw new RuntimeException(e);
         }
 
-        LOG.info("Finished resource " + fileName);
+        LOG.info("Finished resource {}", fileName);
     }
 
     public void setFileName(String fileName) {

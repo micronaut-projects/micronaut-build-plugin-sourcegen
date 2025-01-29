@@ -77,7 +77,7 @@ public record %s(
      */
     @PluginTaskExecutable // <5>
     public void generateSimpleRecord() {
-        LOG.info("Generating record " + typeName);
+        LOG.info("Generating record {}", typeName);
 
         File packageFolder = new File(outputFolder, "src" + File.separator
             + "main" + File.separator + "java" + File.separator
@@ -102,7 +102,7 @@ public record %s(
             throw new RuntimeException(e);
         }
 
-        LOG.info("Finished record " + typeName);
+        LOG.info("Finished record {}", typeName);
     }
 
 }
