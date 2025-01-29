@@ -1,7 +1,10 @@
 introduction:
   title: Introduction
 releaseHistory: Release History
-quickStart:
-  title: Quick Start
+gettingStarted:
+  title: Getting Started
+  commonModule: Common Module
+  gradleModule: Gradle Module
+  mavenModule: Maven Module
 repository: Repository
 

@@ -1,0 +1,8 @@
+The most likely structure for a project that wants to utilize this consists of 3 modules:
+
+* Common module with task logic.
+* Module with generated Gradle plugin sources and possible user extensions.
+* Module with generated Maven plugin sources and possible user extensions.
+
+The 3 modules might be in different repositories. It is possible to use a single module, but it is not recommended.
+

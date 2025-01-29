@@ -1,0 +1,17 @@
+The common module should have the following dependencies:
+
+dependency:micronaut-build-plugin-sourcegen-annotations[groupId="io.micronaut.build.plugin.sourcegen"]
+
+dependency:micronaut-build-plugin-sourcegen-generator[scope="annotationProcessor", groupId="io.micronaut.build.plugin.sourcegen"]
+
+Use the link:{api}/io/micronaut/sourcegen/annotations/PluginTask.html[PluginTask] annotation to define a plugin task. In this example we will create a task that can generate simple record sources. User specifies the type name, properties and javadoc information and then record is generated and added to their sources.
+
+snippet::io.micronaut.sourcegen.example.plugin.GenerateSimpleRecordTask[project-base="test-suite-common", tags="content", source="main"]
+
+<1> Define the task. The task can be a record or a Java class.
+<2> Use the link:{api}/io/micronaut/sourcegen/annotations/PluginTaskParameter.html[PluginTaskParameter] annotation to define a parameter. Set `required = true` for mandatory parameters.
+<3> Define another parameter. Set the default value if any.
+<4> Specify `output = true` for outputs a the task.
+<5> Use the link:{api}/io/micronaut/sourcegen/annotations/PluginTaskExecutable.html[PluginTaskExecutable] to define the executable for task. The executable will use the parameters defined for the task.
+
+See documentation for link:{api}/io/micronaut/sourcegen/annotations/PluginTask.html[PluginTask], link:{api}/io/micronaut/sourcegen/annotations/PluginTaskParameter.html[PluginTaskParameter] and link:{api}/io/micronaut/sourcegen/annotations/PluginTaskExecutable.html[PluginTaskExecutable] to view all the configurable properties.

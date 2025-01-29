@@ -1,0 +1,18 @@
+plugins {
+    id("io.micronaut.build.internal.build-plugin-sourcegen-base")
+    id("io.micronaut.build.internal.common")
+}
+
+repositories {
+    maven {
+        setUrl("https://repo.gradle.org/gradle/libs-releases")
+    }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+tasks.withType(Checkstyle).configureEach {
+    enabled = false
+}

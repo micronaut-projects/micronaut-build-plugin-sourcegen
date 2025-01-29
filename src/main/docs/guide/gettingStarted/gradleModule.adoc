@@ -1,0 +1,38 @@
+The Gradle module should have the same dependencies and also the dependency on the common module.
+
+dependency:micronaut-build-plugin-sourcegen-annotations[groupId="io.micronaut.build.plugin.sourcegen"]
+
+dependency:test-plugin-common[scope="compileOnly", groupId="io.micronaut.test"]
+
+dependency:micronaut-build-plugin-sourcegen-generator[scope="annotationProcessor", groupId="io.micronaut.build.plugin.sourcegen"]
+
+dependency:test-plugin-common[scope="annotationProcessor", groupId="io.micronaut.test"]
+
+NOTE: Adding the common plugin to the annotation processor paths is currently required to retrieve javadoc.
+
+Use the link:{api}/io/micronaut/sourcegen/annotations/GenerateGradlePlugin.html[GenerateGradlePlugin] annotation to trigger generation of Gradle Plugin sources.
+
+snippet::io.micronaut.sourcegen.example.plugin.gradle.GeneratePluginTrigger[project-base="test-suite-gradle", tags="content", source="main"]
+
+<1> Specify the name prefix for all generated sources. `TestPlugin` and `TestExtension` will be generated based on this.
+<2> Use the link:{api}/io/micronaut/sourcegen/annotations/GenerateGradlePlugin/GenerateGradleTask.html[GenerateGradleTask] annotation to define generation of a task. Specify the task from common module annotated with link:{api}/io/micronaut/sourcegen/annotations/PluginTask.html[PluginTask] as source. Based on the prefix, `GenerateSimpleRecordTask` and `GenerateSimpleRecordSpec` will be generated.
+<3> If you create another task, you can add it to the same plugin.
+
+The following sources will be generated based on this:
+
+1. `TestPlugin` - the Gradle plugin base that adds the extension to user project.
+2. `TestExtension` and `DefaultTestExtension` - extension and its implementation that allow calling tasks. Each task can be configured with the corresponding extension method.
+3. `GenerateSimpleRecordTask` - the Gradle task that is responsible for actually calling your task logic.
+4. `GenerateSimpleRecordSpec` - the specification with all the task parameters that user can configure when calling the extension method.
+
+See documentation for link:{api}/io/micronaut/sourcegen/annotations/GenerateGradleTask.html[GenerateGradleTask] to view all the configurable properties.
+
+=== Plugin Customization
+
+Plugin and extension can be extended to add custom Gradle-specific behavior.
+
+snippet::io.micronaut.sourcegen.example.plugin.gradle.TestExtensionImpl[project-base="test-suite-gradle", tags="begin,generateRecordWithName,createGenerateSimpleRecordTask,withJavaSourceSets,end", source="main"]
+
+<1> Extend the generated `TestExtension` class.
+<2> Create a utility extension method that users could call instead.
+<3> Add the generated file to sources.

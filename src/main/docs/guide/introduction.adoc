@@ -1,1 +1,7 @@
-TODO
+Micronaut Build plugin sourcegen allows generating sources of Gradle and Maven plugins.
+
+This is most useful for resource-intensive tasks that have a considerable amount of parameters, but are not closely coupled with plugin logic. An example of such task is generating sources or resources. The idea is that developer writes task logic and describes the API, while plugin sources are generated for this project to start the task using the API.
+
+The main advantage of using the generator is that parameters do not need to be copied manually to plugin implementations separately avoiding human error. For each parameter, default value, whether it is required and javadoc will be copied.
+
+This project is based on https://micronaut-projects.github.io/micronaut-sourcegen/latest/guide/[Micronaut sourcegen].

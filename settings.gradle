@@ -6,16 +6,21 @@ pluginManagement {
 }
 
 plugins {
-    id 'io.micronaut.build.shared.settings' version '7.3.1'
+    id 'io.micronaut.build.shared.settings' version '7.3.2'
 }
 
-rootProject.name = 'project-template-parent'
+rootProject.name = 'micronaut-build-plugin-sourcegen-parent'
 
-include 'project-template'
-include 'project-template-bom'
+include 'micronaut-build-plugin-sourcegen-bom'
+include 'micronaut-build-plugin-sourcegen-annotations'
+include 'micronaut-build-plugin-sourcegen-generator'
+include 'test-suite-common-java'
+include 'test-suite-gradle-java'
+include 'test-suite-maven-java'
 
 enableFeaturePreview 'TYPESAFE_PROJECT_ACCESSORS'
 
 micronautBuild {
     importMicronautCatalog()
+    importMicronautCatalog("micronaut-sourcegen")
 }
