@@ -1,0 +1,10 @@
+io.micronaut.sourcegen.annotations
+io.micronaut.sourcegen.example.plugin
+io.micronaut.sourcegen.example.plugin.gradle
+io.micronaut.sourcegen.example.plugin.gradle.model
+io.micronaut.sourcegen.example.plugin.maven
+io.micronaut.sourcegen.example.plugin.maven.model
+io.micronaut.sourcegen.generator.visitors
+io.micronaut.sourcegen.generator.visitors.gradle
+io.micronaut.sourcegen.generator.visitors.gradle.builder
+io.micronaut.sourcegen.generator.visitors.maven
