@@ -74,7 +74,7 @@ public final class PluginTaskConfigValidatingVisitor implements TypeElementVisit
             if (processed.contains(propertyType.getName())) {
                 continue;
             }
-            if (!propertyType.isEnum() || !ModelUtils.isPOJO(propertyType)) {
+            if (!ModelUtils.isModel(propertyType)) {
                 continue;
             }
             processed.add(propertyType.getName());

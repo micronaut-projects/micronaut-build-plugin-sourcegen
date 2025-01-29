@@ -2,3 +2,8 @@ plugins {
     id "io.micronaut.build.internal.docs"
     id "io.micronaut.build.internal.quality-reporting"
 }
+
+tasks.javadoc {
+    source += fileTree(layout.projectDirectory.dir("test-suite-maven-java/build/generated/sources/annotationProcessor/java/main"))
+    source += fileTree(layout.projectDirectory.dir("test-suite-gradle-java/build/generated/sources/annotationProcessor/java/main"))
+}

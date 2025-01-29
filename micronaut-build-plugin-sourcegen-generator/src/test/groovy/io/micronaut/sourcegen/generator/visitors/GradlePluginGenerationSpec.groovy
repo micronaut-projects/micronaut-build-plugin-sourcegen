@@ -110,12 +110,12 @@ public abstract class WolfTask extends DefaultTask {
  */
 public interface WolfSpec {
   /**
-   * Configurable slogan parameter.
+   * @return Configurable slogan parameter.
    */
   Property<String> getSlogan();
 
   /**
-   * Configurable age parameter.
+   * @return Configurable age parameter.
    */
   Property<Integer> getAge();
 }"""
@@ -128,14 +128,17 @@ public interface WolfExtension {
   /**
    * Create a task for awooo.
    * Main execution of Wolf task.
-   * @param name The unique identifier used to derive task names
-   * @param spec The configurable specification
+   * @param name   The unique identifier used to derive task names
+   * @param action The action to apply on the task specification
    */
   void awooo(String name, Action<? super WolfSpec> action);
 }"""
 
         var defaultExtensionContent = stripImports(files.get("test.DefaultWolfExtension").getCharContent(false))
-        defaultExtensionContent == """public abstract class DefaultWolfExtension implements WolfExtension {
+        defaultExtensionContent == """/**
+ * Default implementation of the {@link test.WolfExtension}.
+ */
+public abstract class DefaultWolfExtension implements WolfExtension {
   protected final Set<String> names = new java.util.HashSet();
 
   protected final Project project;
@@ -176,6 +179,9 @@ public interface WolfExtension {
       this.classpath = classpath;
     }
 
+    /**
+     * The configurator for Wolf task.
+     */
     public void execute(WolfTask arg1) {
       arg1.getClasspath().from(this.classpath);
       arg1.setDescription("Configure the awooo");

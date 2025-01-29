@@ -78,13 +78,17 @@ class TestPluginTest extends AbstractPluginTest {
         }
         """);
 
-        var result = configureRunner(":generateHello").build();
+        var result = configureRunner(":build").build();
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateHello").getOutcome());
 
         File generatedResource = file("build/generated/generateHello/META-INF/hello.txt");
         assertTrue(generatedResource.exists());
         assertEquals("Hello!", content(generatedResource));
+
+        File resource = file("build/resources/main/META-INF/hello.txt");
+        assertTrue(resource.exists());
+        assertEquals("Hello!", content(resource));
     }
 
     @Test

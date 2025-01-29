@@ -70,7 +70,7 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
             MethodDefBuilder propBuilder = MethodDef
                 .builder("get" + NameUtils.capitalize(parameter.source().getName()))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .addJavadoc(parameter.javadoc())
+                .addJavadoc("@return " + parameter.javadoc())
                 .returns(createGradleProperty(parameter));
             builder.addMethod(propBuilder.build());
         }
