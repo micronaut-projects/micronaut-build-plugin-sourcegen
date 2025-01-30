@@ -1,6 +1,6 @@
 <!-- Checklist: https://github.com/micronaut-projects/micronaut-core/wiki/New-Module-Checklist -->
 
-# Micronaut build-plugin-sourcegen
+# Micronaut Build Plugin Generator
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.micronaut.build-plugin-sourcegen/micronaut-project-template.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.micronaut.build.plugin.sourcegen%22%20AND%20a:%22micronaut-build-plugin-sourcegen%22)
 [![Build Status](https://github.com/micronaut-projects/micronaut-build-plugin-sourcegen/workflows/Java%20CI/badge.svg)](https://github.com/micronaut-projects/micronaut-build-plugin-sourcegen/actions)
