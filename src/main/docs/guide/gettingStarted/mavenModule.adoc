@@ -28,5 +28,4 @@ Extend the Mojo to add custom Maven-specific behavior:
 snippet::io.micronaut.sourcegen.example.plugin.maven.GenerateSimpleRecordMojo[project-base="test-suite-maven", tags="content", source="main"]
 
 <2> Specify a name for Mojo.
-<2> Add a property for enabling and disabling the mojo.
-<3> Add the generated folder to sources.
+<3> Add the default value for the `outputFolder` parameter.

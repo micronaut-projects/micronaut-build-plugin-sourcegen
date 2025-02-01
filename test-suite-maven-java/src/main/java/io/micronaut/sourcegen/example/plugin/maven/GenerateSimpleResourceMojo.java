@@ -17,7 +17,6 @@ package io.micronaut.sourcegen.example.plugin.maven;
 
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 
@@ -29,33 +28,13 @@ public class GenerateSimpleResourceMojo extends AbstractGenerateSimpleResourceMo
 
     @Parameter(
         required = true,
-        defaultValue = "${project.build.directory}/generated/simpleResource"
+        defaultValue = "${project.build.directory}/generated/simpleResource/resources"
     )
-    private File outputFolder;
-
-    @Parameter(property = "generate.simple.resource.enabled", defaultValue = "true")
-    private boolean enabled;
-
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
-
-    @Override
-    protected boolean isEnabled() {
-        return enabled;
-    }
+    protected File outputFolder;
 
     @Override
     protected File getOutputFolder() {
         return outputFolder;
     }
 
-    @Override
-    public void execute() {
-        if (project != null) {
-            project.addCompileSourceRoot(
-                outputFolder.getAbsolutePath()
-            );
-        }
-        super.execute();
-    }
 }

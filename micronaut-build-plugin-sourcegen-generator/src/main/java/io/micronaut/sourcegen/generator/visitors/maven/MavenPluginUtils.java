@@ -106,6 +106,7 @@ public final class MavenPluginUtils {
         if (methodJavadoc == null) {
             methodJavadoc = "Main execution of " + namePrefix + " Mojo.";
         }
+        String propertyPrefix = annotation.stringValue("propertyPrefix").orElse(toDotSeparated(namePrefix));
         return new MavenTaskConfig(
             source,
             parameters,
@@ -113,7 +114,8 @@ public final class MavenPluginUtils {
             element.getPackageName(),
             namePrefix,
             annotation.booleanValue("micronautPlugin").orElse(true),
-            annotation.stringValue("mavenPropertyPrefix").orElse(toDotSeparated(namePrefix)),
+            propertyPrefix,
+            annotation.stringValue("enabledPropertyName").orElse(propertyPrefix + ".enabled"),
             javadoc.javadoc().orElse(namePrefix + " Maven Mojo."),
             methodJavadoc,
             generatedModels
@@ -129,7 +131,8 @@ public final class MavenPluginUtils {
      * @param packageName The package name
      * @param namePrefix The type name prefix
      * @param micronautPlugin Whether to extend micronaut plugin
-     * @param mavenPropertyPrefix The prefix for maven properties
+     * @param propertyPrefix The prefix for maven properties
+     * @param enabledPropertyName The name of the enabled property
      * @param taskJavadoc The javadoc for the whole task
      * @param methodJavadoc The javadoc for the executable method
      * @param generatedModels Additional generated models
@@ -141,7 +144,8 @@ public final class MavenPluginUtils {
         @NonNull String packageName,
         @NonNull String namePrefix,
         boolean micronautPlugin,
-        @Nullable String mavenPropertyPrefix,
+        @Nullable String propertyPrefix,
+        @Nullable String enabledPropertyName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,
         @NonNull List<GeneratedModel> generatedModels

@@ -61,7 +61,15 @@ public @interface GenerateMavenMojo {
      * @see PluginTaskParameter#globalProperty()
      * @return The property prefix
      */
-    String mavenPropertyPrefix() default "";
+    String propertyPrefix() default "";
+
+    /**
+     * Set the name for the property to enable or disable the mojo.
+     * The default is {@code ${propertyPrefix}.enabled}.
+     *
+     * @return The name for property
+     */
+    String enabledPropertyName() default "";
 
     /**
      * A container for repeated MavenMojo.

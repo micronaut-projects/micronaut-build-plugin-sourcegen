@@ -19,7 +19,6 @@ import java.io.File;
 
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
 
 // tag::content[]
 /**
@@ -30,34 +29,13 @@ public class GenerateSimpleRecordMojo extends AbstractGenerateSimpleRecordMojo {
 
     @Parameter(
         required = true,
-        defaultValue = "${project.build.directory}/generated/simpleRecord"
+        defaultValue = "${project.build.directory}/generated/simpleRecord/java" // <2>
     )
-    private File outputFolder;
-
-    @Parameter(property = "generate.simple.record.enabled", defaultValue = "true")
-    private boolean enabled; // <2>
-
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
-
-    @Override
-    protected boolean isEnabled() {
-        return enabled;
-    }
+    protected File outputFolder;
 
     @Override
     protected File getOutputFolder() {
         return outputFolder;
-    }
-
-    @Override
-    public void execute() {
-        if (project != null) {
-            project.addCompileSourceRoot(
-                new File(outputFolder, "src/main/java".replace("/", File.separator)).getAbsolutePath()
-            ); // <3>
-        }
-        super.execute();
     }
 }
 // end::content[]

@@ -11,7 +11,7 @@ snippet::io.micronaut.sourcegen.example.plugin.GenerateSimpleRecordTask[project-
 <1> Define the task. The task can be a record or a Java class.
 <2> Use the link:{api}/io/micronaut/sourcegen/annotations/PluginTaskParameter.html[PluginTaskParameter] annotation to define a parameter. Set `required = true` for mandatory parameters.
 <3> Define another parameter. Set the default value if any.
-<4> Specify `output = true` for outputs a the task.
+<4> Specify `output = OutputType.JAVA_SOURCES` for outputs of the task. Specify it as internal to later customize it in particular plugins.
 <5> Use the link:{api}/io/micronaut/sourcegen/annotations/PluginTaskExecutable.html[PluginTaskExecutable] to define the executable for task. The executable will use the parameters defined for the task.
 
 See documentation for link:{api}/io/micronaut/sourcegen/annotations/PluginTask.html[PluginTask], link:{api}/io/micronaut/sourcegen/annotations/PluginTaskParameter.html[PluginTaskParameter] and link:{api}/io/micronaut/sourcegen/annotations/PluginTaskExecutable.html[PluginTaskExecutable] to view all the configurable properties.

@@ -23,6 +23,7 @@ import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
@@ -64,8 +65,11 @@ import java.util.Set;
 @Internal
 public class GradleTaskBuilder implements GradleTypeBuilder {
 
+    /** The suffix to use for task class. */
     public static final String TASK_SUFFIX = "Task";
+    /** The suffix to use for work action class. */
     public static final String WORK_ACTION_SUFFIX = "WorkAction";
+    /** The suffix to use for work action parameters class. */
     public static final String WORK_ACTION_PARAMETERS_SUFFIX = "WorkActionParameters";
 
     private static final String GET_CLASSPATH_METHOD = "getClasspath";
@@ -130,7 +134,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .addJavadoc(parameter.javadoc())
             .returns(createGradleProperty(parameter));
-        if (parameter.output()) {
+        if (parameter.output() != OutputType.NONE) {
             if (parameter.source().getType().isAssignable(File.class)) {
                 if (parameter.directory()) {
                     propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputDirectory")).build());

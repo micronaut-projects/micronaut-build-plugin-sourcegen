@@ -45,14 +45,16 @@ import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExt
 @Internal
 public class GradlePluginBuilder implements GradleTypeBuilder {
 
+    /** The suffix to use for plugin class. */
     public static final String PLUGIN_SUFFIX = "Plugin";
+
+    static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
 
     private static final String MICRONAUT_BASE_PLUGIN = "io.micronaut.gradle.MicronautBasePlugin";
     private static final String MICRONAUT_PLUGINS_HELPER = "io.micronaut.gradle.PluginsHelper";
     private static final String CREATE_METHOD = "create";
     private static final ClassTypeDef PROJECT_TYPE = ClassTypeDef.of("org.gradle.api.Project");
     private static final ClassTypeDef CONFIGURATION_TYPE = ClassTypeDef.of("org.gradle.api.artifacts.Configuration");
-    private static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
 
     @Override
     public Type getType() {

@@ -88,9 +88,9 @@ public @interface PluginTaskParameter {
      * Whether the parameter is output of the task.
      * Most likely, the parameter is a file or directory.
      *
-     * @return Whether it is output
+     * @return Whether it is output and what type of output it is
      */
-    boolean output() default false;
+    OutputType output() default OutputType.NONE;
 
     /**
      * @return Path sensitivity to use for file parameters. This would reflect on how
@@ -112,6 +112,36 @@ public @interface PluginTaskParameter {
         RELATIVE,
         /** The absolute path is compared. **/
         ABSOLUTE
+    }
+
+    /**
+     * Output type options.
+     */
+    enum OutputType {
+        /**
+         * The parameter is not an output
+         */
+        NONE,
+        /**
+         * The parameter specifies generated Java sources location.
+         */
+        JAVA_SOURCES,
+        /**
+         * The parameter specifies generated Groovy sources location.
+         */
+        GROOVY_SOURCES,
+        /**
+         * The parameter specifies generated Kotlin sources location.
+         */
+        KOTLIN_SOURCES,
+        /**
+         * The parameters specifies generated resources location.
+         */
+        RESOURCES,
+        /**
+         * The parameter is an output that is not described by other output types.
+         */
+        CUSTOM
     }
 
 }

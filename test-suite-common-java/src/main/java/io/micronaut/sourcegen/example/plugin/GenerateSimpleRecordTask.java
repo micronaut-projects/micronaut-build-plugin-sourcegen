@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import io.micronaut.sourcegen.annotations.PluginTask;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public record GenerateSimpleRecordTask(
     String packageName,
     Map<String, String> properties,
     List<String> javadoc,
-    @PluginTaskParameter(output = true, directory = true, required = true)
+    @PluginTaskParameter(output = OutputType.JAVA_SOURCES, directory = true, required = true, internal = true)
     File outputFolder // <4>
 ) {
 
@@ -79,9 +80,7 @@ public record %s(
     public void generateSimpleRecord() {
         LOG.info("Generating record {}", typeName);
 
-        File packageFolder = new File(outputFolder, "src" + File.separator
-            + "main" + File.separator + "java" + File.separator
-            + packageName.replace(".", File.separator));
+        File packageFolder = new File(outputFolder, packageName.replace(".", File.separator));
         packageFolder.mkdirs();
         // Create the content of the file using the CONTENT template
         String content = String.format(

@@ -47,7 +47,9 @@ import java.util.stream.Collectors;
 @Internal
 public class JavadocUtils {
 
+    /** The folder to generated javadoc files into. */
     public static final String META_INF_FOLDER = "micronaut-plugin-gen/";
+    /** The extension to use for javadoc files. */
     public static final String META_INF_EXTENSION = ".javadoc.txt";
 
     /**

@@ -1,0 +1,251 @@
+package io.micronaut.sourcegen.generator.visitors
+
+class OutputGenerationSpec extends AbstractGenerationSpec {
+
+    void "test gradle plugin generation with output types"() {
+        when:
+        var files = generateSources("test.Bison", """
+        package test;
+        import io.micronaut.sourcegen.annotations.*;
+        import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
+        import java.io.File;
+
+        @GenerateGradlePlugin(
+            micronautPlugin = false,
+            tasks = @GenerateGradlePlugin.GenerateGradleTask(
+                source = "test.Bison"
+            )
+        )
+        @PluginTask
+        public record Bison(
+                @PluginTaskParameter(output = OutputType.JAVA_SOURCES, directory = true)
+                File javaOutput,
+                @PluginTaskParameter(output = OutputType.GROOVY_SOURCES, directory = true)
+                File groovyOutput,
+                @PluginTaskParameter(output = OutputType.KOTLIN_SOURCES, directory = true)
+                File kotlinOutput,
+                @PluginTaskParameter(output = OutputType.RESOURCES, directory = true)
+                File resourcesOutput
+        ) {
+
+            @PluginTaskExecutable
+            public void moo() {
+            }
+
+        }
+        """)
+
+        then:
+        var defaultExtensionContent = stripImports(files.get("test.DefaultBisonExtension").getCharContent(false))
+        defaultExtensionContent == """/**
+ * Default implementation of the {@link test.BisonExtension}.
+ */
+public abstract class DefaultBisonExtension implements BisonExtension {
+  protected final Set<String> names = new java.util.HashSet();
+
+  protected final Project project;
+
+  protected final Configuration classpath;
+
+  @Inject
+  public DefaultBisonExtension(Project project, Configuration classpath) {
+    this.project = project;
+    this.classpath = classpath;
+  }
+
+  public void moo(String name, Action<? super BisonSpec> action) {
+    if (!this.names.add(name)) {
+      throw new org.gradle.api.GradleException(String.format("An moo definition with name '%s' was already created", name));
+    }
+    BisonSpec spec = this.project.getObjects().newInstance(BisonSpec.class);
+    this.configureSpec(spec);
+    action.execute(spec);
+    TaskProvider<? extends BisonTask> task = this.createBisonTask(name, new BisonTaskConfigurator(spec, this.classpath));
+    this.project.getPlugins().withId("java", new BisonJavaPluginConsumer(this.project, task));
+  }
+
+  TaskProvider<? extends BisonTask> createBisonTask(String name, Action<BisonTask> configurator) {
+    return this.project.getTasks().register(name, BisonTask.class, configurator);
+  }
+
+  protected void configureSpec(BisonSpec spec) {
+  }
+
+  private static class BisonJavaPluginConsumer implements Action<Plugin> {
+    protected final Project project;
+
+    TaskProvider<? extends BisonTask> task;
+
+    BisonJavaPluginConsumer(Project project, TaskProvider<? extends BisonTask> task) {
+      this.project = project;
+      this.task = task;
+    }
+
+    public void execute(Plugin ignored) {
+      JavaPluginExtension extension = this.project.getExtensions().findByType(JavaPluginExtension.class);
+      if (extension == (JavaPluginExtension) (null)) {
+        throw new org.gradle.api.GradleException("No Java plugin extension found");
+      }
+      SourceSet sourceSet = extension.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+      SourceDirectorySet java = sourceSet.getJava();
+      java.srcDir(this.task.map(new JavaOutputTransformer()));
+      GroovySourceDirectorySet groovy = sourceSet.getExtensions().findByType(GroovySourceDirectorySet.class);
+      if (groovy != (GroovySourceDirectorySet) (null)) {
+        groovy.srcDir(this.task.map(new GroovyOutputTransformer()));
+      }
+      SourceDirectorySet kotlin = (SourceDirectorySet) (sourceSet.getExtensions().findByName("kotlin"));
+      if (kotlin != (SourceDirectorySet) (null)) {
+        kotlin.srcDir(this.task.map(new KotlinOutputTransformer()));
+      }
+      SourceDirectorySet resources = sourceSet.getResources();
+      resources.srcDir(this.task.map(new ResourcesOutputTransformer()));
+    }
+
+    private static class JavaOutputTransformer implements Transformer<DirectoryProperty, BisonTask> {
+      public DirectoryProperty transform(BisonTask arg1) {
+        return arg1.getJavaOutput();
+      }
+    }
+
+    private static class GroovyOutputTransformer implements Transformer<DirectoryProperty, BisonTask> {
+      public DirectoryProperty transform(BisonTask arg1) {
+        return arg1.getGroovyOutput();
+      }
+    }
+
+    private static class KotlinOutputTransformer implements Transformer<DirectoryProperty, BisonTask> {
+      public DirectoryProperty transform(BisonTask arg1) {
+        return arg1.getKotlinOutput();
+      }
+    }
+
+    private static class ResourcesOutputTransformer implements Transformer<DirectoryProperty, BisonTask> {
+      public DirectoryProperty transform(BisonTask arg1) {
+        return arg1.getResourcesOutput();
+      }
+    }
+  }
+
+  protected static class BisonTaskConfigurator implements Action<BisonTask> {
+    BisonSpec spec;
+
+    Configuration classpath;
+
+    BisonTaskConfigurator(BisonSpec spec, Configuration classpath) {
+      this.spec = spec;
+      this.classpath = classpath;
+    }
+
+    /**
+     * The configurator for Bison task.
+     */
+    public void execute(BisonTask arg1) {
+      arg1.getClasspath().from(this.classpath);
+      arg1.setDescription("Configure the moo");
+      arg1.getJavaOutput().convention(this.spec.getJavaOutput());
+      arg1.getGroovyOutput().convention(this.spec.getGroovyOutput());
+      arg1.getKotlinOutput().convention(this.spec.getKotlinOutput());
+      arg1.getResourcesOutput().convention(this.spec.getResourcesOutput());
+    }
+  }
+}"""
+    }
+
+    void "test maven plugin generation with output types"() {
+        when:
+        var files = generateSources("test.Bison", """
+        package test;
+        import io.micronaut.sourcegen.annotations.*;
+        import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
+        import java.io.File;
+
+        @GenerateMavenMojo(
+            micronautPlugin = false,
+            source = "test.Bison"
+        )
+        @PluginTask
+        public record Bison(
+                @PluginTaskParameter(output = OutputType.JAVA_SOURCES)
+                File javaOutput,
+                @PluginTaskParameter(output = OutputType.GROOVY_SOURCES)
+                File groovyOutput,
+                @PluginTaskParameter(output = OutputType.KOTLIN_SOURCES)
+                File kotlinOutput,
+                @PluginTaskParameter(output = OutputType.RESOURCES)
+                File resourcesOutput
+        ) {
+
+            @PluginTaskExecutable
+            public void moo() {
+            }
+
+        }
+        """)
+
+        then:
+        var defaultExtensionContent = stripImports(files.get("test.BisonMojo").getCharContent(false))
+        defaultExtensionContent == """/**
+ * Bison Maven Mojo.
+ */
+public abstract class BisonMojo extends AbstractMojo {
+  @Parameter(
+      defaultValue = "\${project}",
+      required = true,
+      readonly = true
+  )
+  protected MavenProject project;
+
+  /**
+   * Determines if this mojo must be executed. The value is true if the mojo is enabled.
+   */
+  @Parameter(
+      property = "bison.enabled",
+      defaultValue = "true"
+  )
+  protected boolean enabled;
+
+  /**
+   * Configurable javaOutput parameter.
+   */
+  @Parameter
+  protected File javaOutput;
+
+  /**
+   * Configurable groovyOutput parameter.
+   */
+  @Parameter
+  protected File groovyOutput;
+
+  /**
+   * Configurable kotlinOutput parameter.
+   */
+  @Parameter
+  protected File kotlinOutput;
+
+  /**
+   * Configurable resourcesOutput parameter.
+   */
+  @Parameter
+  protected File resourcesOutput;
+
+  /**
+   * Main execution of Bison Mojo.
+   */
+  public void execute() {
+    if (!this.enabled) {
+      this.getLog().debug("BisonMojo is disabled");
+    } else {
+      this.project.addCompileSourceRoot(this.javaOutput.getAbsolutePath());
+      this.project.addCompileSourceRoot(this.groovyOutput.getAbsolutePath());
+      this.project.addCompileSourceRoot(this.kotlinOutput.getAbsolutePath());
+      Resource resourcesOutputResource = new org.apache.maven.model.Resource();
+      resourcesOutputResource.setTargetPath(this.resourcesOutput.getAbsolutePath());
+      this.project.addResource(resourcesOutputResource);
+      Bison task = new test.Bison(this.javaOutput, this.groovyOutput, this.kotlinOutput, this.resourcesOutput);
+      task.moo();
+    }
+  }
+}"""
+    }
+
+}
