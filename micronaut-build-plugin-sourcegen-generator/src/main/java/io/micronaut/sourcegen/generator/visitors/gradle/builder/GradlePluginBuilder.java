@@ -70,7 +70,9 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
             .addSuperinterface(TypeDef.parameterized(
                 ClassTypeDef.of("org.gradle.api.Plugin"),
                 PROJECT_TYPE
-            ));
+            ))
+            .addJavadoc("A plugin that applies the {@link " + pluginConfig.namePrefix()
+                + EXTENSION_NAME_SUFFIX + "} extension to the project.");
         builder.addMethod(createExtensionMethod(pluginConfig));
         builder.addMethod(createApplyMethod(pluginConfig));
         return List.of(builder.build());
@@ -81,6 +83,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
             + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX);
 
         return MethodDef.builder("apply")
+            .overrides()
             .addModifiers(Modifier.PUBLIC)
             .addParameter("project", ClassTypeDef.of("org.gradle.api.Project"))
             .build((t, params) -> {
@@ -127,6 +130,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
         ClassTypeDef defaultExtensionType = ClassTypeDef.of(pluginConfig.packageName() + "." + DEFAULT_EXTENSION_NAME_PREFIX + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX);
 
         return MethodDef.builder("createExtension")
+            .addJavadoc("Method for creating the extension. Override it if you need to change the extension.")
             .addModifiers(Modifier.PROTECTED)
             .returns(extensionType)
             .addParameter("project", PROJECT_TYPE)

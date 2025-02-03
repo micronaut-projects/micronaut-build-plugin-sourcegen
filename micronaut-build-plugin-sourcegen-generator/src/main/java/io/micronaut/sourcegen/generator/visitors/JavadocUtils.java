@@ -76,7 +76,7 @@ public class JavadocUtils {
                     while ((line = reader.readLine()) != null) {
                         int i = line.indexOf(' ');
                         if (i > 0) {
-                            elements.put(line.substring(0, i), line.substring(i + 1));
+                            elements.put(line.substring(0, i), parseJavadocInfo(line.substring(i + 1)));
                         }
                     }
                 }
