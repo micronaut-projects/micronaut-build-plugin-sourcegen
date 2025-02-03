@@ -35,6 +35,7 @@ import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder.CLASS_STATIC_FIELD;
 import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder.DEFAULT_EXTENSION_NAME_PREFIX;
 import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder.EXTENSION_NAME_SUFFIX;
 
@@ -45,6 +46,7 @@ import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExt
 @Internal
 public class GradlePluginBuilder implements GradleTypeBuilder {
 
+    /** The suffix to use for plugin class. */
     public static final String PLUGIN_SUFFIX = "Plugin";
 
     private static final String MICRONAUT_BASE_PLUGIN = "io.micronaut.gradle.MicronautBasePlugin";
@@ -52,7 +54,6 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
     private static final String CREATE_METHOD = "create";
     private static final ClassTypeDef PROJECT_TYPE = ClassTypeDef.of("org.gradle.api.Project");
     private static final ClassTypeDef CONFIGURATION_TYPE = ClassTypeDef.of("org.gradle.api.artifacts.Configuration");
-    private static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
 
     @Override
     public Type getType() {
@@ -68,7 +69,9 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
             .addSuperinterface(TypeDef.parameterized(
                 ClassTypeDef.of("org.gradle.api.Plugin"),
                 PROJECT_TYPE
-            ));
+            ))
+            .addJavadoc("A plugin that applies the {@link " + pluginConfig.namePrefix()
+                + EXTENSION_NAME_SUFFIX + "} extension to the project.");
         builder.addMethod(createExtensionMethod(pluginConfig));
         builder.addMethod(createApplyMethod(pluginConfig));
         return List.of(builder.build());
@@ -79,6 +82,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
             + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX);
 
         return MethodDef.builder("apply")
+            .overrides()
             .addModifiers(Modifier.PUBLIC)
             .addParameter("project", ClassTypeDef.of("org.gradle.api.Project"))
             .build((t, params) -> {
@@ -125,6 +129,7 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
         ClassTypeDef defaultExtensionType = ClassTypeDef.of(pluginConfig.packageName() + "." + DEFAULT_EXTENSION_NAME_PREFIX + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX);
 
         return MethodDef.builder("createExtension")
+            .addJavadoc("Method for creating the extension. Override it if you need to change the extension.")
             .addModifiers(Modifier.PROTECTED)
             .returns(extensionType)
             .addParameter("project", PROJECT_TYPE)

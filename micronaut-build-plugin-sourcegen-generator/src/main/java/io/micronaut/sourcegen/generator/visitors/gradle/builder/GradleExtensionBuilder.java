@@ -17,8 +17,10 @@ package io.micronaut.sourcegen.generator.visitors.gradle.builder;
 
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.naming.NameUtils;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradlePluginConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradleTaskConfig;
@@ -54,18 +56,28 @@ import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleTas
 @Internal
 public class GradleExtensionBuilder implements GradleTypeBuilder {
 
+    /** The suffix to use for extension class. */
     public static final String EXTENSION_NAME_SUFFIX = "Extension";
+    /** The prefix to use for default extension class. */
     public static final String DEFAULT_EXTENSION_NAME_PREFIX = "Default";
+    /** The suffix to use for task configurator class. */
     public static final String TASK_CONFIGURATOR_SUFFIX = "TaskConfigurator";
+
+    static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
 
     private static final String EXECUTE_METHOD = "execute";
     private static final String CLASSPATH_FIELD = "classpath";
+    private static final String GET_EXTENSIONS_METHOD = "getExtensions";
     private static final TypeDef PROJECT_TYPE = TypeDef.of("org.gradle.api.Project");
     private static final TypeDef CONFIGURATION_TYPE = TypeDef.of("org.gradle.api.artifacts.Configuration");
     private static final FieldDef PROJECT_FIELD = FieldDef.builder("project").ofType(PROJECT_TYPE)
+        .addJavadoc("The project that extension is applied to.")
         .addModifiers(Modifier.PROTECTED, Modifier.FINAL).build();
     private static final ClassTypeDef ACTION_TYPE = ClassTypeDef.of("org.gradle.api.Action");
+    private static final ClassTypeDef PLUGIN_TYPE = ClassTypeDef.of("org.gradle.api.Plugin");
     private static final ClassTypeDef TASK_PROVIDER_TYPE = ClassTypeDef.of("org.gradle.api.tasks.TaskProvider");
+    private static final ClassTypeDef EXTENSION_CONTAINER_TYPE = ClassTypeDef.of("org.gradle.api.plugins.ExtensionContainer");
+    private static final ClassTypeDef SOURCE_DIRECTORY_SET_TYPE = ClassTypeDef.of("org.gradle.api.file.SourceDirectorySet");
 
     @Override
     public Type getType() {
@@ -108,22 +120,23 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
     }
 
     private ObjectDef buildDefaultExtension(GradlePluginConfig pluginConfig) {
-        String interfaceTypeName = pluginConfig.packageName() + "." + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX;
-        TypeDef interfaceType = TypeDef.of(interfaceTypeName);
+        ClassTypeDef interfaceType = ClassTypeDef.of(pluginConfig.packageName() + "." + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX);
 
         ClassDefBuilder builder = ClassDef.builder(pluginConfig.packageName() +
                 "." + DEFAULT_EXTENSION_NAME_PREFIX + pluginConfig.namePrefix() + EXTENSION_NAME_SUFFIX)
-            .addJavadoc("Default implementation of the {@link " + interfaceTypeName + "}.")
+            .addJavadoc("Default implementation of the {@link " + interfaceType.getName() + "}.")
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .addSuperinterface(interfaceType)
             .addField(
                 FieldDef.builder("names", TypeDef.parameterized(Set.class, String.class))
                     .addModifiers(Modifier.PROTECTED, Modifier.FINAL)
                     .initializer(ClassTypeDef.of(HashSet.class).instantiate())
+                    .addJavadoc("A set containing all the registered task names to verify that none are duplicated.")
                     .build()
             )
             .addField(PROJECT_FIELD)
             .addField(FieldDef.builder(CLASSPATH_FIELD, CONFIGURATION_TYPE)
+                .addJavadoc("The classpath used for running the tasks.")
                 .addModifiers(Modifier.PROTECTED, Modifier.FINAL).build());
 
         builder.addMethod(MethodDef.builder(MethodDef.CONSTRUCTOR)
@@ -144,17 +157,27 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             ClassTypeDef actionType = TypeDef.parameterized(
                 ACTION_TYPE, TypeDef.wildcardSupertypeOf(specificationType));
 
+            ClassTypeDef javaPluginConsumerType;
+            if (taskConfig.parameters().stream().anyMatch(p -> p.output() != OutputType.NONE && p.output() != OutputType.CUSTOM)) {
+                ObjectDef javaPluginConsumer = buildJavaPluginConsumer(pluginConfig, taskConfig);
+                builder.addInnerType(javaPluginConsumer);
+                javaPluginConsumerType = javaPluginConsumer.asTypeDef();
+            } else {
+                javaPluginConsumerType = null;
+            }
+
             builder.addMethod(MethodDef.builder(taskConfig.extensionMethodName())
                 .overrides()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter("name", String.class)
                 .addParameter(ParameterDef.builder("action", actionType).build())
-                .build((t, params) -> buildExtensionMethod(t, params, pluginConfig, taskConfig, specificationType))
+                .build((t, params) -> buildExtensionMethod(t, params, pluginConfig, taskConfig, specificationType, javaPluginConsumerType))
             );
             builder.addMethod(buildCreateTaskMethod(pluginConfig, taskConfig));
             builder.addMethod(MethodDef.builder("configureSpec")
                 .addModifiers(Modifier.PROTECTED)
                 .addParameter("spec", specificationType)
+                .addJavadoc("Configure the defaults for the {@link " + specificationType.getName() + "} specification.")
                 .build((t, params) -> buildConfigureSpecMethod(taskConfig, params))
             );
 
@@ -175,7 +198,6 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             .addParameter(taskType)
             .overrides()
             .addModifiers(Modifier.PUBLIC)
-            .addJavadoc("The configurator for " + pluginConfig.namePrefix() + " task.")
             .build((t, params) -> {
                 List<StatementDef> statements = new ArrayList<>();
                 MethodParameter task = params.get(0);
@@ -206,6 +228,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             .addField(classpathField)
             .addAllFieldsConstructor()
             .addMethod(execute)
+            .addJavadoc("The configurator for " + pluginConfig.namePrefix() + " task.")
             .build();
     }
 
@@ -219,12 +242,13 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             .returns(taskProviderType)
             .addParameter("name", String.class)
             .addParameter("configurator", pluginConfiguratorType)
+            .addJavadoc("Create the {@link " + taskType.getName() + "} task and configure it based on the specification.")
             .build((t, params) ->
                     t.field(PROJECT_FIELD)
                     .invoke("getTasks", taskContainerType)
                     .invoke("register", taskProviderType,
                         params.get(0),
-                        taskType.getStaticField("class", TypeDef.CLASS),
+                        taskType.getStaticField(CLASS_STATIC_FIELD),
                         params.get(1)
                     ).returning()
             );
@@ -247,7 +271,9 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
     }
 
     private StatementDef buildExtensionMethod(
-            VariableDef t, List<VariableDef.MethodParameter> params, GradlePluginConfig pluginConfig, GradleTaskConfig taskConfig, ClassTypeDef specificationType
+        VariableDef t, List<VariableDef.MethodParameter> params,
+        GradlePluginConfig pluginConfig, GradleTaskConfig taskConfig,
+        ClassTypeDef specificationType, @Nullable ClassTypeDef javaPluginConsumer
     ) {
         StatementDef ifStatement = new StatementDef.If(
             t.field("names", TypeDef.of(String.class)).invoke("add", TypeDef.of(boolean.class), params.get(0)).isFalse(),
@@ -264,7 +290,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             spec,
             t.field(PROJECT_FIELD)
                 .invoke("getObjects", objectFactoryType)
-                .invoke("newInstance", specificationType, specificationType.getStaticField("class", TypeDef.CLASS))
+                .invoke("newInstance", specificationType, specificationType.getStaticField(CLASS_STATIC_FIELD))
         );
         StatementDef configureSpec = t.invoke("configureSpec", TypeDef.VOID, spec);
         StatementDef actionCall = params.get(1).invoke(EXECUTE_METHOD, TypeDef.VOID, spec);
@@ -281,7 +307,16 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             task,
             t.invoke("create" + taskConfig.namePrefix() + "Task", taskProviderType, params.get(0), pluginConfigurator)
         );
-        // TODO source sets
+        if (javaPluginConsumer != null) {
+            taskCreation = StatementDef.multi(
+                taskCreation,
+                t.field(PROJECT_FIELD)
+                    .invoke("getPlugins", TypeDef.of("org.gradle.api.plugins.PluginContainer"))
+                    .invoke("withId", TypeDef.VOID, ExpressionDef.constant("java"),
+                        javaPluginConsumer.instantiate(t.field(PROJECT_FIELD), task)
+                    )
+            );
+        }
         return StatementDef.multi(
             ifStatement,
             specCreation,
@@ -289,6 +324,123 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             actionCall,
             taskCreation
         );
+    }
+
+    private ClassDef buildJavaPluginConsumer(GradlePluginConfig pluginConfig, GradleTaskConfig taskConfig) {
+        ClassTypeDef sourceSetType = ClassTypeDef.of("org.gradle.api.tasks.SourceSet");
+        TypeDef sourceSetContainerType = TypeDef.of("org.gradle.api.tasks.SourceSetContainer");
+        ClassTypeDef taskType = ClassTypeDef.of(pluginConfig.packageName() + "." + taskConfig.namePrefix() + TASK_SUFFIX);
+        TypeDef taskProviderType = TypeDef.parameterized(TASK_PROVIDER_TYPE, TypeDef.wildcardSubtypeOf(taskType));
+        FieldDef taskField = FieldDef.builder("task").ofType(taskProviderType).build();
+
+        List<ObjectDef> innerTypes = new ArrayList<>();
+
+        return ClassDef.builder(taskConfig.namePrefix() + "JavaPluginConsumer")
+            .addJavadoc("Consumer of the java plugin that configures source sets generated by the {@link " + taskType.getName() + " } task.")
+            .addSuperinterface(TypeDef.parameterized(ACTION_TYPE, PLUGIN_TYPE))
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+            .addField(PROJECT_FIELD)
+            .addField(taskField)
+            .addAllFieldsConstructor()
+            .addMethod(MethodDef.builder(EXECUTE_METHOD)
+                .addParameter("ignored", PLUGIN_TYPE)
+                .addModifiers(Modifier.PUBLIC)
+                .overrides()
+                .build((t, params) -> {
+                    ClassTypeDef extensionType = ClassTypeDef.of("org.gradle.api.plugins.JavaPluginExtension");
+                    Local extension = new Local("extension", extensionType);
+                    Local sourceSet = new Local("sourceSet", sourceSetType);
+
+                    List<StatementDef> statements = new ArrayList<>();
+                    statements.add(extension.defineAndAssign(t.field(PROJECT_FIELD)
+                        .invoke(GET_EXTENSIONS_METHOD, EXTENSION_CONTAINER_TYPE)
+                        .invoke("findByType", extensionType, extensionType.getStaticField(CLASS_STATIC_FIELD))
+                    ));
+                    statements.add(new StatementDef.If(extension.isNull(), ClassTypeDef.of("org.gradle.api.GradleException")
+                        .instantiate(ExpressionDef.constant("No Java plugin extension found")).doThrow())
+                    );
+                    statements.add(sourceSet.defineAndAssign(extension.invoke("getSourceSets",  sourceSetContainerType)
+                        .invoke("getByName", sourceSetType, sourceSetType.getStaticField("MAIN_SOURCE_SET_NAME", TypeDef.STRING)))
+                    );
+
+                    addSourceStatements(taskConfig.parameters(), sourceSet, taskField, taskType, t, statements, innerTypes, OutputType.JAVA_SOURCES);
+                    addSourceStatements(taskConfig.parameters(), sourceSet, taskField, taskType, t, statements, innerTypes, OutputType.GROOVY_SOURCES);
+                    addSourceStatements(taskConfig.parameters(), sourceSet, taskField, taskType, t, statements, innerTypes, OutputType.KOTLIN_SOURCES);
+                    addSourceStatements(taskConfig.parameters(), sourceSet, taskField, taskType, t, statements, innerTypes, OutputType.RESOURCES);
+                    return StatementDef.multi(statements);
+                }))
+            .addInnerType(innerTypes)
+            .build();
+    }
+
+    private void addSourceStatements(
+        List<ParameterConfig> parameters, Local sourceSet, FieldDef taskField, TypeDef taskType,
+        VariableDef.This t, List<StatementDef> statements, List<ObjectDef> innerTypes, OutputType outputType
+    ) {
+        if (parameters.stream().noneMatch(p -> p.output().equals(outputType))) {
+            return;
+        }
+        Local sourceDir;
+        if (outputType == OutputType.JAVA_SOURCES) {
+            sourceDir = new Local("java", SOURCE_DIRECTORY_SET_TYPE);
+            statements.add(sourceDir.defineAndAssign(
+                sourceSet.invoke("getJava", SOURCE_DIRECTORY_SET_TYPE)
+            ));
+        } else if (outputType == OutputType.GROOVY_SOURCES) {
+            ClassTypeDef groovyDirSet = ClassTypeDef.of("org.gradle.api.tasks.GroovySourceDirectorySet");
+            sourceDir = new Local("groovy", groovyDirSet);
+            statements.add(sourceDir.defineAndAssign(
+                sourceSet.invoke(GET_EXTENSIONS_METHOD, EXTENSION_CONTAINER_TYPE)
+                    .invoke("findByType", groovyDirSet, groovyDirSet.getStaticField(CLASS_STATIC_FIELD))
+            ));
+        } else if (outputType == OutputType.KOTLIN_SOURCES) {
+            sourceDir = new Local("kotlin", SOURCE_DIRECTORY_SET_TYPE);
+            statements.add(sourceDir.defineAndAssign(
+                sourceSet.invoke(GET_EXTENSIONS_METHOD, EXTENSION_CONTAINER_TYPE)
+                    .invoke("findByName", TypeDef.OBJECT, ExpressionDef.constant("kotlin"))
+                    .cast(SOURCE_DIRECTORY_SET_TYPE)
+            ));
+        } else {
+            sourceDir = new Local("resources", SOURCE_DIRECTORY_SET_TYPE);
+            statements.add(sourceDir.defineAndAssign(
+                sourceSet.invoke("getResources", SOURCE_DIRECTORY_SET_TYPE)
+            ));
+        }
+        List<StatementDef> innerStatements = new ArrayList<>();
+        for (ParameterConfig parameter: parameters) {
+            if (parameter.output() != outputType) {
+                continue;
+            }
+            TypeDef propertyType = GradleTaskBuilder.createGradleProperty(parameter);
+            ClassDef innerType = buildJavaPluginConsumerTransformer(parameter, propertyType, taskType);
+            innerTypes.add(innerType);
+            innerStatements.add(sourceDir.invoke("srcDir", TypeDef.VOID, t.field(taskField)
+                .invoke("map", propertyType, innerType.asTypeDef().instantiate())));
+        }
+        if (outputType == OutputType.GROOVY_SOURCES || outputType == OutputType.KOTLIN_SOURCES) {
+            statements.add(new StatementDef.If(sourceDir.isNonNull(), StatementDef.multi(innerStatements)));
+        } else {
+            statements.add(StatementDef.multi(innerStatements));
+        }
+    }
+
+    private ClassDef buildJavaPluginConsumerTransformer(ParameterConfig parameter, TypeDef propertyType, TypeDef taskType) {
+        return ClassDef
+            .builder(NameUtils.capitalize(parameter.source().getName()) + "Transformer")
+            .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
+            .addSuperinterface(TypeDef.parameterized(ClassTypeDef.of("org.gradle.api.Transformer"), propertyType, taskType))
+            .addJavadoc("Transformer used for retrieving the " + parameter.source().getName()  + " property.")
+            .addMethod(MethodDef.builder("transform")
+                .addModifiers(Modifier.PUBLIC)
+                .overrides()
+                .returns(propertyType)
+                .addParameter(taskType)
+                .build((t1, params1) -> params1.get(0)
+                    .invoke("get" + NameUtils.capitalize(parameter.source().getName()), propertyType)
+                    .returning()
+                )
+            )
+            .build();
     }
 
 }

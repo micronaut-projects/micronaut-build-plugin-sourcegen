@@ -49,9 +49,15 @@ public abstract class WolfTask extends DefaultTask {
   @Optional
   public abstract Property<Integer> getAge();
 
+  /**
+   * Classpath for running the task logic.
+   */
   @Classpath
   public abstract ConfigurableFileCollection getClasspath();
 
+  /**
+   * Worker executor.
+   */
   @Inject
   public abstract WorkerExecutor getWorkerExecutor();
 
@@ -63,6 +69,9 @@ public abstract class WolfTask extends DefaultTask {
     this.getWorkerExecutor().classLoaderIsolation(new WolfClasspathConfigurator(this)).submit(WolfWorkAction.class, new WolfWorkActionParameterConfigurator(this));
   }
 
+  /**
+   * The work action that actually runs the task logic.
+   */
   public abstract static class WolfWorkAction implements WorkAction<WolfWorkActionParameters> {
     public void execute() {
       WolfWorkActionParameters parameters = this.getParameters();
@@ -71,12 +80,18 @@ public abstract class WolfTask extends DefaultTask {
     }
   }
 
+  /**
+   * Parameters for the work action.
+   */
   public interface WolfWorkActionParameters extends WorkParameters {
     Property<String> getSlogan();
 
     Property<Integer> getAge();
   }
 
+  /**
+   * Configurator for {@link WolfWorkActionParameters}.
+   */
   public static class WolfWorkActionParameterConfigurator implements Action<WolfWorkActionParameters> {
     WolfTask task;
 
@@ -90,6 +105,9 @@ public abstract class WolfTask extends DefaultTask {
     }
   }
 
+  /**
+   * Classpath configurator for creating isolated classpath for the work action.
+   */
   public static class WolfClasspathConfigurator implements Action<ClassLoaderWorkerSpec> {
     WolfTask task;
 
@@ -110,11 +128,13 @@ public abstract class WolfTask extends DefaultTask {
  */
 public interface WolfSpec {
   /**
+   * Configurable slogan parameter.
    * @return Configurable slogan parameter.
    */
   Property<String> getSlogan();
 
   /**
+   * Configurable age parameter.
    * @return Configurable age parameter.
    */
   Property<Integer> getAge();
@@ -139,10 +159,19 @@ public interface WolfExtension {
  * Default implementation of the {@link test.WolfExtension}.
  */
 public abstract class DefaultWolfExtension implements WolfExtension {
+  /**
+   * A set containing all the registered task names to verify that none are duplicated.
+   */
   protected final Set<String> names = new java.util.HashSet();
 
+  /**
+   * The project that extension is applied to.
+   */
   protected final Project project;
 
+  /**
+   * The classpath used for running the tasks.
+   */
   protected final Configuration classpath;
 
   @Inject
@@ -161,14 +190,23 @@ public abstract class DefaultWolfExtension implements WolfExtension {
     TaskProvider<? extends WolfTask> task = this.createWolfTask(name, new WolfTaskConfigurator(spec, this.classpath));
   }
 
+  /**
+   * Create the {@link test.WolfTask} task and configure it based on the specification.
+   */
   TaskProvider<? extends WolfTask> createWolfTask(String name, Action<WolfTask> configurator) {
     return this.project.getTasks().register(name, WolfTask.class, configurator);
   }
 
+  /**
+   * Configure the defaults for the {@link test.WolfSpec} specification.
+   */
   protected void configureSpec(WolfSpec spec) {
     spec.getAge().convention(1);
   }
 
+  /**
+   * The configurator for Wolf task.
+   */
   protected static class WolfTaskConfigurator implements Action<WolfTask> {
     WolfSpec spec;
 
@@ -179,9 +217,6 @@ public abstract class DefaultWolfExtension implements WolfExtension {
       this.classpath = classpath;
     }
 
-    /**
-     * The configurator for Wolf task.
-     */
     public void execute(WolfTask arg1) {
       arg1.getClasspath().from(this.classpath);
       arg1.setDescription("Configure the awooo");
@@ -192,7 +227,13 @@ public abstract class DefaultWolfExtension implements WolfExtension {
 }"""
 
         var pluginContent = stripImports(files.get("test.WolfPlugin").getCharContent(false))
-        pluginContent == """public class WolfPlugin implements Plugin<Project> {
+        pluginContent == """/**
+ * A plugin that applies the {@link WolfExtension} extension to the project.
+ */
+public class WolfPlugin implements Plugin<Project> {
+  /**
+   * Method for creating the extension. Override it if you need to change the extension.
+   */
   protected WolfExtension createExtension(Project project, Configuration classpath) {
     return project.getExtensions().create(WolfExtension.class, "Wolf", DefaultWolfExtension.class, project, classpath);
   }

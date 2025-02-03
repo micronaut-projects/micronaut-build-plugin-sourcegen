@@ -18,6 +18,7 @@ package io.micronaut.sourcegen.example.plugin;
 import io.micronaut.sourcegen.annotations.PluginTask;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public final class GenerateSimpleResourceTask {
     /**
      * The output folder.
      */
-    @PluginTaskParameter(output = true, directory = true, required = true)
+    @PluginTaskParameter(output = OutputType.RESOURCES, directory = true, required = true, internal = true)
     private File outputFolder;
 
     /**

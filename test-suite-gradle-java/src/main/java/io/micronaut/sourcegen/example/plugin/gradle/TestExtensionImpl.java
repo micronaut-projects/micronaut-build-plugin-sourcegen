@@ -83,17 +83,12 @@ public abstract class TestExtensionImpl extends DefaultTestExtension { // <1>
     TaskProvider<? extends GenerateSimpleRecordTask> createGenerateSimpleRecordTask(
             String name, Action<GenerateSimpleRecordTask> configurator
     ) {
-        TaskProvider<? extends GenerateSimpleRecordTask> task = super.createGenerateSimpleRecordTask(name, t -> {
+        return super.createGenerateSimpleRecordTask(name, t -> {
             configurator.execute(t);
             t.getOutputFolder().convention(
-                project.getLayout().getBuildDirectory().dir("generated/" + t.getName())
+                project.getLayout().getBuildDirectory().dir("generated/" + t.getName() + "/java")
             );
         });
-        withJavaSourceSets(sourceSets -> { // <3>
-            var javaMain = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getJava();
-            javaMain.srcDir(task.map(t -> t.getOutputFolder().dir("src/main/java")));
-        });
-        return task;
     }
 // end::createGenerateSimpleRecordTask[]
 
@@ -109,30 +104,13 @@ public abstract class TestExtensionImpl extends DefaultTestExtension { // <1>
     TaskProvider<? extends GenerateSimpleResourceTask> createGenerateSimpleResourceTask(
         String name, Action<GenerateSimpleResourceTask> configurator
     ) {
-        TaskProvider<? extends GenerateSimpleResourceTask> task = super.createGenerateSimpleResourceTask(name, t -> {
+        return super.createGenerateSimpleResourceTask(name, t -> {
             configurator.execute(t);
-            t.getOutputFolder().convention(
-                project.getLayout().getBuildDirectory().dir("generated/" + t.getName())
+            t.getOutputFolder().convention( // <3>
+                project.getLayout().getBuildDirectory().dir("generated/" + t.getName() + "/resources")
             );
         });
-        withJavaSourceSets(sourceSets -> {
-            var resources = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getResources();
-            resources.srcDir(task.map(GenerateSimpleResourceTask::getOutputFolder));
-        });
-        return task;
     }
-
-// tag::withJavaSourceSets[]
-    private void withJavaSourceSets(Consumer<? super SourceSetContainer> consumer) {
-        project.getPlugins().withId("java", unused -> {
-            var javaPluginExtension =  project.getExtensions().findByType(JavaPluginExtension.class);
-            if (javaPluginExtension == null) {
-                throw new GradleException("No Java plugin extension found");
-            }
-            consumer.accept(javaPluginExtension.getSourceSets());
-        });
-    }
-// end::withJavaSourceSets[]
 
 // tag::end[]
 }

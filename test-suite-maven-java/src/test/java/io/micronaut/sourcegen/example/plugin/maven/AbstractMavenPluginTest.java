@@ -3,8 +3,10 @@ package io.micronaut.sourcegen.example.plugin.maven;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import org.apache.maven.plugin.testing.ResolverExpressionEvaluatorStub;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.ComponentConfigurator;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedInputStream;
@@ -17,6 +19,13 @@ abstract class AbstractMavenPluginTest extends AbstractMojoTestCase {
 
     @TempDir
     public File baseDir;
+
+    public MavenProject project;
+
+    @BeforeEach
+    public void beforeEach() {
+        project = new MavenProject();
+    }
 
     public Mojo findConfiguredMojo(String goal, File configurationPom) throws Exception {
         Mojo mojo = lookupMojo(

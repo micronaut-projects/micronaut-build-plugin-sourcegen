@@ -18,5 +18,6 @@ dependencies {
     }
     testImplementation(libs.maven.plugin.annotations)
     testImplementation(libs.maven.plugin.api)
+    testImplementation(libs.maven.core)
 }
 

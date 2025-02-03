@@ -37,7 +37,7 @@ class TestPluginTest extends AbstractPluginTest {
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateMyRecord").getOutcome());
         assertEquals(TaskOutcome.SUCCESS, result.task(":compileJava").getOutcome());
 
-        File generated = file("build/generated/generateMyRecord/src/main/java/io/micronaut/test/MyRecord.java");
+        File generated = file("build/generated/generateMyRecord/java/io/micronaut/test/MyRecord.java");
         assertTrue(generated.exists());
         assertEquals(content(generated), """
             package io.micronaut.test;
@@ -56,7 +56,7 @@ class TestPluginTest extends AbstractPluginTest {
         assertTrue(file("build/classes/java/main/io/micronaut/test/MyRecord.class").exists());
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateHello").getOutcome());
-        File generatedResource = file("build/generated/generateHello/META-INF/hello.txt");
+        File generatedResource = file("build/generated/generateHello/resources/META-INF/hello.txt");
         assertTrue(generatedResource.exists());
         assertEquals("Hello!", content(generatedResource));
     }
@@ -82,7 +82,7 @@ class TestPluginTest extends AbstractPluginTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateHello").getOutcome());
 
-        File generatedResource = file("build/generated/generateHello/META-INF/hello.txt");
+        File generatedResource = file("build/generated/generateHello/resources/META-INF/hello.txt");
         assertTrue(generatedResource.exists());
         assertEquals("Hello!", content(generatedResource));
 
@@ -121,11 +121,11 @@ class TestPluginTest extends AbstractPluginTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateHello").getOutcome());
 
-        File generatedResource1 = file("build/generated/generateHello/META-INF/hello.txt_1");
+        File generatedResource1 = file("build/generated/generateHello/resources/META-INF/hello.txt_1");
         assertTrue(generatedResource1.exists());
         assertEquals("Hello!\n", content(generatedResource1));
 
-        File generatedResource2 = file("build/generated/generateHello/META-INF/hello.txt_2");
+        File generatedResource2 = file("build/generated/generateHello/resources/META-INF/hello.txt_2");
         assertTrue(generatedResource2.exists());
         assertEquals("Hello!\n", content(generatedResource2));
     }

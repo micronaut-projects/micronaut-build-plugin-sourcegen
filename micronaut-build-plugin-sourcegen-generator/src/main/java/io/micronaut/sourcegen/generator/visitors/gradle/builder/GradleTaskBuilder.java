@@ -23,6 +23,7 @@ import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
@@ -64,8 +65,11 @@ import java.util.Set;
 @Internal
 public class GradleTaskBuilder implements GradleTypeBuilder {
 
+    /** The suffix to use for task class. */
     public static final String TASK_SUFFIX = "Task";
+    /** The suffix to use for work action class. */
     public static final String WORK_ACTION_SUFFIX = "WorkAction";
+    /** The suffix to use for work action parameters class. */
     public static final String WORK_ACTION_PARAMETERS_SUFFIX = "WorkActionParameters";
 
     private static final String GET_CLASSPATH_METHOD = "getClasspath";
@@ -109,6 +113,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .returns(classpathType)
             .addAnnotation("org.gradle.api.tasks.Classpath")
+            .addJavadoc("Classpath for running the task logic.")
             .build()
         );
 
@@ -117,6 +122,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .returns(workerExecutorType)
             .addAnnotation("javax.inject.Inject")
+            .addJavadoc("Worker executor.")
             .build()
         );
 
@@ -130,7 +136,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .addJavadoc(parameter.javadoc())
             .returns(createGradleProperty(parameter));
-        if (parameter.output()) {
+        if (parameter.output() != OutputType.NONE) {
             if (parameter.source().getType().isAssignable(File.class)) {
                 if (parameter.directory()) {
                     propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputDirectory")).build());
@@ -162,7 +168,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
     }
 
     private ClassDef createWorkActionParameterConfigurator(TypeDef taskType, GradleTaskConfig taskConfig) {
-        TypeDef parametersType = TypeDef.of(taskConfig.namePrefix() + WORK_ACTION_PARAMETERS_SUFFIX);
+        ClassTypeDef parametersType = ClassTypeDef.of(taskConfig.namePrefix() + WORK_ACTION_PARAMETERS_SUFFIX);
         FieldDef taskField = FieldDef.builder("task").ofType(taskType).build();
         return ClassDef.builder(taskConfig.namePrefix() + "WorkActionParameterConfigurator")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -172,6 +178,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             ))
             .addField(taskField)
             .addAllFieldsConstructor(Modifier.PUBLIC)
+            .addJavadoc("Configurator for {@link " + parametersType.getName() + "}.")
             .addMethod(MethodDef.builder(EXECUTE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeDef.VOID)
@@ -231,6 +238,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
             ))
             .addField(taskField)
             .addAllFieldsConstructor(Modifier.PUBLIC)
+            .addJavadoc("Classpath configurator for creating isolated classpath for the work action.")
             .addMethod(MethodDef.builder(EXECUTE_METHOD)
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeDef.VOID)
@@ -248,6 +256,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
     private InterfaceDef createWorkActionParameters(GradleTaskConfig taskConfig) {
         InterfaceDefBuilder builder = InterfaceDef.builder(taskConfig.namePrefix() + WORK_ACTION_PARAMETERS_SUFFIX)
             .addModifiers(Modifier.PUBLIC)
+            .addJavadoc("Parameters for the work action.")
             .addSuperinterface(ClassTypeDef.of("org.gradle.workers.WorkParameters"));
         for (ParameterConfig parameter: taskConfig.parameters()) {
             MethodDefBuilder propBuilder = MethodDef
@@ -272,6 +281,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                 ClassTypeDef.of("org.gradle.workers.WorkAction"),
                 parametersType
             ))
+            .addJavadoc("The work action that actually runs the task logic.")
             .addMethods(taskConfig.generatedModels().stream().map(GeneratedModel::convertorMethod).toList())
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.STATIC)
             .addMethod(executeMethod)

@@ -17,6 +17,7 @@ package io.micronaut.sourcegen.generator.visitors.maven;
 
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.naming.NameUtils;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
@@ -33,12 +34,15 @@ import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
 import io.micronaut.sourcegen.model.VariableDef;
+import io.micronaut.sourcegen.model.VariableDef.Local;
 
 import javax.lang.model.element.Modifier;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * A builder for Maven Mojos.
@@ -46,7 +50,22 @@ import java.util.Map;
 @Internal
 public class MavenMojoBuilder {
 
+    /** The suffix to use for Mojo class. */
     public static final String MOJO_SUFFIX = "Mojo";
+    private static final String DEFAULT_VALUE_ANN_MEMBER = "defaultValue";
+    private static final ClassTypeDef PARAMETER_ANNOTATION_TYPE =
+        ClassTypeDef.of("org.apache.maven.plugins.annotations.Parameter");
+    private static final FieldDef PROJECT_FIELD = FieldDef
+        .builder("project", ClassTypeDef.of("org.apache.maven.project.MavenProject"))
+        .addModifiers(Modifier.PROTECTED)
+        .addAnnotation(AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE)
+            .addMember(DEFAULT_VALUE_ANN_MEMBER, "${project}")
+            .addMember("required", true)
+            .addMember("readonly", true)
+            .build()
+        )
+        .build();
+    private static final String ENABLED_FIELD_NAME = "enabled";
 
     /**
      * Method for building the Maven mojo.
@@ -64,16 +83,19 @@ public class MavenMojoBuilder {
             builder.superclass(ClassTypeDef.of("org.apache.maven.plugin.AbstractMojo"));
         }
 
+        builder.addField(PROJECT_FIELD);
+        builder.addField(FieldDef.builder(ENABLED_FIELD_NAME, TypeDef.of(boolean.class))
+            .addModifiers(Modifier.PROTECTED)
+            .addJavadoc("Determines if this mojo must be executed. The value is true if the mojo is enabled.")
+            .addAnnotation(AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE)
+                .addMember("property", taskConfig.enabledPropertyName())
+                .addMember(DEFAULT_VALUE_ANN_MEMBER, "true")
+                .build())
+            .build()
+        );
         for (ParameterConfig parameter : taskConfig.parameters()) {
             addParameter(taskConfig, parameter, builder);
         }
-
-        builder.addMethod(MethodDef.builder("isEnabled")
-            .addModifiers(Modifier.PROTECTED, Modifier.ABSTRACT)
-            .returns(TypeDef.of(boolean.class))
-            .addJavadoc("Determines if this mojo must be executed.\n@return true if the mojo is enabled")
-            .build()
-        );
         builder.addMethods(taskConfig.generatedModels().stream().map(GeneratedModel::convertorMethod).toList());
         builder.addMethod(createExecuteMethod(taskConfig));
         builder.addJavadoc(taskConfig.taskJavadoc());
@@ -82,7 +104,7 @@ public class MavenMojoBuilder {
     }
 
     private void addParameter(MavenTaskConfig taskConfig, ParameterConfig parameter, ClassDefBuilder builder) {
-        if (parameter.internal() || parameter.output()) {
+        if (parameter.internal()) {
             builder.addMethod(MethodDef
                 .builder("get" + NameUtils.capitalize(parameter.source().getName()))
                 .returns(parameter.type())
@@ -91,15 +113,15 @@ public class MavenMojoBuilder {
                 .build()
             );
         } else {
-            AnnotationDefBuilder ann = AnnotationDef.builder(ClassTypeDef.of("org.apache.maven.plugins.annotations.Parameter"));
+            AnnotationDefBuilder ann = AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE);
             if (parameter.defaultValue() != null) {
-                ann.addMember("defaultValue", parameter.defaultValue());
+                ann.addMember(DEFAULT_VALUE_ANN_MEMBER, parameter.defaultValue());
             }
             if (parameter.required()) {
                 ann.addMember("required", true);
             }
             if (parameter.globalProperty() != null) {
-                ann.addMember("property",  taskConfig.mavenPropertyPrefix()
+                ann.addMember("property",  taskConfig.propertyPrefix()
                     + "." + MavenPluginUtils.toDotSeparated(parameter.globalProperty()));
             }
             FieldDef field = FieldDef.builder(parameter.source().getName())
@@ -117,25 +139,47 @@ public class MavenMojoBuilder {
             .overrides()
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(taskConfig.methodJavadoc())
-            .build((t, params) -> t.invoke("isEnabled", TypeDef.of(boolean.class))
-                .ifFalse(
-                    t.invoke("getLog", ClassTypeDef.of("org.apache.maven.plugin.logging.Log"))
-                        .invoke("debug", TypeDef.VOID, ExpressionDef.constant(taskConfig.namePrefix() + MOJO_SUFFIX + " is disabled")),
-                    runTask(taskConfig, t)
-                ));
+            .build((t, params) -> {
+                List<StatementDef> mainStatements = new ArrayList<>();
+                for (ParameterConfig parameter : taskConfig.parameters()) {
+                    addExecuteStatementsForParameter(parameter, t, mainStatements);
+                }
+                mainStatements.add(runTask(taskConfig, t));
+                return t.field(ENABLED_FIELD_NAME, TypeDef.of(boolean.class))
+                    .ifFalse(
+                        t.invoke("getLog", ClassTypeDef.of("org.apache.maven.plugin.logging.Log"))
+                            .invoke("debug", TypeDef.VOID, ExpressionDef.constant(taskConfig.namePrefix() + MOJO_SUFFIX + " is disabled")),
+                        StatementDef.multi(mainStatements)
+                    );
+            });
+    }
+
+    private void addExecuteStatementsForParameter(
+            ParameterConfig parameter, VariableDef.This t, List<StatementDef> statements
+    ) {
+        ExpressionDef value = getParameterValue(parameter, t);
+        if (parameter.source().getType().isAssignable(File.class)) {
+            value = value.invoke("getAbsolutePath", TypeDef.STRING);
+        }
+        if (parameter.output() == OutputType.RESOURCES) {
+            ClassTypeDef resourceType = ClassTypeDef.of("org.apache.maven.model.Resource");
+            Local resource = new Local(parameter.source().getName() + "Resource", resourceType);
+            statements.add(resource.defineAndAssign(resourceType.instantiate()));
+            statements.add(resource.invoke("setTargetPath", TypeDef.VOID, value));
+            statements.add(t.field(PROJECT_FIELD).invoke("addResource", TypeDef.VOID, resource));
+        } else if (parameter.output() == OutputType.JAVA_SOURCES
+            || parameter.output() == OutputType.GROOVY_SOURCES
+            || parameter.output() == OutputType.KOTLIN_SOURCES
+        ) {
+            statements.add(t.field(PROJECT_FIELD).invoke("addCompileSourceRoot", TypeDef.VOID, value));
+        }
     }
 
     private StatementDef runTask(MavenTaskConfig taskConfig, VariableDef.This t) {
         Map<String, ExpressionDef> params = new HashMap<>();
         List<StatementDef> statements = new ArrayList<>();
         for (ParameterConfig parameter: taskConfig.parameters()) {
-            ExpressionDef expression;
-            if (parameter.internal() || parameter.output()) {
-                String getter = "get" + NameUtils.capitalize(parameter.source().getName());
-                expression = t.invoke(getter, parameter.type());
-            } else {
-                expression = t.field(parameter.source().getName(), parameter.type());
-            }
+            ExpressionDef expression = getParameterValue(parameter, t);
             params.put(
                 parameter.source().getName(),
                 ModelUtils.convertParameterIfRequired(
@@ -145,6 +189,15 @@ public class MavenMojoBuilder {
         }
         statements.add(PluginUtils.executeTaskMethod(taskConfig.source(), taskConfig.methodName(), params));
         return StatementDef.multi(statements);
+    }
+
+    private ExpressionDef getParameterValue(ParameterConfig parameter, VariableDef.This t) {
+        if (parameter.internal()) {
+            String getter = "get" + NameUtils.capitalize(parameter.source().getName());
+            return t.invoke(getter, parameter.type());
+        } else {
+            return t.field(parameter.source().getName(), parameter.type());
+        }
     }
 
 }

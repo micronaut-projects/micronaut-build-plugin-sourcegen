@@ -41,6 +41,7 @@ import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleTas
 @Internal
 public class GradleSpecificationBuilder implements GradleTypeBuilder {
 
+    /** The suffix to use for specification name class. */
     public static final String SPECIFICATION_NAME_SUFFIX = "Spec";
 
     @Override
@@ -70,7 +71,7 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
             MethodDefBuilder propBuilder = MethodDef
                 .builder("get" + NameUtils.capitalize(parameter.source().getName()))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                .addJavadoc("@return " + parameter.javadoc())
+                .addJavadoc(parameter.javadoc() + "\n@return " + parameter.javadoc())
                 .returns(createGradleProperty(parameter));
             builder.addMethod(propBuilder.build());
         }

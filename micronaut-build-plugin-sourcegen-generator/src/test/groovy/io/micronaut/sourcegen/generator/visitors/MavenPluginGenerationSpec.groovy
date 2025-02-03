@@ -33,6 +33,22 @@ class MavenPluginGenerationSpec extends AbstractGenerationSpec {
  * Wolf Maven Mojo.
  */
 public abstract class WolfMojo extends AbstractMojo {
+  @Parameter(
+      defaultValue = "\${project}",
+      required = true,
+      readonly = true
+  )
+  protected MavenProject project;
+
+  /**
+   * Determines if this mojo must be executed. The value is true if the mojo is enabled.
+   */
+  @Parameter(
+      property = "wolf.enabled",
+      defaultValue = "true"
+  )
+  protected boolean enabled;
+
   /**
    * Configurable slogan parameter.
    */
@@ -50,16 +66,10 @@ public abstract class WolfMojo extends AbstractMojo {
   protected Integer age;
 
   /**
-   * Determines if this mojo must be executed.
-   * @return true if the mojo is enabled
-   */
-  protected abstract boolean isEnabled();
-
-  /**
    * Main execution of Wolf Mojo.
    */
   public void execute() {
-    if (!this.isEnabled()) {
+    if (!this.enabled) {
       this.getLog().debug("WolfMojo is disabled");
     } else {
       Wolf task = new test.Wolf(this.slogan, this.age);
