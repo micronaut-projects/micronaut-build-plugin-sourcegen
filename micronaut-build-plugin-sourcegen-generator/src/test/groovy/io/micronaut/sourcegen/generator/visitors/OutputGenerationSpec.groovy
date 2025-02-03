@@ -198,13 +198,13 @@ public abstract class DefaultBisonExtension implements BisonExtension {
         )
         @PluginTask
         public record Bison(
-                @PluginTaskParameter(output = OutputType.JAVA_SOURCES)
+                @PluginTaskParameter(output = OutputType.JAVA_SOURCES, directory = true)
                 File javaOutput,
-                @PluginTaskParameter(output = OutputType.GROOVY_SOURCES)
+                @PluginTaskParameter(output = OutputType.GROOVY_SOURCES, directory = true)
                 File groovyOutput,
-                @PluginTaskParameter(output = OutputType.KOTLIN_SOURCES)
+                @PluginTaskParameter(output = OutputType.KOTLIN_SOURCES, directory = true)
                 File kotlinOutput,
-                @PluginTaskParameter(output = OutputType.RESOURCES)
+                @PluginTaskParameter(output = OutputType.RESOURCES, directory = true)
                 File resourcesOutput
         ) {
 

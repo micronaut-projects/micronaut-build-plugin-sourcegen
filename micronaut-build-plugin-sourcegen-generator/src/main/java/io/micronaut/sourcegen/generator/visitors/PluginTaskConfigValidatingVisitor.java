@@ -23,7 +23,11 @@ import io.micronaut.inject.processing.ProcessingException;
 import io.micronaut.inject.visitor.TypeElementVisitor;
 import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.PluginTask;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
+import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.model.TypeDef;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,8 +66,25 @@ public final class PluginTaskConfigValidatingVisitor implements TypeElementVisit
 
         // Verify that method is present
         PluginUtils.getTaskExecutable(element);
+        for (PropertyElement property: element.getBeanProperties()) {
+            ParameterConfig parameter = PluginUtils.getParameterConfig(
+                JavadocUtils.getTaskJavadoc(context, element), property, TypeDef.of(property.getType())
+            );
+            validateParameter(parameter, property, context);
+        }
 
         writeJavaDocForType(context, element);
+    }
+
+    private void validateParameter(ParameterConfig parameter, PropertyElement property, VisitorContext context) {
+        if (parameter.output() != OutputType.NONE && parameter.output() != OutputType.CUSTOM) {
+            if (!property.getType().isAssignable(File.class)) {
+                context.fail("Sources output must be of type " + File.class.getName(), property);
+            }
+            if (!parameter.directory()) {
+                context.fail("Sources output type must be a directory", property);
+            }
+        }
     }
 
     private void writeJavaDocForType(VisitorContext context, ClassElement element) {
