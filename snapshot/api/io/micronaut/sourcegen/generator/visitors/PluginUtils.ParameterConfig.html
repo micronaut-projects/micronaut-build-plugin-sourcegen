@@ -83,7 +83,7 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-defaultValue">defaultValue</span></code> - The default value</dd>
 <dd><code><span id="param-internal">internal</span></code> - Whether it is internal</dd>
 <dd><code><span id="param-directory">directory</span></code> - Whether it is a directory</dd>
-<dd><code><span id="param-output">output</span></code> - Whether it is an output</dd>
+<dd><code><span id="param-output">output</span></code> - Whether it is an output and what output type</dd>
 <dd><code><span id="param-globalProperty">globalProperty</span></code> - A global property</dd>
 <dd><code><span id="param-javadoc">javadoc</span></code> - The javadoc for property</dd>
 <dd><code><span id="param-type">type</span></code> - The type to use for generated property</dd>
@@ -94,7 +94,7 @@ loadScripts(document, 'script');</script>
 <dd><a href="PluginUtils.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils</a></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">PluginUtils.ParameterConfig</span>(@NonNull io.micronaut.inject.ast.PropertyElement&nbsp;source, boolean&nbsp;required, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;defaultValue, boolean&nbsp;internal, boolean&nbsp;directory, boolean&nbsp;output, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;globalProperty, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;javadoc, @NonNull io.micronaut.sourcegen.model.TypeDef&nbsp;type, @NonNull <a href="../../annotations/PluginTaskParameter.PathSensitivity.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.PathSensitivity</a>&nbsp;pathSensitivity)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">PluginUtils.ParameterConfig</span>(@NonNull io.micronaut.inject.ast.PropertyElement&nbsp;source, boolean&nbsp;required, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;defaultValue, boolean&nbsp;internal, boolean&nbsp;directory, @NonNull <a href="../../annotations/PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a>&nbsp;output, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;globalProperty, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;javadoc, @NonNull io.micronaut.sourcegen.model.TypeDef&nbsp;type, @NonNull <a href="../../annotations/PluginTaskParameter.PathSensitivity.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.PathSensitivity</a>&nbsp;pathSensitivity)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Configuration for a plugin parameter.</div>
 </section>
@@ -108,12 +108,12 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.inject.ast.PropertyElement,boolean,java.lang.String,boolean,boolean,boolean,java.lang.String,java.lang.String,io.micronaut.sourcegen.model.TypeDef,io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity)" class="member-name-link">ParameterConfig</a><wbr>(@NonNull io.micronaut.inject.ast.PropertyElement&nbsp;source,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.inject.ast.PropertyElement,boolean,java.lang.String,boolean,boolean,io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType,java.lang.String,java.lang.String,io.micronaut.sourcegen.model.TypeDef,io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity)" class="member-name-link">ParameterConfig</a><wbr>(@NonNull io.micronaut.inject.ast.PropertyElement&nbsp;source,
  boolean&nbsp;required,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;defaultValue,
  boolean&nbsp;internal,
  boolean&nbsp;directory,
- boolean&nbsp;output,
+ @NonNull <a href="../../annotations/PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a>&nbsp;output,
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;globalProperty,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;javadoc,
  @NonNull io.micronaut.sourcegen.model.TypeDef&nbsp;type,
@@ -170,7 +170,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-javadoc"><code>javadoc</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="../../annotations/PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#output()" class="member-name-link">output</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-output"><code>output</code></a> record component.</div>
@@ -218,7 +218,7 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(io.micronaut.inject.ast.PropertyElement,boolean,java.lang.String,boolean,boolean,boolean,java.lang.String,java.lang.String,io.micronaut.sourcegen.model.TypeDef,io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity)">
+<section class="detail" id="&lt;init&gt;(io.micronaut.inject.ast.PropertyElement,boolean,java.lang.String,boolean,boolean,io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType,java.lang.String,java.lang.String,io.micronaut.sourcegen.model.TypeDef,io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity)">
 <h3>ParameterConfig</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ParameterConfig</span><wbr><span class="parameters">(@NonNull
  @NonNull io.micronaut.inject.ast.PropertyElement&nbsp;source,
@@ -227,7 +227,8 @@ loadScripts(document, 'script');</script>
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;defaultValue,
  boolean&nbsp;internal,
  boolean&nbsp;directory,
- boolean&nbsp;output,
+ @NonNull
+ @NonNull <a href="../../annotations/PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a>&nbsp;output,
  @Nullable
  @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;globalProperty,
  @NonNull
@@ -361,7 +362,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="output()">
 <h3>output</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">output</span>()</div>
+<div class="member-signature"><span class="annotations">@NonNull
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NonNull <a href="../../annotations/PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a></span>&nbsp;<span class="element-name">output</span>()</div>
 <div class="block">Returns the value of the <a href="#param-output"><code>output</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>

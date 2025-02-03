@@ -228,6 +228,7 @@
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import io.micronaut.sourcegen.annotations.PluginTask;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter;
+import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,7 +254,7 @@ public record GenerateSimpleRecordTask(
     String packageName,
     Map&lt;String, String&gt; properties,
     List&lt;String&gt; javadoc,
-    @PluginTaskParameter(output = true, directory = true, required = true)
+    @PluginTaskParameter(output = OutputType.JAVA_SOURCES, directory = true, required = true, internal = true)
     File outputFolder // <b class="conum">(4)</b>
 ) {
 
@@ -280,9 +281,7 @@ public record %s(
     public void generateSimpleRecord() {
         LOG.info("Generating record {}", typeName);
 
-        File packageFolder = new File(outputFolder, "src" + File.separator
-            + "main" + File.separator + "java" + File.separator
-            + packageName.replace(".", File.separator));
+        File packageFolder = new File(outputFolder, packageName.replace(".", File.separator));
         packageFolder.mkdirs();
         // Create the content of the file using the CONTENT template
         String content = String.format(
@@ -325,7 +324,7 @@ public record %s(
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Specify <code>output = true</code> for outputs a the task.</td>
+<td>Specify <code>output = OutputType.JAVA_SOURCES</code> for outputs of the task. Specify it as internal to later customize it in particular plugins.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
@@ -468,7 +467,7 @@ public final class GeneratePluginTrigger {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Use the <a href="../api/io/micronaut/sourcegen/annotations/GenerateGradlePlugin/GenerateGradleTask.html">GenerateGradleTask</a> annotation to define generation of a task. Specify the task from common module annotated with <a href="../api/io/micronaut/sourcegen/annotations/PluginTask.html">PluginTask</a> as source. Based on the prefix, <code>GenerateSimpleRecordTask</code> and <code>GenerateSimpleRecordSpec</code> will be generated.</td>
+<td>Use the <a href="../api/io/micronaut/sourcegen/annotations/GenerateGradlePlugin.GenerateGradleTask.html">GenerateGradleTask</a> annotation to define generation of a task. Specify the task from common module annotated with <a href="../api/io/micronaut/sourcegen/annotations/PluginTask.html">PluginTask</a> as source. Based on the prefix, <code>GenerateSimpleRecordTask</code> and <code>GenerateSimpleRecordSpec</code> will be generated.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -494,6 +493,9 @@ public final class GeneratePluginTrigger {
 <p><code>GenerateSimpleRecordSpec</code> - the specification with all the task parameters that user can configure when calling the extension method.</p>
 </li>
 </ol>
+</div>
+<div class="paragraph">
+<p>You can see the javadoc for the generated sources in this example in <a href="../api/io/micronaut/sourcegen/example/plugin/gradle/package-summary.html">io.micronaut.sourcegen.example.plugin.maven package javadoc</a>.</p>
 </div>
 <div class="paragraph">
 <p>See documentation for <a href="../api/io/micronaut/sourcegen/annotations/GenerateGradleTask.html">GenerateGradleTask</a> to view all the configurable properties.</p>
@@ -554,26 +556,11 @@ public abstract class TestExtensionImpl extends DefaultTestExtension { // <b cla
     TaskProvider&lt;? extends GenerateSimpleRecordTask&gt; createGenerateSimpleRecordTask(
             String name, Action&lt;GenerateSimpleRecordTask&gt; configurator
     ) {
-        TaskProvider&lt;? extends GenerateSimpleRecordTask&gt; task = super.createGenerateSimpleRecordTask(name, t -&gt; {
+        return super.createGenerateSimpleRecordTask(name, t -&gt; {
             configurator.execute(t);
             t.getOutputFolder().convention(
-                project.getLayout().getBuildDirectory().dir("generated/" + t.getName())
+                project.getLayout().getBuildDirectory().dir("generated/" + t.getName() + "/java")
             );
-        });
-        withJavaSourceSets(sourceSets -&gt; { // <b class="conum">(3)</b>
-            var javaMain = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getJava();
-            javaMain.srcDir(task.map(t -&gt; t.getOutputFolder().dir("src/main/java")));
-        });
-        return task;
-    }
-
-    private void withJavaSourceSets(Consumer&lt;? super SourceSetContainer&gt; consumer) {
-        project.getPlugins().withId("java", unused -&gt; {
-            var javaPluginExtension =  project.getExtensions().findByType(JavaPluginExtension.class);
-            if (javaPluginExtension == null) {
-                throw new GradleException("No Java plugin extension found");
-            }
-            consumer.accept(javaPluginExtension.getSourceSets());
         });
     }
 
@@ -592,7 +579,7 @@ public abstract class TestExtensionImpl extends DefaultTestExtension { // <b cla
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Add the generated file to sources.</td>
+<td>Add the default value for the <code>outputFolder</code> parameter.</td>
 </tr>
 </table>
 </div>
@@ -707,13 +694,13 @@ Adding the common plugin to the annotation processor paths is currently required
     namePrefix = "AbstractGenerateSimpleRecord",
     micronautPlugin = false,
     source = "io.micronaut.sourcegen.example.plugin.GenerateSimpleRecordTask",
-    mavenPropertyPrefix = "test.generate.simple.record"
+    propertyPrefix = "test.generate.simple.record"
 )
 @GenerateMavenMojo( // <b class="conum">(2)</b>
     namePrefix = "AbstractGenerateSimpleResource",
     micronautPlugin = false,
     source = "io.micronaut.sourcegen.example.plugin.GenerateSimpleResourceTask",
-    mavenPropertyPrefix = "test.generate.simple.resource"
+    propertyPrefix = "test.generate.simple.resource"
 )
 public final class GenerateMojoTrigger {
 }</code></pre>
@@ -732,7 +719,7 @@ public final class GenerateMojoTrigger {
 </table>
 </div>
 <div class="paragraph">
-<p>Only <code>AbstractGenerateSimpleRecordMojo</code> class will be generated. The mojo will have all the specified task parameters and will call the defined task as its action.</p>
+<p>Only <code>AbstractGenerateSimpleRecordMojo</code> class will be generated. The mojo will have all the specified task parameters and will call the defined task as its action. You can see the javadoc for the generated sources in this example in <a href="../api/io/micronaut/sourcegen/example/plugin/maven/package-summary.html">io.micronaut.sourcegen.example.plugin.maven package javadoc</a>.</p>
 </div>
 <div class="paragraph">
 <p>See documentation for <a href="../api/io/micronaut/sourcegen/annotations/GenerateMavenMojo.html">GenerateMavenMojo</a> to view all the configurable properties.</p>
@@ -752,34 +739,13 @@ public class GenerateSimpleRecordMojo extends AbstractGenerateSimpleRecordMojo {
 
     @Parameter(
         required = true,
-        defaultValue = "${project.build.directory}/generated/simpleRecord"
+        defaultValue = "${project.build.directory}/generated/simpleRecord/java" // <b class="conum">(2)</b>
     )
-    private File outputFolder;
-
-    @Parameter(property = "generate.simple.record.enabled", defaultValue = "true")
-    private boolean enabled; // <b class="conum">(2)</b>
-
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
-
-    @Override
-    protected boolean isEnabled() {
-        return enabled;
-    }
+    protected File outputFolder;
 
     @Override
     protected File getOutputFolder() {
         return outputFolder;
-    }
-
-    @Override
-    public void execute() {
-        if (project != null) {
-            project.addCompileSourceRoot(
-                new File(outputFolder, "src/main/java".replace("/", File.separator)).getAbsolutePath()
-            ); // <b class="conum">(3)</b>
-        }
-        super.execute();
     }
 }</code></pre>
 </div>
@@ -792,11 +758,7 @@ public class GenerateSimpleRecordMojo extends AbstractGenerateSimpleRecordMojo {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Add a property for enabling and disabling the mojo.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Add the generated folder to sources.</td>
+<td>Add the default value for the <code>outputFolder</code> parameter.</td>
 </tr>
 </table>
 </div>

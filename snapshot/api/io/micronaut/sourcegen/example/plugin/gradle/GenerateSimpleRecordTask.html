@@ -103,16 +103,24 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="GenerateSimpleRecordTask.GenerateSimpleRecordClasspathConfigurator.html" class="type-name-link" title="class in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordTask.GenerateSimpleRecordClasspathConfigurator</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Classpath configurator for creating isolated classpath for the work action.</div>
+</div>
 <div class="col-first odd-row-color"><code>static class&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="GenerateSimpleRecordTask.GenerateSimpleRecordWorkAction.html" class="type-name-link" title="class in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordTask.GenerateSimpleRecordWorkAction</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The work action that actually runs the task logic.</div>
+</div>
 <div class="col-first even-row-color"><code>static class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="GenerateSimpleRecordTask.GenerateSimpleRecordWorkActionParameterConfigurator.html" class="type-name-link" title="class in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordTask.GenerateSimpleRecordWorkActionParameterConfigurator</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Configurator for <a href="GenerateSimpleRecordTask.GenerateSimpleRecordWorkActionParameters.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle"><code>GenerateSimpleRecordTask.GenerateSimpleRecordWorkActionParameters</code></a>.</div>
+</div>
 <div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="GenerateSimpleRecordTask.GenerateSimpleRecordWorkActionParameters.html" class="type-name-link" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordTask.GenerateSimpleRecordWorkActionParameters</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Parameters for the work action.</div>
+</div>
 </div>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-org.gradle.api.Task">Nested classes/interfaces inherited from interface&nbsp;org.gradle.api.Task</h2>
@@ -155,11 +163,13 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#execute()" class="member-name-link">execute</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Generate a simple record in the supplied package and with the specified version.\nThis javadoc will be copied to the respected plugin implementations.</div>
+<div class="block">Generate a simple record in the supplied package and with the specified version.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract org.gradle.api.file.ConfigurableFileCollection</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getClasspath()" class="member-name-link">getClasspath</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Classpath for running the task logic.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract org.gradle.api.provider.ListProperty&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getJavadoc()" class="member-name-link">getJavadoc</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -192,7 +202,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract org.gradle.workers.WorkerExecutor</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getWorkerExecutor()" class="member-name-link">getWorkerExecutor</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Worker executor.</div>
+</div>
 </div>
 </div>
 </div>
@@ -290,6 +302,7 @@ loadScripts(document, 'script');</script>
 <h3>getClasspath</h3>
 <div class="member-signature"><span class="annotations">@Classpath
 </span><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">org.gradle.api.file.ConfigurableFileCollection</span>&nbsp;<span class="element-name">getClasspath</span>()</div>
+<div class="block">Classpath for running the task logic.</div>
 </section>
 </li>
 <li>
@@ -297,13 +310,15 @@ loadScripts(document, 'script');</script>
 <h3>getWorkerExecutor</h3>
 <div class="member-signature"><span class="annotations">@Inject
 </span><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">org.gradle.workers.WorkerExecutor</span>&nbsp;<span class="element-name">getWorkerExecutor</span>()</div>
+<div class="block">Worker executor.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="execute()">
 <h3>execute</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">execute</span>()</div>
-<div class="block">Generate a simple record in the supplied package and with the specified version.\nThis javadoc will be copied to the respected plugin implementations.</div>
+<div class="block">Generate a simple record in the supplied package and with the specified version.
+ This javadoc will be copied to the respected plugin implementations.</div>
 </section>
 </li>
 </ul>

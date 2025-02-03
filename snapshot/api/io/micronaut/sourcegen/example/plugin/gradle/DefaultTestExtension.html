@@ -101,10 +101,14 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected static class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="DefaultTestExtension.GenerateSimpleRecordTaskConfigurator.html" class="type-name-link" title="class in io.micronaut.sourcegen.example.plugin.gradle">DefaultTestExtension.GenerateSimpleRecordTaskConfigurator</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The configurator for Test task.</div>
+</div>
 <div class="col-first odd-row-color"><code>protected static class&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="DefaultTestExtension.GenerateSimpleResourceTaskConfigurator.html" class="type-name-link" title="class in io.micronaut.sourcegen.example.plugin.gradle">DefaultTestExtension.GenerateSimpleResourceTaskConfigurator</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The configurator for Test task.</div>
+</div>
 </div>
 </section>
 </li>
@@ -119,13 +123,19 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected final org.gradle.api.artifacts.Configuration</code></div>
 <div class="col-second even-row-color"><code><a href="#classpath" class="member-name-link">classpath</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The classpath used for running the tasks.</div>
+</div>
 <div class="col-first odd-row-color"><code>protected final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#names" class="member-name-link">names</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">A set containing all the registered task names to verify that none are duplicated.</div>
+</div>
 <div class="col-first even-row-color"><code>protected final org.gradle.api.Project</code></div>
 <div class="col-second even-row-color"><code><a href="#project" class="member-name-link">project</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The project that extension is applied to.</div>
+</div>
 </div>
 </section>
 </li>
@@ -156,10 +166,14 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configureSpec(io.micronaut.sourcegen.example.plugin.gradle.GenerateSimpleRecordSpec)" class="member-name-link">configureSpec</a><wbr>(<a href="GenerateSimpleRecordSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordSpec</a>&nbsp;spec)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Configure the defaults for the <a href="GenerateSimpleRecordSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle"><code>GenerateSimpleRecordSpec</code></a> specification.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#configureSpec(io.micronaut.sourcegen.example.plugin.gradle.GenerateSimpleResourceSpec)" class="member-name-link">configureSpec</a><wbr>(<a href="GenerateSimpleResourceSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleResourceSpec</a>&nbsp;spec)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Configure the defaults for the <a href="GenerateSimpleResourceSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle"><code>GenerateSimpleResourceSpec</code></a> specification.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generateSimpleRecord(java.lang.String,org.gradle.api.Action)" class="member-name-link">generateSimpleRecord</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  org.gradle.api.Action&lt;? super <a href="GenerateSimpleRecordSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordSpec</a>&gt;&nbsp;action)</code></div>
@@ -193,18 +207,21 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
 <section class="detail" id="names">
 <h3>names</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">names</span></div>
+<div class="block">A set containing all the registered task names to verify that none are duplicated.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="project">
 <h3>project</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">org.gradle.api.Project</span>&nbsp;<span class="element-name">project</span></div>
+<div class="block">The project that extension is applied to.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="classpath">
 <h3>classpath</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">org.gradle.api.artifacts.Configuration</span>&nbsp;<span class="element-name">classpath</span></div>
+<div class="block">The classpath used for running the tasks.</div>
 </section>
 </li>
 </ul>
@@ -238,7 +255,8 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
  org.gradle.api.Action&lt;? super <a href="GenerateSimpleRecordSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordSpec</a>&gt;&nbsp;action)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="TestExtension.html#generateSimpleRecord(java.lang.String,org.gradle.api.Action)">TestExtension</a></code></span></div>
 <div class="block">Create a task for generateSimpleRecord.
- Generate a simple record in the supplied package and with the specified version.\nThis javadoc will be copied to the respected plugin implementations.</div>
+ Generate a simple record in the supplied package and with the specified version.
+ This javadoc will be copied to the respected plugin implementations.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="TestExtension.html#generateSimpleRecord(java.lang.String,org.gradle.api.Action)">generateSimpleRecord</a></code>&nbsp;in interface&nbsp;<code><a href="TestExtension.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">TestExtension</a></code></dd>
@@ -252,6 +270,7 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
 <section class="detail" id="configureSpec(io.micronaut.sourcegen.example.plugin.gradle.GenerateSimpleRecordSpec)">
 <h3>configureSpec</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configureSpec</span><wbr><span class="parameters">(<a href="GenerateSimpleRecordSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleRecordSpec</a>&nbsp;spec)</span></div>
+<div class="block">Configure the defaults for the <a href="GenerateSimpleRecordSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle"><code>GenerateSimpleRecordSpec</code></a> specification.</div>
 </section>
 </li>
 <li>
@@ -261,7 +280,8 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
  org.gradle.api.Action&lt;? super <a href="GenerateSimpleResourceSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleResourceSpec</a>&gt;&nbsp;action)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="TestExtension.html#generateSimpleResource(java.lang.String,org.gradle.api.Action)">TestExtension</a></code></span></div>
 <div class="block">Create a task for generateSimpleResource.
- Generate a simple record in the supplied package and with the specified version.\nThis javadoc will be copied to the respected plugin implementations.</div>
+ Generate a simple record in the supplied package and with the specified version.
+ This javadoc will be copied to the respected plugin implementations.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="TestExtension.html#generateSimpleResource(java.lang.String,org.gradle.api.Action)">generateSimpleResource</a></code>&nbsp;in interface&nbsp;<code><a href="TestExtension.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">TestExtension</a></code></dd>
@@ -275,6 +295,7 @@ implements <a href="TestExtension.html" title="interface in io.micronaut.sourceg
 <section class="detail" id="configureSpec(io.micronaut.sourcegen.example.plugin.gradle.GenerateSimpleResourceSpec)">
 <h3>configureSpec</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">configureSpec</span><wbr><span class="parameters">(<a href="GenerateSimpleResourceSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">GenerateSimpleResourceSpec</a>&nbsp;spec)</span></div>
+<div class="block">Configure the defaults for the <a href="GenerateSimpleResourceSpec.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle"><code>GenerateSimpleResourceSpec</code></a> specification.</div>
 </section>
 </li>
 </ul>

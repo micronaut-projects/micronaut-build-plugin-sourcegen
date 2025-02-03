@@ -86,6 +86,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TestPlugin</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements org.gradle.api.Plugin&lt;org.gradle.api.Project&gt;</span></div>
+<div class="block">A plugin that applies the <a href="TestExtension.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle"><code>TestExtension</code></a> extension to the project.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -119,7 +120,9 @@ implements org.gradle.api.Plugin&lt;org.gradle.api.Project&gt;</span></div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="TestExtension.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">TestExtension</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createExtension(org.gradle.api.Project,org.gradle.api.artifacts.Configuration)" class="member-name-link">createExtension</a><wbr>(org.gradle.api.Project&nbsp;project,
  org.gradle.api.artifacts.Configuration&nbsp;classpath)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Method for creating the extension.</div>
+</div>
 </div>
 </div>
 </div>
@@ -156,6 +159,7 @@ implements org.gradle.api.Plugin&lt;org.gradle.api.Project&gt;</span></div>
 <h3>createExtension</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="TestExtension.html" title="interface in io.micronaut.sourcegen.example.plugin.gradle">TestExtension</a></span>&nbsp;<span class="element-name">createExtension</span><wbr><span class="parameters">(org.gradle.api.Project&nbsp;project,
  org.gradle.api.artifacts.Configuration&nbsp;classpath)</span></div>
+<div class="block">Method for creating the extension. Override it if you need to change the extension.</div>
 </section>
 </li>
 <li>

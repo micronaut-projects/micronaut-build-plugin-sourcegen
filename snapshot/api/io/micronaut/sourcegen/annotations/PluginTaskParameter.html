@@ -96,8 +96,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="PluginTaskParameter.PathSensitivity.html" class="type-name-link" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.PathSensitivity</a></code></div>
+<div class="col-second even-row-color"><code><a href="PluginTaskParameter.OutputType.html" class="type-name-link" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">Output type options.</div>
+</div>
+<div class="col-first odd-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="PluginTaskParameter.PathSensitivity.html" class="type-name-link" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.PathSensitivity</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Path sensitivity options.</div>
 </div>
 </div>
@@ -132,7 +137,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Whether the parameter is plugin-internal.</div>
 </div>
-<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-first even-row-color"><code><a href="PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a></code></div>
 <div class="col-second even-row-color"><code><a href="#output()" class="member-name-link">output</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">Whether the parameter is output of the task.</div>
@@ -245,16 +250,16 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="output()">
 <h3>output</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">output</span></div>
+<div class="member-signature"><span class="return-type"><a href="PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a></span>&nbsp;<span class="element-name">output</span></div>
 <div class="block">Whether the parameter is output of the task.
  Most likely, the parameter is a file or directory.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Whether it is output</dd>
+<dd>Whether it is output and what type of output it is</dd>
 </dl>
 <dl class="notes">
 <dt>Default:</dt>
-<dd>false</dd>
+<dd>NONE</dd>
 </dl>
 </section>
 </li>

@@ -84,7 +84,8 @@ loadScripts(document, 'script');</script>
 <dd><code><span id="param-packageName">packageName</span></code> - The package name</dd>
 <dd><code><span id="param-namePrefix">namePrefix</span></code> - The type name prefix</dd>
 <dd><code><span id="param-micronautPlugin">micronautPlugin</span></code> - Whether to extend micronaut plugin</dd>
-<dd><code><span id="param-mavenPropertyPrefix">mavenPropertyPrefix</span></code> - The prefix for maven properties</dd>
+<dd><code><span id="param-propertyPrefix">propertyPrefix</span></code> - The prefix for maven properties</dd>
+<dd><code><span id="param-enabledPropertyName">enabledPropertyName</span></code> - The name of the enabled property</dd>
 <dd><code><span id="param-taskJavadoc">taskJavadoc</span></code> - The javadoc for the whole task</dd>
 <dd><code><span id="param-methodJavadoc">methodJavadoc</span></code> - The javadoc for the executable method</dd>
 <dd><code><span id="param-generatedModels">generatedModels</span></code> - Additional generated models</dd>
@@ -94,7 +95,7 @@ loadScripts(document, 'script');</script>
 <dd><a href="MavenPluginUtils.html" title="class in io.micronaut.sourcegen.generator.visitors.maven">MavenPluginUtils</a></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">MavenPluginUtils.MavenTaskConfig</span>(io.micronaut.inject.ast.ClassElement&nbsp;source, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a>&gt;&nbsp;parameters, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namePrefix, boolean&nbsp;micronautPlugin, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;mavenPropertyPrefix, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;taskJavadoc, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodJavadoc, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ModelUtils.GeneratedModel.html" title="class in io.micronaut.sourcegen.generator.visitors">ModelUtils.GeneratedModel</a>&gt;&nbsp;generatedModels)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">MavenPluginUtils.MavenTaskConfig</span>(io.micronaut.inject.ast.ClassElement&nbsp;source, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a>&gt;&nbsp;parameters, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namePrefix, boolean&nbsp;micronautPlugin, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;propertyPrefix, @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;enabledPropertyName, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;taskJavadoc, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodJavadoc, @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ModelUtils.GeneratedModel.html" title="class in io.micronaut.sourcegen.generator.visitors">ModelUtils.GeneratedModel</a>&gt;&nbsp;generatedModels)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 <div class="block">Configuration for a gradle task type.</div>
 </section>
@@ -108,13 +109,14 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.inject.ast.ClassElement,java.util.List,java.lang.String,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">MavenTaskConfig</a><wbr>(io.micronaut.inject.ast.ClassElement&nbsp;source,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(io.micronaut.inject.ast.ClassElement,java.util.List,java.lang.String,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">MavenTaskConfig</a><wbr>(io.micronaut.inject.ast.ClassElement&nbsp;source,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a>&gt;&nbsp;parameters,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodName,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;packageName,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namePrefix,
  boolean&nbsp;micronautPlugin,
- @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;mavenPropertyPrefix,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;propertyPrefix,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;enabledPropertyName,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;taskJavadoc,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;methodJavadoc,
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ModelUtils.GeneratedModel.html" title="class in io.micronaut.sourcegen.generator.visitors">ModelUtils.GeneratedModel</a>&gt;&nbsp;generatedModels)</code></div>
@@ -135,25 +137,25 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#enabledPropertyName()" class="member-name-link">enabledPropertyName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-enabledPropertyName"><code>enabledPropertyName</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ModelUtils.GeneratedModel.html" title="class in io.micronaut.sourcegen.generator.visitors">ModelUtils.GeneratedModel</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generatedModels()" class="member-name-link">generatedModels</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ModelUtils.GeneratedModel.html" title="class in io.micronaut.sourcegen.generator.visitors">ModelUtils.GeneratedModel</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generatedModels()" class="member-name-link">generatedModels</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-generatedModels"><code>generatedModels</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns a hash code value for this object.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mavenPropertyPrefix()" class="member-name-link">mavenPropertyPrefix</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <a href="#param-mavenPropertyPrefix"><code>mavenPropertyPrefix</code></a> record component.</div>
+<div class="block">Returns a hash code value for this object.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#methodJavadoc()" class="member-name-link">methodJavadoc</a>()</code></div>
@@ -185,19 +187,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-parameters"><code>parameters</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.micronaut.inject.ast.ClassElement</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#propertyPrefix()" class="member-name-link">propertyPrefix</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the value of the <a href="#param-propertyPrefix"><code>propertyPrefix</code></a> record component.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>io.micronaut.inject.ast.ClassElement</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#source()" class="member-name-link">source</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-source"><code>source</code></a> record component.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#taskJavadoc()" class="member-name-link">taskJavadoc</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>@NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#taskJavadoc()" class="member-name-link">taskJavadoc</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <a href="#param-taskJavadoc"><code>taskJavadoc</code></a> record component.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
 </div>
@@ -218,7 +225,7 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(io.micronaut.inject.ast.ClassElement,java.util.List,java.lang.String,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,java.lang.String,java.util.List)">
+<section class="detail" id="&lt;init&gt;(io.micronaut.inject.ast.ClassElement,java.util.List,java.lang.String,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.util.List)">
 <h3>MavenTaskConfig</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">MavenTaskConfig</span><wbr><span class="parameters">(io.micronaut.inject.ast.ClassElement&nbsp;source,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a>&gt;&nbsp;parameters,
@@ -230,7 +237,9 @@ loadScripts(document, 'script');</script>
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namePrefix,
  boolean&nbsp;micronautPlugin,
  @Nullable
- @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;mavenPropertyPrefix,
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;propertyPrefix,
+ @Nullable
+ @Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;enabledPropertyName,
  @NonNull
  @NonNull <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;taskJavadoc,
  @NonNull
@@ -246,7 +255,8 @@ loadScripts(document, 'script');</script>
 <dd><code>packageName</code> - the value for the <a href="#param-packageName"><code>packageName</code></a> record component</dd>
 <dd><code>namePrefix</code> - the value for the <a href="#param-namePrefix"><code>namePrefix</code></a> record component</dd>
 <dd><code>micronautPlugin</code> - the value for the <a href="#param-micronautPlugin"><code>micronautPlugin</code></a> record component</dd>
-<dd><code>mavenPropertyPrefix</code> - the value for the <a href="#param-mavenPropertyPrefix"><code>mavenPropertyPrefix</code></a> record component</dd>
+<dd><code>propertyPrefix</code> - the value for the <a href="#param-propertyPrefix"><code>propertyPrefix</code></a> record component</dd>
+<dd><code>enabledPropertyName</code> - the value for the <a href="#param-enabledPropertyName"><code>enabledPropertyName</code></a> record component</dd>
 <dd><code>taskJavadoc</code> - the value for the <a href="#param-taskJavadoc"><code>taskJavadoc</code></a> record component</dd>
 <dd><code>methodJavadoc</code> - the value for the <a href="#param-methodJavadoc"><code>methodJavadoc</code></a> record component</dd>
 <dd><code>generatedModels</code> - the value for the <a href="#param-generatedModels"><code>generatedModels</code></a> record component</dd>
@@ -372,14 +382,26 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="mavenPropertyPrefix()">
-<h3>mavenPropertyPrefix</h3>
+<section class="detail" id="propertyPrefix()">
+<h3>propertyPrefix</h3>
 <div class="member-signature"><span class="annotations">@Nullable
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">mavenPropertyPrefix</span>()</div>
-<div class="block">Returns the value of the <a href="#param-mavenPropertyPrefix"><code>mavenPropertyPrefix</code></a> record component.</div>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">propertyPrefix</span>()</div>
+<div class="block">Returns the value of the <a href="#param-propertyPrefix"><code>propertyPrefix</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <a href="#param-mavenPropertyPrefix"><code>mavenPropertyPrefix</code></a> record component</dd>
+<dd>the value of the <a href="#param-propertyPrefix"><code>propertyPrefix</code></a> record component</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="enabledPropertyName()">
+<h3>enabledPropertyName</h3>
+<div class="member-signature"><span class="annotations">@Nullable
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">enabledPropertyName</span>()</div>
+<div class="block">Returns the value of the <a href="#param-enabledPropertyName"><code>enabledPropertyName</code></a> record component.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the value of the <a href="#param-enabledPropertyName"><code>enabledPropertyName</code></a> record component</dd>
 </dl>
 </section>
 </li>
