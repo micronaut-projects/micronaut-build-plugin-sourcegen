@@ -35,6 +35,7 @@ import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder.CLASS_STATIC_FIELD;
 import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder.DEFAULT_EXTENSION_NAME_PREFIX;
 import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder.EXTENSION_NAME_SUFFIX;
 
@@ -47,8 +48,6 @@ public class GradlePluginBuilder implements GradleTypeBuilder {
 
     /** The suffix to use for plugin class. */
     public static final String PLUGIN_SUFFIX = "Plugin";
-
-    static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
 
     private static final String MICRONAUT_BASE_PLUGIN = "io.micronaut.gradle.MicronautBasePlugin";
     private static final String MICRONAUT_PLUGINS_HELPER = "io.micronaut.gradle.PluginsHelper";

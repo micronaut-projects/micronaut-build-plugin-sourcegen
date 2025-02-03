@@ -119,7 +119,7 @@ public @interface PluginTaskParameter {
      */
     enum OutputType {
         /**
-         * The parameter is not an output
+         * The parameter is not an output.
          */
         NONE,
         /**

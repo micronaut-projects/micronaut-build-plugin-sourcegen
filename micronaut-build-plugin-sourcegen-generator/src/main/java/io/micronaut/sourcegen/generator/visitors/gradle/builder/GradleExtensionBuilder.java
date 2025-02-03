@@ -63,8 +63,11 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
     /** The suffix to use for task configurator class. */
     public static final String TASK_CONFIGURATOR_SUFFIX = "TaskConfigurator";
 
+    static final FieldDef CLASS_STATIC_FIELD = FieldDef.builder("class", TypeDef.CLASS).build();
+
     private static final String EXECUTE_METHOD = "execute";
     private static final String CLASSPATH_FIELD = "classpath";
+    private static final String GET_EXTENSIONS_METHOD = "getExtensions";
     private static final TypeDef PROJECT_TYPE = TypeDef.of("org.gradle.api.Project");
     private static final TypeDef CONFIGURATION_TYPE = TypeDef.of("org.gradle.api.artifacts.Configuration");
     private static final FieldDef PROJECT_FIELD = FieldDef.builder("project").ofType(PROJECT_TYPE)
@@ -245,7 +248,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
                     .invoke("getTasks", taskContainerType)
                     .invoke("register", taskProviderType,
                         params.get(0),
-                        taskType.getStaticField("class", TypeDef.CLASS),
+                        taskType.getStaticField(CLASS_STATIC_FIELD),
                         params.get(1)
                     ).returning()
             );
@@ -287,7 +290,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             spec,
             t.field(PROJECT_FIELD)
                 .invoke("getObjects", objectFactoryType)
-                .invoke("newInstance", specificationType, specificationType.getStaticField("class", TypeDef.CLASS))
+                .invoke("newInstance", specificationType, specificationType.getStaticField(CLASS_STATIC_FIELD))
         );
         StatementDef configureSpec = t.invoke("configureSpec", TypeDef.VOID, spec);
         StatementDef actionCall = params.get(1).invoke(EXECUTE_METHOD, TypeDef.VOID, spec);
@@ -350,8 +353,8 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
 
                     List<StatementDef> statements = new ArrayList<>();
                     statements.add(extension.defineAndAssign(t.field(PROJECT_FIELD)
-                        .invoke("getExtensions", EXTENSION_CONTAINER_TYPE)
-                        .invoke("findByType", extensionType, extensionType.getStaticField(GradlePluginBuilder.CLASS_STATIC_FIELD))
+                        .invoke(GET_EXTENSIONS_METHOD, EXTENSION_CONTAINER_TYPE)
+                        .invoke("findByType", extensionType, extensionType.getStaticField(CLASS_STATIC_FIELD))
                     ));
                     statements.add(new StatementDef.If(extension.isNull(), ClassTypeDef.of("org.gradle.api.GradleException")
                         .instantiate(ExpressionDef.constant("No Java plugin extension found")).doThrow())
@@ -387,13 +390,13 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
             ClassTypeDef groovyDirSet = ClassTypeDef.of("org.gradle.api.tasks.GroovySourceDirectorySet");
             sourceDir = new Local("groovy", groovyDirSet);
             statements.add(sourceDir.defineAndAssign(
-                sourceSet.invoke("getExtensions", EXTENSION_CONTAINER_TYPE)
-                    .invoke("findByType", groovyDirSet, groovyDirSet.getStaticField(GradlePluginBuilder.CLASS_STATIC_FIELD))
+                sourceSet.invoke(GET_EXTENSIONS_METHOD, EXTENSION_CONTAINER_TYPE)
+                    .invoke("findByType", groovyDirSet, groovyDirSet.getStaticField(CLASS_STATIC_FIELD))
             ));
         } else if (outputType == OutputType.KOTLIN_SOURCES) {
             sourceDir = new Local("kotlin", SOURCE_DIRECTORY_SET_TYPE);
             statements.add(sourceDir.defineAndAssign(
-                sourceSet.invoke("getExtensions", EXTENSION_CONTAINER_TYPE)
+                sourceSet.invoke(GET_EXTENSIONS_METHOD, EXTENSION_CONTAINER_TYPE)
                     .invoke("findByName", TypeDef.OBJECT, ExpressionDef.constant("kotlin"))
                     .cast(SOURCE_DIRECTORY_SET_TYPE)
             ));

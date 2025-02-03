@@ -45,7 +45,7 @@ class TestMavenPluginTest extends AbstractMavenPluginTest {
 
         File generated = file("META-INF/hello.txt");
         Assertions.assertTrue(generated.exists());
-        Assertions.assertEquals(content(generated), "Hello!");
+        Assertions.assertEquals("Hello!", content(generated));
 
         Assertions.assertEquals(1, project.getResources().size());
         Assertions.assertEquals(baseDir.getAbsolutePath(), project.getResources().get(0).getTargetPath());
@@ -61,11 +61,11 @@ class TestMavenPluginTest extends AbstractMavenPluginTest {
 
         File generated1 = file("META-INF/hello.txt_1");
         Assertions.assertTrue(generated1.exists());
-        Assertions.assertEquals(content(generated1), "Hello!\n");
+        Assertions.assertEquals("Hello!\n", content(generated1));
 
         File generated2 = file("META-INF/hello.txt_2");
         Assertions.assertTrue(generated2.exists());
-        Assertions.assertEquals(content(generated2), "Hello!\n");
+        Assertions.assertEquals("Hello!\n", content(generated2));
 
         Assertions.assertEquals(1, project.getResources().size());
         Assertions.assertEquals(baseDir.getAbsolutePath(), project.getResources().get(0).getTargetPath());

@@ -52,13 +52,14 @@ public class MavenMojoBuilder {
 
     /** The suffix to use for Mojo class. */
     public static final String MOJO_SUFFIX = "Mojo";
+    private static final String DEFAULT_VALUE_ANN_MEMBER = "defaultValue";
     private static final ClassTypeDef PARAMETER_ANNOTATION_TYPE =
         ClassTypeDef.of("org.apache.maven.plugins.annotations.Parameter");
     private static final FieldDef PROJECT_FIELD = FieldDef
         .builder("project", ClassTypeDef.of("org.apache.maven.project.MavenProject"))
         .addModifiers(Modifier.PROTECTED)
         .addAnnotation(AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE)
-            .addMember("defaultValue", "${project}")
+            .addMember(DEFAULT_VALUE_ANN_MEMBER, "${project}")
             .addMember("required", true)
             .addMember("readonly", true)
             .build()
@@ -88,7 +89,7 @@ public class MavenMojoBuilder {
             .addJavadoc("Determines if this mojo must be executed. The value is true if the mojo is enabled.")
             .addAnnotation(AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE)
                 .addMember("property", taskConfig.enabledPropertyName())
-                .addMember("defaultValue", "true")
+                .addMember(DEFAULT_VALUE_ANN_MEMBER, "true")
                 .build())
             .build()
         );
@@ -114,7 +115,7 @@ public class MavenMojoBuilder {
         } else {
             AnnotationDefBuilder ann = AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE);
             if (parameter.defaultValue() != null) {
-                ann.addMember("defaultValue", parameter.defaultValue());
+                ann.addMember(DEFAULT_VALUE_ANN_MEMBER, parameter.defaultValue());
             }
             if (parameter.required()) {
                 ann.addMember("required", true);
