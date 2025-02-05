@@ -104,18 +104,18 @@ public abstract class DefaultBisonExtension implements BisonExtension {
 
     public void execute(Plugin ignored) {
       JavaPluginExtension extension = this.project.getExtensions().findByType(JavaPluginExtension.class);
-      if (extension == (JavaPluginExtension) (null)) {
+      if (extension == null) {
         throw new org.gradle.api.GradleException("No Java plugin extension found");
       }
       SourceSet sourceSet = extension.getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
       SourceDirectorySet java = sourceSet.getJava();
       java.srcDir(this.task.map(new JavaOutputTransformer()));
       GroovySourceDirectorySet groovy = sourceSet.getExtensions().findByType(GroovySourceDirectorySet.class);
-      if (groovy != (GroovySourceDirectorySet) (null)) {
+      if (groovy != null) {
         groovy.srcDir(this.task.map(new GroovyOutputTransformer()));
       }
       SourceDirectorySet kotlin = (SourceDirectorySet) (sourceSet.getExtensions().findByName("kotlin"));
-      if (kotlin != (SourceDirectorySet) (null)) {
+      if (kotlin != null) {
         kotlin.srcDir(this.task.map(new KotlinOutputTransformer()));
       }
       SourceDirectorySet resources = sourceSet.getResources();
@@ -198,13 +198,13 @@ public abstract class DefaultBisonExtension implements BisonExtension {
         )
         @PluginTask
         public record Bison(
-                @PluginTaskParameter(output = OutputType.JAVA_SOURCES)
+                @PluginTaskParameter(output = OutputType.JAVA_SOURCES, directory = true)
                 File javaOutput,
-                @PluginTaskParameter(output = OutputType.GROOVY_SOURCES)
+                @PluginTaskParameter(output = OutputType.GROOVY_SOURCES, directory = true)
                 File groovyOutput,
-                @PluginTaskParameter(output = OutputType.KOTLIN_SOURCES)
+                @PluginTaskParameter(output = OutputType.KOTLIN_SOURCES, directory = true)
                 File kotlinOutput,
-                @PluginTaskParameter(output = OutputType.RESOURCES)
+                @PluginTaskParameter(output = OutputType.RESOURCES, directory = true)
                 File resourcesOutput
         ) {
 

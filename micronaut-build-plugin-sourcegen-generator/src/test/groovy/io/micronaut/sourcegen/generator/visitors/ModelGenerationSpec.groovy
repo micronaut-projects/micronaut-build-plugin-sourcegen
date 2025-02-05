@@ -51,9 +51,12 @@ public enum Color {
 }"""
 
         var taskContent = stripImports(files.get("test.JaguarTask").getCharContent(false))
-        taskContent.contains("""public abstract static class JaguarWorkAction implements WorkAction<JaguarWorkActionParameters> {
+        taskContent.contains("""/**
+   * The work action that actually runs the task logic.
+   */
+  public abstract static class JaguarWorkAction implements WorkAction<JaguarWorkActionParameters> {
     Color convertColor(test.model.Color value) {
-      if (value == (test.model.Color) (null)) {
+      if (value == null) {
         return null;
       } else {
         return Color.valueOf(value.name());
@@ -202,9 +205,12 @@ public class Tail implements Serializable {
         enumContent != null
 
         var taskContent = stripImports(files.get("test.JaguarTask").getCharContent(false))
-        taskContent.contains("""public abstract static class JaguarWorkAction implements WorkAction<JaguarWorkActionParameters> {
+        taskContent.contains("""/**
+   * The work action that actually runs the task logic.
+   */
+  public abstract static class JaguarWorkAction implements WorkAction<JaguarWorkActionParameters> {
     Color convertColor(test.model.Color value) {
-      if (value == (test.model.Color) (null)) {
+      if (value == null) {
         return null;
       } else {
         return Color.valueOf(value.name());
@@ -212,7 +218,7 @@ public class Tail implements Serializable {
     }
 
     Tail convertTail(test.model.Tail value) {
-      if (value == (test.model.Tail) (null)) {
+      if (value == null) {
         return null;
       } else {
         Color ColorParam = this.convertColor(value.getColor());
