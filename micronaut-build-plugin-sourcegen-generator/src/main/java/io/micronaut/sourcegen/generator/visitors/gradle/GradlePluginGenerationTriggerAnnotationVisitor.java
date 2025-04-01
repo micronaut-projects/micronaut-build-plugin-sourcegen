@@ -95,6 +95,7 @@ public final class GradlePluginGenerationTriggerAnnotationVisitor implements Typ
                 sourceGenerator.write(definition, context, element);
             }
         } catch (ProcessingException e) {
+            e.printStackTrace();
             throw e;
         } catch (Exception e) {
             SourceGenerators.handleFatalException(element, GenerateGradlePlugin.class, e,

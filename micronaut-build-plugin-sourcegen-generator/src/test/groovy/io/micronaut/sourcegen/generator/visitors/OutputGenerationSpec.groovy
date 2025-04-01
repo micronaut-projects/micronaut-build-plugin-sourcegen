@@ -221,6 +221,11 @@ public abstract class DefaultBisonExtension implements BisonExtension {
  * Bison Maven Mojo.
  */
 public abstract class BisonMojo extends AbstractMojo {
+  /**
+   * The common prefix for Mojo properties.
+   */
+  protected static final String PROPERTY_PREFIX = "bison";
+
   @Parameter(
       defaultValue = "\${project}",
       required = true,
@@ -233,7 +238,7 @@ public abstract class BisonMojo extends AbstractMojo {
    */
   @Parameter(
       property = "bison.enabled",
-      defaultValue = "true"
+      defaultValue = "false"
   )
   protected boolean enabled;
 
@@ -264,7 +269,7 @@ public abstract class BisonMojo extends AbstractMojo {
   /**
    * Main execution of Bison Mojo.
    */
-  public void execute() {
+  public void execute() throws MojoExecutionException, MojoFailureException {
     if (!this.enabled) {
       this.getLog().debug("BisonMojo is disabled");
     } else {
@@ -274,9 +279,15 @@ public abstract class BisonMojo extends AbstractMojo {
       Resource resourcesOutputResource = new org.apache.maven.model.Resource();
       resourcesOutputResource.setTargetPath(this.resourcesOutput.getAbsolutePath());
       this.project.addResource(resourcesOutputResource);
+      try {
       Bison task = new test.Bison(this.javaOutput, this.groovyOutput, this.kotlinOutput, this.resourcesOutput);
       task.moo();
-    }
+
+      } catch (IllegalArgumentException e0) {throw new org.apache.maven.plugin.MojoFailureException("Invalid configuration for Bison", e0);
+
+      } catch (Exception e1) {throw new org.apache.maven.plugin.MojoExecutionException("Failed to run Bison", e1);
+
+      }}
   }
 }"""
     }
