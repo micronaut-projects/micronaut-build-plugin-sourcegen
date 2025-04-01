@@ -217,6 +217,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">An enum representing how the file ends.</div>
 </dd>
+<dt><a href="io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html#enumConstants()" class="member-name-link">enumConstants()</a> - Method in record class io.micronaut.sourcegen.generator.visitors.<a href="io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html#param-enumConstants"><code>enumConstants</code></a> record component.</div>
+</dd>
 <dt><a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleRecordTask.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class io.micronaut.sourcegen.example.plugin.<a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleRecordTask.html" title="class in io.micronaut.sourcegen.example.plugin">GenerateSimpleRecordTask</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
@@ -665,13 +669,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Worker executor.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/annotations/PluginTaskParameter.html#globalProperty()" class="member-name-link">globalProperty()</a> - Element in annotation interface io.micronaut.sourcegen.annotations.<a href="io/micronaut/sourcegen/annotations/PluginTaskParameter.html" title="annotation interface in io.micronaut.sourcegen.annotations">PluginTaskParameter</a></dt>
+<dt><a href="io/micronaut/sourcegen/annotations/GenerateMavenMojo.html#globalParameters()" class="member-name-link">globalParameters()</a> - Element in annotation interface io.micronaut.sourcegen.annotations.<a href="io/micronaut/sourcegen/annotations/GenerateMavenMojo.html" title="annotation interface in io.micronaut.sourcegen.annotations">GenerateMavenMojo</a></dt>
 <dd>
-<div class="block">The global property name.</div>
+<div class="block">Specify which properties should be defined as parameters.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html#globalProperty()" class="member-name-link">globalProperty()</a> - Method in record class io.micronaut.sourcegen.generator.visitors.<a href="io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a></dt>
+<dt><a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#globalParameters()" class="member-name-link">globalParameters()</a> - Method in record class io.micronaut.sourcegen.generator.visitors.maven.<a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html" title="class in io.micronaut.sourcegen.generator.visitors.maven">MavenPluginUtils.MavenTaskConfig</a></dt>
 <dd>
-<div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html#param-globalProperty"><code>globalProperty</code></a> record component.</div>
+<div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#param-globalParameters"><code>globalParameters</code></a> record component.</div>
 </dd>
 <dt><a href="io/micronaut/sourcegen/annotations/GenerateGradlePlugin.Type.html#GRADLE_EXTENSION" class="member-name-link">GRADLE_EXTENSION</a> - Enum constant in enum class io.micronaut.sourcegen.annotations.<a href="io/micronaut/sourcegen/annotations/GenerateGradlePlugin.Type.html" title="enum class in io.micronaut.sourcegen.annotations">GenerateGradlePlugin.Type</a></dt>
 <dd>&nbsp;</dd>
@@ -884,7 +888,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Configuration for a gradle task type.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#%3Cinit%3E(io.micronaut.inject.ast.ClassElement,java.util.List,java.lang.String,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">MavenTaskConfig(ClassElement, List&lt;PluginUtils.ParameterConfig&gt;, String, String, String, boolean, String, String, String, String, List&lt;ModelUtils.GeneratedModel&gt;)</a> - Constructor for record class io.micronaut.sourcegen.generator.visitors.maven.<a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html" title="class in io.micronaut.sourcegen.generator.visitors.maven">MavenPluginUtils.MavenTaskConfig</a></dt>
+<dt><a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#%3Cinit%3E(io.micronaut.inject.ast.ClassElement,java.util.List,java.lang.String,java.lang.String,java.lang.String,boolean,java.lang.String,java.util.List,java.lang.String,java.lang.String,java.lang.String,java.util.List)" class="member-name-link">MavenTaskConfig(ClassElement, List&lt;PluginUtils.ParameterConfig&gt;, String, String, String, boolean, String, List&lt;String&gt;, String, String, String, List&lt;ModelUtils.GeneratedModel&gt;)</a> - Constructor for record class io.micronaut.sourcegen.generator.visitors.maven.<a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html" title="class in io.micronaut.sourcegen.generator.visitors.maven">MavenPluginUtils.MavenTaskConfig</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>MavenTaskConfig</code> record class.</div>
 </dd>
@@ -978,9 +982,13 @@ loadScripts(document, 'script');</script>
 <dt><a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Ending.html#NEWLINE" class="member-name-link">NEWLINE</a> - Enum constant in enum class io.micronaut.sourcegen.example.plugin.<a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Ending.html" title="enum class in io.micronaut.sourcegen.example.plugin">GenerateSimpleResourceTask.Ending</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/sourcegen/example/plugin/gradle/model/Ending.html#NEWLINE" class="member-name-link">NEWLINE</a> - Enum constant in enum class io.micronaut.sourcegen.example.plugin.gradle.model.<a href="io/micronaut/sourcegen/example/plugin/gradle/model/Ending.html" title="enum class in io.micronaut.sourcegen.example.plugin.gradle.model">Ending</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">NEWLINE value</div>
+</dd>
 <dt><a href="io/micronaut/sourcegen/example/plugin/maven/model/Ending.html#NEWLINE" class="member-name-link">NEWLINE</a> - Enum constant in enum class io.micronaut.sourcegen.example.plugin.maven.model.<a href="io/micronaut/sourcegen/example/plugin/maven/model/Ending.html" title="enum class in io.micronaut.sourcegen.example.plugin.maven.model">Ending</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">NEWLINE value</div>
+</dd>
 <dt><a href="io/micronaut/sourcegen/annotations/PluginTaskParameter.OutputType.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class io.micronaut.sourcegen.annotations.<a href="io/micronaut/sourcegen/annotations/PluginTaskParameter.OutputType.html" title="enum class in io.micronaut.sourcegen.annotations">PluginTaskParameter.OutputType</a></dt>
 <dd>
 <div class="block">The parameter is not an output.</div>
@@ -992,9 +1000,13 @@ loadScripts(document, 'script');</script>
 <dt><a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Ending.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class io.micronaut.sourcegen.example.plugin.<a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Ending.html" title="enum class in io.micronaut.sourcegen.example.plugin">GenerateSimpleResourceTask.Ending</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/micronaut/sourcegen/example/plugin/gradle/model/Ending.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class io.micronaut.sourcegen.example.plugin.gradle.model.<a href="io/micronaut/sourcegen/example/plugin/gradle/model/Ending.html" title="enum class in io.micronaut.sourcegen.example.plugin.gradle.model">Ending</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">NONE value</div>
+</dd>
 <dt><a href="io/micronaut/sourcegen/example/plugin/maven/model/Ending.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class io.micronaut.sourcegen.example.plugin.maven.model.<a href="io/micronaut/sourcegen/example/plugin/maven/model/Ending.html" title="enum class in io.micronaut.sourcegen.example.plugin.maven.model">Ending</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">NONE value</div>
+</dd>
 <dt><a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Repeat.html#number()" class="member-name-link">number()</a> - Method in record class io.micronaut.sourcegen.example.plugin.<a href="io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Repeat.html" title="class in io.micronaut.sourcegen.example.plugin">GenerateSimpleResourceTask.Repeat</a></dt>
 <dd>
 <div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/example/plugin/GenerateSimpleResourceTask.Repeat.html#param-number"><code>number</code></a> record component.</div>
@@ -1037,9 +1049,17 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#param-packageName"><code>packageName</code></a> record component.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html#%3Cinit%3E(io.micronaut.inject.ast.PropertyElement,boolean,java.lang.String,boolean,boolean,io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType,java.lang.String,java.lang.String,io.micronaut.sourcegen.model.TypeDef,io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity)" class="member-name-link">ParameterConfig(PropertyElement, boolean, String, boolean, boolean, PluginTaskParameter.OutputType, String, String, TypeDef, PluginTaskParameter.PathSensitivity)</a> - Constructor for record class io.micronaut.sourcegen.generator.visitors.<a href="io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a></dt>
+<dt><a href="io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html#%3Cinit%3E(io.micronaut.inject.ast.PropertyElement,boolean,java.lang.String,boolean,boolean,io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType,java.lang.String,io.micronaut.sourcegen.model.TypeDef,io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity)" class="member-name-link">ParameterConfig(PropertyElement, boolean, String, boolean, boolean, PluginTaskParameter.OutputType, String, TypeDef, PluginTaskParameter.PathSensitivity)</a> - Constructor for record class io.micronaut.sourcegen.generator.visitors.<a href="io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html" title="class in io.micronaut.sourcegen.generator.visitors">PluginUtils.ParameterConfig</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>ParameterConfig</code> record class.</div>
+</dd>
+<dt><a href="io/micronaut/sourcegen/annotations/GenerateMavenMojo.html#parameterPrefix()" class="member-name-link">parameterPrefix()</a> - Element in annotation interface io.micronaut.sourcegen.annotations.<a href="io/micronaut/sourcegen/annotations/GenerateMavenMojo.html" title="annotation interface in io.micronaut.sourcegen.annotations">GenerateMavenMojo</a></dt>
+<dd>
+<div class="block">The prefix to use for parameters generated in Maven Mojo.</div>
+</dd>
+<dt><a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#parameterPrefix()" class="member-name-link">parameterPrefix()</a> - Method in record class io.micronaut.sourcegen.generator.visitors.maven.<a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html" title="class in io.micronaut.sourcegen.generator.visitors.maven">MavenPluginUtils.MavenTaskConfig</a></dt>
+<dd>
+<div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#param-parameterPrefix"><code>parameterPrefix</code></a> record component.</div>
 </dd>
 <dt><a href="io/micronaut/sourcegen/generator/visitors/gradle/GradlePluginUtils.GradleTaskConfig.html#parameters()" class="member-name-link">parameters()</a> - Method in record class io.micronaut.sourcegen.generator.visitors.gradle.<a href="io/micronaut/sourcegen/generator/visitors/gradle/GradlePluginUtils.GradleTaskConfig.html" title="class in io.micronaut.sourcegen.generator.visitors.gradle">GradlePluginUtils.GradleTaskConfig</a></dt>
 <dd>
@@ -1111,13 +1131,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/example/plugin/GenerateSimpleRecordTask.html#param-properties"><code>properties</code></a> record component.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/annotations/GenerateMavenMojo.html#propertyPrefix()" class="member-name-link">propertyPrefix()</a> - Element in annotation interface io.micronaut.sourcegen.annotations.<a href="io/micronaut/sourcegen/annotations/GenerateMavenMojo.html" title="annotation interface in io.micronaut.sourcegen.annotations">GenerateMavenMojo</a></dt>
+<dt><a href="io/micronaut/sourcegen/example/plugin/maven/AbstractGenerateSimpleRecordMojo.html#PROPERTY_PREFIX" class="member-name-link">PROPERTY_PREFIX</a> - Static variable in class io.micronaut.sourcegen.example.plugin.maven.<a href="io/micronaut/sourcegen/example/plugin/maven/AbstractGenerateSimpleRecordMojo.html" title="class in io.micronaut.sourcegen.example.plugin.maven">AbstractGenerateSimpleRecordMojo</a></dt>
 <dd>
-<div class="block">The property prefix to use for parameters generated in Maven Mojo.</div>
+<div class="block">The common prefix for Mojo properties.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#propertyPrefix()" class="member-name-link">propertyPrefix()</a> - Method in record class io.micronaut.sourcegen.generator.visitors.maven.<a href="io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html" title="class in io.micronaut.sourcegen.generator.visitors.maven">MavenPluginUtils.MavenTaskConfig</a></dt>
+<dt><a href="io/micronaut/sourcegen/example/plugin/maven/AbstractGenerateSimpleResourceMojo.html#PROPERTY_PREFIX" class="member-name-link">PROPERTY_PREFIX</a> - Static variable in class io.micronaut.sourcegen.example.plugin.maven.<a href="io/micronaut/sourcegen/example/plugin/maven/AbstractGenerateSimpleResourceMojo.html" title="class in io.micronaut.sourcegen.example.plugin.maven">AbstractGenerateSimpleResourceMojo</a></dt>
 <dd>
-<div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/maven/MavenPluginUtils.MavenTaskConfig.html#param-propertyPrefix"><code>propertyPrefix</code></a> record component.</div>
+<div class="block">The common prefix for Mojo properties.</div>
 </dd>
 </dl>
 <h2 class="title" id="I:R">R</h2>
@@ -1320,7 +1340,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <a href="./io/micronaut/sourcegen/generator/visitors/PluginUtils.ParameterConfig.html#param-type"><code>type</code></a> record component.</div>
 </dd>
-<dt><a href="io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html#%3Cinit%3E(java.util.Optional,java.util.Map)" class="member-name-link">TypeJavadoc(Optional&lt;String&gt;, Map&lt;String, String&gt;)</a> - Constructor for record class io.micronaut.sourcegen.generator.visitors.<a href="io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></dt>
+<dt><a href="io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html#%3Cinit%3E(java.util.Optional,java.util.Map,java.util.Map)" class="member-name-link">TypeJavadoc(Optional&lt;String&gt;, Map&lt;String, String&gt;, Map&lt;String, String&gt;)</a> - Constructor for record class io.micronaut.sourcegen.generator.visitors.<a href="io/micronaut/sourcegen/generator/visitors/JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>TypeJavadoc</code> record class.</div>
 </dd>

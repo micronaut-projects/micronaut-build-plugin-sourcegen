@@ -246,11 +246,11 @@ import org.slf4j.LoggerFactory;
  */
 @PluginTask // <b class="conum">(1)</b>
 public record GenerateSimpleRecordTask(
-    @PluginTaskParameter(required = true, globalProperty = "typeName")
+    @PluginTaskParameter(required = true)
     String typeName, // <b class="conum">(2)</b>
-    @PluginTaskParameter(defaultValue = "1", globalProperty = "version")
+    @PluginTaskParameter(defaultValue = "1")
     Integer version, // <b class="conum">(3)</b>
-    @PluginTaskParameter(defaultValue = "com.example", globalProperty = "packageName")
+    @PluginTaskParameter(defaultValue = "com.example")
     String packageName,
     Map&lt;String, String&gt; properties,
     List&lt;String&gt; javadoc,
@@ -694,13 +694,15 @@ Adding the common plugin to the annotation processor paths is currently required
     namePrefix = "AbstractGenerateSimpleRecord",
     micronautPlugin = false,
     source = "io.micronaut.sourcegen.example.plugin.GenerateSimpleRecordTask",
-    propertyPrefix = "test.generate.simple.record"
+    parameterPrefix = "test.generate.simple.record",
+    globalParameters = { "typeName", "version", "packageName" }
 )
 @GenerateMavenMojo( // <b class="conum">(2)</b>
     namePrefix = "AbstractGenerateSimpleResource",
     micronautPlugin = false,
     source = "io.micronaut.sourcegen.example.plugin.GenerateSimpleResourceTask",
-    propertyPrefix = "test.generate.simple.resource"
+    parameterPrefix = "test.generate.simple.resource",
+    globalParameters = { "fileName", "content" }
 )
 public final class GenerateMojoTrigger {
 }</code></pre>

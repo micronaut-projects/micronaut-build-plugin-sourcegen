@@ -128,18 +128,23 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Set the name for the property to enable or disable the mojo.</div>
 </div>
-<div class="col-first odd-row-color"><code>boolean</code></div>
-<div class="col-second odd-row-color"><code><a href="#micronautPlugin()" class="member-name-link">micronautPlugin</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#namePrefix()" class="member-name-link">namePrefix</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</code></div>
+<div class="col-second odd-row-color"><code><a href="#globalParameters()" class="member-name-link">globalParameters</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Specify which properties should be defined as parameters.</div>
+</div>
+<div class="col-first even-row-color"><code>boolean</code></div>
+<div class="col-second even-row-color"><code><a href="#micronautPlugin()" class="member-name-link">micronautPlugin</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#namePrefix()" class="member-name-link">namePrefix</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The prefix to use for the mojo name.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#propertyPrefix()" class="member-name-link">propertyPrefix</a></code></div>
-<div class="col-last odd-row-color">
-<div class="block">The property prefix to use for parameters generated in Maven Mojo.</div>
+<div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#parameterPrefix()" class="member-name-link">parameterPrefix</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">The prefix to use for parameters generated in Maven Mojo.</div>
 </div>
 </div>
 </section>
@@ -202,17 +207,17 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="propertyPrefix()">
-<h3>propertyPrefix</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">propertyPrefix</span></div>
-<div class="block">The property prefix to use for parameters generated in Maven Mojo.</div>
+<section class="detail" id="parameterPrefix()">
+<h3>parameterPrefix</h3>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">parameterPrefix</span></div>
+<div class="block">The prefix to use for parameters generated in Maven Mojo.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The property prefix</dd>
 <dt>See Also:</dt>
 <dd>
-<ul class="see-list-long">
-<li><a href="PluginTaskParameter.html#globalProperty()"><code>PluginTaskParameter.globalProperty()</code></a></li>
+<ul class="see-list">
+<li><a href="#globalParameters()"><code>globalParameters()</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -223,11 +228,27 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="globalParameters()">
+<h3>globalParameters</h3>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>[]</span>&nbsp;<span class="element-name">globalParameters</span></div>
+<div class="block">Specify which properties should be defined as parameters.
+ Parameters will be configured with <code>@Property(parameter = )</code> in Maven.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The parameters list</dd>
+</dl>
+<dl class="notes">
+<dt>Default:</dt>
+<dd>{}</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="enabledPropertyName()">
 <h3>enabledPropertyName</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">enabledPropertyName</span></div>
 <div class="block">Set the name for the property to enable or disable the mojo.
- The default is <code>${propertyPrefix}.enabled</code>.</div>
+ The default is <code>${parameterPrefix}.enabled</code>.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The name for property</dd>

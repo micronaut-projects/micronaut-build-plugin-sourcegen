@@ -125,14 +125,19 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">The properties.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#typeName" class="member-name-link">typeName</a></code></div>
+<div class="col-first odd-row-color"><code>protected static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#PROPERTY_PREFIX" class="member-name-link">PROPERTY_PREFIX</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The common prefix for Mojo properties.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color"><code><a href="#typeName" class="member-name-link">typeName</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The generated class name.</div>
 </div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
-<div class="col-second even-row-color"><code><a href="#version" class="member-name-link">version</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#version" class="member-name-link">version</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The version.</div>
 </div>
 </div>
@@ -196,6 +201,21 @@ loadScripts(document, 'script');</script>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="PROPERTY_PREFIX">
+<h3>PROPERTY_PREFIX</h3>
+<div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">PROPERTY_PREFIX</span></div>
+<div class="block">The common prefix for Mojo properties.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../../../../../../constant-values.html#io.micronaut.sourcegen.example.plugin.maven.AbstractGenerateSimpleRecordMojo.PROPERTY_PREFIX">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="project">
 <h3>project</h3>
 <div class="member-signature"><span class="annotations">@Parameter(defaultValue="${project}",
@@ -208,7 +228,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="enabled">
 <h3>enabled</h3>
 <div class="member-signature"><span class="annotations">@Parameter(property="test.generate.simple.record.enabled",
-           defaultValue="true")
+           defaultValue="false")
 </span><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">enabled</span></div>
 <div class="block">Determines if this mojo must be executed. The value is true if the mojo is enabled.</div>
 </section>
@@ -288,9 +308,16 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="execute()">
 <h3>execute</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">execute</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">execute</span>()
+             throws <span class="exceptions">org.apache.maven.plugin.MojoExecutionException,
+org.apache.maven.plugin.MojoFailureException</span></div>
 <div class="block">Generate a simple record in the supplied package and with the specified version.
  This javadoc will be copied to the respected plugin implementations.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code>org.apache.maven.plugin.MojoExecutionException</code></dd>
+<dd><code>org.apache.maven.plugin.MojoFailureException</code></dd>
+</dl>
 </section>
 </li>
 </ul>
