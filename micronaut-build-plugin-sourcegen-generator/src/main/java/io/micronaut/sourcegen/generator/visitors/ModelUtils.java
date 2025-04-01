@@ -28,6 +28,7 @@ import io.micronaut.sourcegen.model.ClassDef;
 import io.micronaut.sourcegen.model.ClassDef.ClassDefBuilder;
 import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.EnumDef;
+import io.micronaut.sourcegen.model.EnumDef.EnumConstantDef;
 import io.micronaut.sourcegen.model.EnumDef.EnumDefBuilder;
 import io.micronaut.sourcegen.model.ExpressionDef;
 import io.micronaut.sourcegen.model.ExpressionDef.ComparisonOperation.OpType;
@@ -110,12 +111,17 @@ public class ModelUtils {
     private static ClassTypeDef copyEnum(
             VisitorContext context, String packageName, ClassElement element, List<GeneratedModel> objects
     ) {
+        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
         EnumDefBuilder enumDefBuilder = EnumDef.builder(packageName + "." + getSimpleName(element))
             .addModifiers(Modifier.PUBLIC)
-            .addJavadoc(JavadocUtils.getTaskJavadoc(context, element).javadoc().orElse(element.getName() + " enum."));
+            .addJavadoc(javadoc.javadoc().orElse(element.getName() + " enum."));
         if (element instanceof EnumElement enumElement) {
             for (EnumConstantElement constant: enumElement.elements()) {
-                enumDefBuilder.addEnumConstant(constant.getName());
+                enumDefBuilder.addEnumConstant(
+                    EnumConstantDef.builder(constant.getName())
+                        .addJavadoc(javadoc.enumConstants().getOrDefault(constant.getName(), constant.getName() + " value"))
+                        .build()
+                );
             }
         }
         EnumDef enumDef = enumDefBuilder.build();

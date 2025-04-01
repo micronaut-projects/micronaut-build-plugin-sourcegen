@@ -145,7 +145,6 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                 }
             }
         } else {
-            propBuilder.addAnnotation("org.gradle.api.tasks.Input");
             if (parameter.source().getType().isAssignable(File.class)) {
                 if (parameter.directory()) {
                     propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.InputDirectory")).build());
@@ -158,6 +157,8 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                     .addMember("value", pathSensitivityType.getStaticField(parameter.pathSensitivity().name(), pathSensitivityType))
                     .build()
                 );
+            } else {
+                propBuilder.addAnnotation("org.gradle.api.tasks.Input");
             }
         }
 
@@ -315,13 +316,15 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
         for (ParameterConfig parameter: taskConfig.parameters()) {
             ExpressionDef expression = new VariableDef.Local("parameters", parametersType)
                 .invoke("get" + NameUtils.capitalize(parameter.source().getName()), createGradleProperty(parameter));
+            if (parameter.source().getType().isAssignable(File.class)) {
+                expression = expression.invoke("getAsFile",
+                    TypeDef.parameterized(ClassTypeDef.of("org.gradle.api.provider.Provider"), File.class)
+                );
+            }
             if (!parameter.required() && parameter.defaultValue() == null) {
                 expression = expression.invoke("getOrNull", parameter.type());
             } else {
                 expression = expression.invoke("get", parameter.type());
-            }
-            if (parameter.source().getType().isAssignable(File.class)) {
-                expression = expression.invoke("getAsFile", TypeDef.of(File.class));
             }
             params.put(
                 parameter.source().getName(),

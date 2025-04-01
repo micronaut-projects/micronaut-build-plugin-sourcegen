@@ -99,7 +99,6 @@ public class PluginUtils {
                 false,
                 false,
                 OutputType.NONE,
-                null,
                 javadoc,
                 type,
                 PathSensitivity.ABSOLUTE
@@ -112,7 +111,6 @@ public class PluginUtils {
             annotation.booleanValue("internal").orElse(false),
             annotation.booleanValue("directory").orElse(false),
             annotation.enumValue("output", OutputType.class).orElse(OutputType.NONE),
-            annotation.stringValue("globalProperty").orElse(null),
             javadoc,
             type,
             annotation.enumValue("pathSensitivity", PathSensitivity.class).orElse(PathSensitivity.ABSOLUTE)
@@ -222,7 +220,6 @@ public class PluginUtils {
      * @param internal Whether it is internal
      * @param directory Whether it is a directory
      * @param output Whether it is an output and what output type
-     * @param globalProperty A global property
      * @param javadoc The javadoc for property
      * @param type The type to use for generated property
      * @param pathSensitivity The path sensitivity
@@ -234,7 +231,6 @@ public class PluginUtils {
         boolean internal,
         boolean directory,
         @NonNull OutputType output,
-        @Nullable String globalProperty,
         @NonNull String javadoc,
         @NonNull TypeDef type,
         @NonNull PathSensitivity pathSensitivity

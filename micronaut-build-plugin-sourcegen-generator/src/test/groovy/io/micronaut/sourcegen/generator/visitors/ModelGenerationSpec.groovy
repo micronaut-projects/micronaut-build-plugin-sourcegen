@@ -44,9 +44,21 @@ class ModelGenerationSpec extends AbstractGenerationSpec {
  */
 public enum Color {
 
+  /**
+   * MELANISTIC value
+   */
   MELANISTIC,
+  /**
+   * ERYTHRISM value
+   */
   ERYTHRISM,
+  /**
+   * GOLDEN value
+   */
   GOLDEN,
+  /**
+   * WHITE value
+   */
   WHITE
 }"""
 

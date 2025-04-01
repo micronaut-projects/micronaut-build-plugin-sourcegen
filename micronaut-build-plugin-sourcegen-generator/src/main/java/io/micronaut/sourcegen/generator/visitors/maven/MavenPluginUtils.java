@@ -19,6 +19,7 @@ import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.type.Argument;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
@@ -33,6 +34,7 @@ import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
 import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -106,7 +108,7 @@ public final class MavenPluginUtils {
         if (methodJavadoc == null) {
             methodJavadoc = "Main execution of " + namePrefix + " Mojo.";
         }
-        String propertyPrefix = annotation.stringValue("propertyPrefix").orElse(toDotSeparated(namePrefix));
+        String parameterPrefix = annotation.stringValue("parameterPrefix").orElse(toDotSeparated(namePrefix));
         return new MavenTaskConfig(
             source,
             parameters,
@@ -114,8 +116,9 @@ public final class MavenPluginUtils {
             element.getPackageName(),
             namePrefix,
             annotation.booleanValue("micronautPlugin").orElse(true),
-            propertyPrefix,
-            annotation.stringValue("enabledPropertyName").orElse(propertyPrefix + ".enabled"),
+            parameterPrefix,
+            annotation.get("globalParameters", Argument.listOf(String.class)).orElse(Collections.emptyList()),
+            annotation.stringValue("enabledPropertyName").orElse(parameterPrefix + ".enabled"),
             javadoc.javadoc().orElse(namePrefix + " Maven Mojo."),
             methodJavadoc,
             generatedModels
@@ -131,7 +134,8 @@ public final class MavenPluginUtils {
      * @param packageName The package name
      * @param namePrefix The type name prefix
      * @param micronautPlugin Whether to extend micronaut plugin
-     * @param propertyPrefix The prefix for maven properties
+     * @param parameterPrefix The prefix for maven properties
+     * @param globalParameters The property to define as maven parameters
      * @param enabledPropertyName The name of the enabled property
      * @param taskJavadoc The javadoc for the whole task
      * @param methodJavadoc The javadoc for the executable method
@@ -144,7 +148,8 @@ public final class MavenPluginUtils {
         @NonNull String packageName,
         @NonNull String namePrefix,
         boolean micronautPlugin,
-        @Nullable String propertyPrefix,
+        @Nullable String parameterPrefix,
+        @NonNull List<String> globalParameters,
         @Nullable String enabledPropertyName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,

@@ -41,13 +41,13 @@ public final class GenerateSimpleResourceTask {
     /**
      * The generated file name.
      */
-    @PluginTaskParameter(required = true, globalProperty = "fileName")
+    @PluginTaskParameter(required = true)
     private String fileName;
 
     /**
      * The content of the file.
      */
-    @PluginTaskParameter(required = true, globalProperty = "content")
+    @PluginTaskParameter(required = true)
     private String content;
 
     /**

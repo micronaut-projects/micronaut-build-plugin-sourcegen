@@ -33,6 +33,11 @@ class MavenPluginGenerationSpec extends AbstractGenerationSpec {
  * Wolf Maven Mojo.
  */
 public abstract class WolfMojo extends AbstractMojo {
+  /**
+   * The common prefix for Mojo properties.
+   */
+  protected static final String PROPERTY_PREFIX = "wolf";
+
   @Parameter(
       defaultValue = "\${project}",
       required = true,
@@ -45,7 +50,7 @@ public abstract class WolfMojo extends AbstractMojo {
    */
   @Parameter(
       property = "wolf.enabled",
-      defaultValue = "true"
+      defaultValue = "false"
   )
   protected boolean enabled;
 
@@ -68,13 +73,19 @@ public abstract class WolfMojo extends AbstractMojo {
   /**
    * Main execution of Wolf Mojo.
    */
-  public void execute() {
+  public void execute() throws MojoExecutionException, MojoFailureException {
     if (!this.enabled) {
       this.getLog().debug("WolfMojo is disabled");
     } else {
+      try {
       Wolf task = new test.Wolf(this.slogan, this.age);
       task.awooo();
-    }
+
+      } catch (IllegalArgumentException e0) {throw new org.apache.maven.plugin.MojoFailureException("Invalid configuration for Wolf", e0);
+
+      } catch (Exception e1) {throw new org.apache.maven.plugin.MojoExecutionException("Failed to run Wolf", e1);
+
+      }}
   }
 }"""
     }

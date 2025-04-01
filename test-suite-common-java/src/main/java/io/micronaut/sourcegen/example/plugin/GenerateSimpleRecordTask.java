@@ -45,11 +45,11 @@ import org.slf4j.LoggerFactory;
  */
 @PluginTask // <1>
 public record GenerateSimpleRecordTask(
-    @PluginTaskParameter(required = true, globalProperty = "typeName")
+    @PluginTaskParameter(required = true)
     String typeName, // <2>
-    @PluginTaskParameter(defaultValue = "1", globalProperty = "version")
+    @PluginTaskParameter(defaultValue = "1")
     Integer version, // <3>
-    @PluginTaskParameter(defaultValue = "com.example", globalProperty = "packageName")
+    @PluginTaskParameter(defaultValue = "com.example")
     String packageName,
     Map<String, String> properties,
     List<String> javadoc,

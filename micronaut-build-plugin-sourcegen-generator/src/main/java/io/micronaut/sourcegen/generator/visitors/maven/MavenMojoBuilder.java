@@ -55,6 +55,10 @@ public class MavenMojoBuilder {
     private static final String DEFAULT_VALUE_ANN_MEMBER = "defaultValue";
     private static final ClassTypeDef PARAMETER_ANNOTATION_TYPE =
         ClassTypeDef.of("org.apache.maven.plugins.annotations.Parameter");
+    private static final ClassTypeDef MOJO_FAILURE_EXCEPTION =
+        ClassTypeDef.of("org.apache.maven.plugin.MojoFailureException");
+    private static final ClassTypeDef MOJO_EXECUTION_EXCEPTION =
+        ClassTypeDef.of("org.apache.maven.plugin.MojoExecutionException");
     private static final FieldDef PROJECT_FIELD = FieldDef
         .builder("project", ClassTypeDef.of("org.apache.maven.project.MavenProject"))
         .addModifiers(Modifier.PROTECTED)
@@ -66,6 +70,7 @@ public class MavenMojoBuilder {
         )
         .build();
     private static final String ENABLED_FIELD_NAME = "enabled";
+    private static final String PROPERTY_PREFIX_FIELD_NAME = "PROPERTY_PREFIX";
 
     /**
      * Method for building the Maven mojo.
@@ -83,13 +88,18 @@ public class MavenMojoBuilder {
             builder.superclass(ClassTypeDef.of("org.apache.maven.plugin.AbstractMojo"));
         }
 
+        builder.addField(FieldDef.builder(PROPERTY_PREFIX_FIELD_NAME, TypeDef.STRING)
+            .addModifiers(Modifier.PROTECTED, Modifier.STATIC, Modifier.FINAL)
+            .initializer(ExpressionDef.constant(taskConfig.parameterPrefix()))
+            .addJavadoc("The common prefix for Mojo properties.")
+            .build());
         builder.addField(PROJECT_FIELD);
         builder.addField(FieldDef.builder(ENABLED_FIELD_NAME, TypeDef.of(boolean.class))
             .addModifiers(Modifier.PROTECTED)
             .addJavadoc("Determines if this mojo must be executed. The value is true if the mojo is enabled.")
             .addAnnotation(AnnotationDef.builder(PARAMETER_ANNOTATION_TYPE)
                 .addMember("property", taskConfig.enabledPropertyName())
-                .addMember(DEFAULT_VALUE_ANN_MEMBER, "true")
+                .addMember(DEFAULT_VALUE_ANN_MEMBER, "false")
                 .build())
             .build()
         );
@@ -120,9 +130,9 @@ public class MavenMojoBuilder {
             if (parameter.required()) {
                 ann.addMember("required", true);
             }
-            if (parameter.globalProperty() != null) {
-                ann.addMember("property",  taskConfig.propertyPrefix()
-                    + "." + MavenPluginUtils.toDotSeparated(parameter.globalProperty()));
+            if (taskConfig.globalParameters().contains(parameter.source().getName())) {
+                ann.addMember("property", taskConfig.parameterPrefix()
+                    + "." + MavenPluginUtils.toDotSeparated(parameter.source().getName()));
             }
             FieldDef field = FieldDef.builder(parameter.source().getName())
                 .ofType(parameter.type())
@@ -139,12 +149,21 @@ public class MavenMojoBuilder {
             .overrides()
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(taskConfig.methodJavadoc())
+            .addThrows(
+                TypeDef.of("org.apache.maven.plugin.MojoExecutionException"),
+                TypeDef.of("org.apache.maven.plugin.MojoFailureException")
+            )
             .build((t, params) -> {
                 List<StatementDef> mainStatements = new ArrayList<>();
                 for (ParameterConfig parameter : taskConfig.parameters()) {
                     addExecuteStatementsForParameter(parameter, t, mainStatements);
                 }
-                mainStatements.add(runTask(taskConfig, t));
+                mainStatements.add(runTask(taskConfig, t).doTry()
+                    .doCatch(IllegalArgumentException.class, (e) ->
+                        MOJO_FAILURE_EXCEPTION.instantiate(ExpressionDef.constant("Invalid configuration for " + taskConfig.namePrefix()), e).doThrow())
+                    .doCatch(Exception.class, (e) ->
+                        MOJO_EXECUTION_EXCEPTION.instantiate(ExpressionDef.constant("Failed to run " + taskConfig.namePrefix()), e).doThrow())
+                );
                 return t.field(ENABLED_FIELD_NAME, TypeDef.of(boolean.class))
                     .ifFalse(
                         t.invoke("getLog", ClassTypeDef.of("org.apache.maven.plugin.logging.Log"))

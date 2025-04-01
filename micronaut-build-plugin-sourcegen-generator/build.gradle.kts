@@ -5,7 +5,10 @@ plugins {
 dependencies {
     api(mnSourcegen.micronaut.sourcegen.model)
     implementation(mnSourcegen.micronaut.sourcegen.generator)
-    api(mn.micronaut.core.processor)
+    implementation(mnSourcegen.micronaut.sourcegen.generator.java)
+    implementation(mn.micronaut.core.processor)
+    implementation(mn.micronaut.inject)
+    implementation(mn.micronaut.inject.java)
     implementation(projects.micronautBuildPluginSourcegenAnnotations)
 
     testImplementation(mnSourcegen.micronaut.sourcegen.annotations)

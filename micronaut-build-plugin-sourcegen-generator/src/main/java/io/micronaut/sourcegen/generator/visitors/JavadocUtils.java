@@ -23,6 +23,8 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.Element;
+import io.micronaut.inject.ast.EnumConstantElement;
+import io.micronaut.inject.ast.EnumElement;
 import io.micronaut.inject.ast.MethodElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
@@ -66,6 +68,7 @@ public class JavadocUtils {
 
         String javadoc = null;
         Map<String, String> elements = new LinkedHashMap<>();
+        Map<String, String> enumConstants = new LinkedHashMap<>();
         try (InputStream inputStream = classLoader.getResourceAsStream(javadocMetaPath)) {
             if (inputStream != null) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -76,7 +79,15 @@ public class JavadocUtils {
                     while ((line = reader.readLine()) != null) {
                         int i = line.indexOf(' ');
                         if (i > 0) {
-                            elements.put(line.substring(0, i), parseJavadocInfo(line.substring(i + 1)));
+                            String name = line.substring(0, i);
+                            if (name.equals("enum")) {
+                                int j = line.indexOf(' ', i + 1);
+                                if (j > 0) {
+                                    enumConstants.put(line.substring(i + 1, j), parseJavadocInfo(line.substring(j + 1)));
+                                }
+                            } else {
+                                elements.put(name, parseJavadocInfo(line.substring(i + 1)));
+                            }
                         }
                     }
                 }
@@ -95,7 +106,8 @@ public class JavadocUtils {
         }
         return new TypeJavadoc(
             Optional.ofNullable(javadoc),
-            elements
+            elements,
+            enumConstants
         );
     }
 
@@ -117,6 +129,13 @@ public class JavadocUtils {
                 .append(formatJavadocInfo(entry.getValue()))
                 .append('\n');
         }
+        for (Entry<String, String> entry: javadoc.enumConstants.entrySet()) {
+            result.append("enum ")
+                .append(entry.getKey())
+                .append(' ')
+                .append(formatJavadocInfo(entry.getValue()))
+                .append('\n');
+        }
         return result.toString();
     }
 
@@ -124,6 +143,7 @@ public class JavadocUtils {
         Javadoc parsed = StaticJavaParser.parseJavadoc(element.getDocumentation().orElse(""));
         String javadoc = parsed.getDescription().toText();
         Map<String, String> elements = new LinkedHashMap<>();
+        Map<String, String> enumConstants = new LinkedHashMap<>();
 
         for (JavadocBlockTag tag: parsed.getBlockTags()) {
             if (tag.getType() == Type.PARAM) {
@@ -147,12 +167,19 @@ public class JavadocUtils {
                 elements.put(key, methodDoc.get());
             }
         }
+        if (element instanceof EnumElement enumElement) {
+            for (EnumConstantElement enumConstant: enumElement.elements()) {
+                Optional<String> constantDoc = enumConstant.getDocumentation();
+                constantDoc.ifPresent(s -> enumConstants.put(enumConstant.getName(), s));
+            }
+        }
         if (javadoc.isEmpty()) {
             javadoc = null;
         }
         return new TypeJavadoc(
             Optional.ofNullable(javadoc),
-            elements
+            elements,
+            enumConstants
         );
     }
 
@@ -176,10 +203,12 @@ public class JavadocUtils {
      *
      * @param javadoc The type javadoc
      * @param elements The javadoc of elements, like properties and methods
+     * @param enumConstants The javadoc for enum constants
      */
     public record TypeJavadoc(
         Optional<String> javadoc,
-        Map<String, String> elements
+        Map<String, String> elements,
+        Map<String, String> enumConstants
     ) {
     }
 

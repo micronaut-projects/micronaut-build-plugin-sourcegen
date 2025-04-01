@@ -56,16 +56,24 @@ public @interface GenerateMavenMojo {
     boolean micronautPlugin() default true;
 
     /**
-     * The property prefix to use for parameters generated in Maven Mojo.
+     * The prefix to use for parameters generated in Maven Mojo.
      *
-     * @see PluginTaskParameter#globalProperty()
+     * @see GenerateMavenMojo#globalParameters()
      * @return The property prefix
      */
-    String propertyPrefix() default "";
+    String parameterPrefix() default "";
+
+    /**
+     * Specify which properties should be defined as parameters.
+     * Parameters will be configured with {@code @Property(parameter = )} in Maven.
+     *
+     * @return The parameters list
+     */
+    String[] globalParameters() default {};
 
     /**
      * Set the name for the property to enable or disable the mojo.
-     * The default is {@code ${propertyPrefix}.enabled}.
+     * The default is {@code ${parameterPrefix}.enabled}.
      *
      * @return The name for property
      */
