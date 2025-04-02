@@ -19,7 +19,6 @@ import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.type.Argument;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
@@ -35,7 +34,9 @@ import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utils class for Maven plugin generation.
@@ -117,12 +118,28 @@ public final class MavenPluginUtils {
             namePrefix,
             annotation.booleanValue("micronautPlugin").orElse(true),
             parameterPrefix,
-            annotation.get("globalParameters", Argument.listOf(String.class)).orElse(Collections.emptyList()),
+            createGlobalParameters(annotation.get("globalParameters", String[].class).orElse(null)),
             annotation.stringValue("enabledPropertyName").orElse(parameterPrefix + ".enabled"),
             javadoc.javadoc().orElse(namePrefix + " Maven Mojo."),
             methodJavadoc,
             generatedModels
         );
+    }
+
+    private static Map<String, String> createGlobalParameters(@Nullable String[] values) {
+        if (values == null || values.length == 0) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> globalParameters = new HashMap<>();
+        for (String value : values) {
+            int index = value.indexOf('=');
+            if (index > -1) {
+                globalParameters.put(value.substring(0, index), value.substring(index + 1));
+            } else {
+                globalParameters.put(value, value);
+            }
+        }
+        return globalParameters;
     }
 
     /**
@@ -149,7 +166,7 @@ public final class MavenPluginUtils {
         @NonNull String namePrefix,
         boolean micronautPlugin,
         @Nullable String parameterPrefix,
-        @NonNull List<String> globalParameters,
+        @NonNull Map<String, String> globalParameters,
         @Nullable String enabledPropertyName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,

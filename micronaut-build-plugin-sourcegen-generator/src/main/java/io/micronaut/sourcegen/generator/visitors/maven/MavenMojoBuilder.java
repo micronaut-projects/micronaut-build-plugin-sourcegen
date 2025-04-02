@@ -130,9 +130,9 @@ public class MavenMojoBuilder {
             if (parameter.required()) {
                 ann.addMember("required", true);
             }
-            if (taskConfig.globalParameters().contains(parameter.source().getName())) {
+            if (taskConfig.globalParameters().containsKey(parameter.source().getName())) {
                 ann.addMember("property", taskConfig.parameterPrefix()
-                    + "." + MavenPluginUtils.toDotSeparated(parameter.source().getName()));
+                    + "." + taskConfig.globalParameters().get(parameter.source().getName()));
             }
             FieldDef field = FieldDef.builder(parameter.source().getName())
                 .ofType(parameter.type())
