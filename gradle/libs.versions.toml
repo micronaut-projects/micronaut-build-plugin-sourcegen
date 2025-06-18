@@ -18,8 +18,8 @@
 [versions]
 micronaut = "4.9.3"
 micronaut-docs = "2.0.0"
-micronaut-sourcegen = "1.7.10"
 micronaut-test = "4.7.0"
+micronaut-sourcegen = "1.8.2"
 
 groovy = "4.0.24"
 spock = "2.3-groovy-4.0"
