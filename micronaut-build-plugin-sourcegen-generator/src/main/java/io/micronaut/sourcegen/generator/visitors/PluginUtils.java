@@ -91,6 +91,7 @@ public class PluginUtils {
         if (type == null) {
             type = TypeDef.of(property.getType());
         }
+        boolean isPojo = ModelUtils.isPOJO(property.getType());
         if (annotation == null) {
             return new ParameterConfig(
                 property,
@@ -101,7 +102,8 @@ public class PluginUtils {
                 OutputType.NONE,
                 javadoc,
                 type,
-                PathSensitivity.ABSOLUTE
+                PathSensitivity.ABSOLUTE,
+                isPojo
             );
         }
         return new ParameterConfig(
@@ -113,7 +115,8 @@ public class PluginUtils {
             annotation.enumValue("output", OutputType.class).orElse(OutputType.NONE),
             javadoc,
             type,
-            annotation.enumValue("pathSensitivity", PathSensitivity.class).orElse(PathSensitivity.ABSOLUTE)
+            annotation.enumValue("pathSensitivity", PathSensitivity.class).orElse(PathSensitivity.ABSOLUTE),
+            isPojo
         );
     }
 
@@ -223,6 +226,7 @@ public class PluginUtils {
      * @param javadoc The javadoc for property
      * @param type The type to use for generated property
      * @param pathSensitivity The path sensitivity
+     * @param isPOJO Whether the property is a POJO
      */
     public record ParameterConfig(
         @NonNull PropertyElement source,
@@ -233,7 +237,8 @@ public class PluginUtils {
         @NonNull OutputType output,
         @NonNull String javadoc,
         @NonNull TypeDef type,
-        @NonNull PathSensitivity pathSensitivity
-        ) {
+        @NonNull PathSensitivity pathSensitivity,
+        boolean isPOJO
+    ) {
     }
 }

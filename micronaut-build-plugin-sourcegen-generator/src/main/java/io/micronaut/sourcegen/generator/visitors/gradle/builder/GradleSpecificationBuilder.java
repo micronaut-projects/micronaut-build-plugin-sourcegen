@@ -73,6 +73,9 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addJavadoc(parameter.javadoc() + "\n@return " + parameter.javadoc())
                 .returns(createGradleProperty(parameter));
+            if (parameter.isPOJO()){
+                propBuilder.addAnnotation("org.gradle.api.tasks.Nested");
+            }
             builder.addMethod(propBuilder.build());
         }
         return builder.build();

@@ -26,8 +26,8 @@ import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.GenerateMavenMojo;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
+import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
+import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
 import io.micronaut.sourcegen.model.TypeDef;
@@ -94,12 +94,13 @@ public final class MavenPluginUtils {
                 + annotation.stringValue("source"));
         }
 
-        List<GeneratedModel> generatedModels = new ArrayList<>();
+        ModelBuilder modelBuilder = new ModelBuilder();
+
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
         for (PropertyElement property: source.getBeanProperties()) {
-            TypeDef type = ModelUtils.getType(context, element.getPackageName() + ".model",
-                property.getType(), generatedModels);
+            TypeDef type = modelBuilder.getType(context, element.getPackageName() + ".model",
+                property.getType());
             parameters.add(PluginUtils.getParameterConfig(javadoc, property, type));
         }
 
@@ -122,7 +123,7 @@ public final class MavenPluginUtils {
             annotation.stringValue("enabledPropertyName").orElse(parameterPrefix + ".enabled"),
             javadoc.javadoc().orElse(namePrefix + " Maven Mojo."),
             methodJavadoc,
-            generatedModels
+            modelBuilder
         );
     }
 
@@ -156,7 +157,7 @@ public final class MavenPluginUtils {
      * @param enabledPropertyName The name of the enabled property
      * @param taskJavadoc The javadoc for the whole task
      * @param methodJavadoc The javadoc for the executable method
-     * @param generatedModels Additional generated models
+     * @param modelBuilder The model builder
      */
     public record MavenTaskConfig(
         ClassElement source,
@@ -170,7 +171,7 @@ public final class MavenPluginUtils {
         @Nullable String enabledPropertyName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,
-        @NonNull List<GeneratedModel> generatedModels
+        @NonNull ModelBuilder modelBuilder
     ) {
     }
 

@@ -95,7 +95,7 @@ class TestPluginTest extends AbstractPluginTest {
     void generateSimpleResourceRepeated() {
         settingsFile("rootProject.name = 'test-project'");
         buildFile("""
-        import io.micronaut.sourcegen.example.plugin.gradle.model.Repeat
+        import io.micronaut.sourcegen.example.plugin.gradle.model.RepeatSpec
         import io.micronaut.sourcegen.example.plugin.gradle.model.Ending
 
         plugins {
@@ -107,9 +107,9 @@ class TestPluginTest extends AbstractPluginTest {
             generateSimpleResource("generateHello", spec -> {
                 spec.getFileName().set("META-INF/hello.txt")
                 spec.getContent().set("Hello!")
-                spec.getRepeat().set(
-                    new Repeat().withNumber(2).withRepeatSuffix("_").withEnding(Ending.NEWLINE)
-                )
+                spec.getRepeat().getNumber().set(2)
+                spec.getRepeat().getRepeatSuffix().set("_")
+                spec.getRepeat().getEnding().set(Ending.NEWLINE)
             });
         }
 

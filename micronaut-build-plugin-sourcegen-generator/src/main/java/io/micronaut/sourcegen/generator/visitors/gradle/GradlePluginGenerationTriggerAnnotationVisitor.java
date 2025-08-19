@@ -25,7 +25,7 @@ import io.micronaut.sourcegen.annotations.GenerateGradlePlugin;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
 import io.micronaut.sourcegen.generator.SourceGenerator;
 import io.micronaut.sourcegen.generator.SourceGenerators;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
+import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradlePluginConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradleTaskConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleExtensionBuilder;
@@ -111,7 +111,7 @@ public final class GradlePluginGenerationTriggerAnnotationVisitor implements Typ
         List<ObjectDef> definitions = new ArrayList<>();
         GradlePluginConfig pluginConfig = GradlePluginUtils.getPluginConfig(element, context);
         for (GradleTaskConfig taskConfig : pluginConfig.tasks()) {
-            definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
+            definitions.addAll(taskConfig.modelBuilder().getGeneratedModels().stream().map(GeneratedModel::model).toList());
         }
         for (Type type : pluginConfig.types()) {
             List<ObjectDef> typeDefinitions = null;

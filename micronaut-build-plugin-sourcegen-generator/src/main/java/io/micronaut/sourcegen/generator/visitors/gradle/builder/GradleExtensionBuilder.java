@@ -212,7 +212,10 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
                 for (ParameterConfig parameter: taskConfig.parameters()) {
                     String getterName = "get" + NameUtils.capitalize(parameter.source().getName());
                     TypeDef getterType = createGradleProperty(parameter);
-                    if (!parameter.internal()) {
+                    if (parameter.isPOJO()) {
+                        statements.add(t.field(specField).invoke(getterName, getterType)
+                            .invoke("copyTo", TypeDef.VOID, task.invoke(getterName, getterType)));
+                    } else if (!parameter.internal()) {
                         StatementDef convention = task
                             .invoke(getterName, getterType)
                             .invoke("convention", getterType, t.field(specField).invoke(getterName, getterType));

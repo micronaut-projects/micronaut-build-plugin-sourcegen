@@ -76,7 +76,7 @@ public final class GenerateSimpleResourceTask {
     public void generateSimpleResource() {
         generateOne(fileName, ending);
 
-        if (repeat != null) {
+        if (repeat.number != null) {
             for (int i = 0; i < repeat.number; ++i) {
                 generateOne(fileName + repeat.repeatSuffix + (i + 1), repeat.ending);
             }
@@ -133,7 +133,7 @@ public final class GenerateSimpleResourceTask {
      * @param ending The file ending
      */
     public record Repeat(
-        int number,
+        Integer number,
         String repeatSuffix,
         Ending ending
     ) {
