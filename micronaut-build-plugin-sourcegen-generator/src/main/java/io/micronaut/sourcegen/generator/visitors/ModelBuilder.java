@@ -44,8 +44,6 @@ import io.micronaut.sourcegen.model.FieldDef.FieldDefBuilder;
 import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.ObjectDef;
 import io.micronaut.sourcegen.model.ParameterDef;
-import io.micronaut.sourcegen.model.PropertyDef;
-import io.micronaut.sourcegen.model.PropertyDef.PropertyDefBuilder;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
 import io.micronaut.sourcegen.model.VariableDef;
@@ -93,6 +91,7 @@ public class ModelBuilder {
     /**
      * Get configuration for a plugin parameter.
      *
+     * @param context The visitor context
      * @param sourceJavadoc The javadoc for the task type
      * @param property The property representing the parameter
      * @return THe configuration
@@ -228,6 +227,7 @@ public class ModelBuilder {
      *
      * @param context The visitor context
      * @param element The element to copy
+     * @param parameters The POJO properties
      * @return The type of copied POJO
      */
     protected ClassTypeDef copyPOJO(

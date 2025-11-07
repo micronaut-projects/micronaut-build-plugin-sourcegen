@@ -17,6 +17,7 @@ package io.micronaut.sourcegen.generator.visitors.gradle;
 
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.naming.NameUtils;
+import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
@@ -31,6 +32,7 @@ import io.micronaut.sourcegen.model.InterfaceDef.InterfaceDefBuilder;
 import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
+import io.micronaut.sourcegen.model.TypeDef.Primitive;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
@@ -53,6 +55,25 @@ public class GradleModelBuilder extends ModelBuilder {
      */
     public GradleModelBuilder(String packageName) {
         super(packageName);
+    }
+
+    @Override
+    public TypeDef getType(VisitorContext context, ClassElement element) {
+        if (element.isPrimitive()) {
+            return switch (element.getName()) {
+                case "float" -> Primitive.FLOAT_WRAPPER;
+                case "double" -> Primitive.DOUBLE_WRAPPER;
+                case "boolean" -> Primitive.BOOLEAN_WRAPPER;
+                case "byte" -> Primitive.BYTE_WRAPPER;
+                case "int" -> Primitive.INT_WRAPPER;
+                case "long" -> Primitive.LONG_WRAPPER;
+                case "char" -> Primitive.CHAR_WRAPPER;
+                case "short" -> Primitive.SHORT_WRAPPER;
+                case "void" -> TypeDef.VOID;
+                default -> throw new IllegalStateException("Unexpected primitive: " + element.getName());
+            };
+        }
+        return super.getType(context, element);
     }
 
     @Override

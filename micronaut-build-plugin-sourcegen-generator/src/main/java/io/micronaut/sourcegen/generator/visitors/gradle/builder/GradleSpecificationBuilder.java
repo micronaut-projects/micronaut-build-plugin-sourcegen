@@ -62,7 +62,7 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
     private ObjectDef buildForTask(String packageName, GradleTaskConfig taskConfig) {
         InterfaceDefBuilder builder = InterfaceDef.builder(packageName + "." + taskConfig.namePrefix() + SPECIFICATION_NAME_SUFFIX)
             .addModifiers(Modifier.PUBLIC)
-            .addJavadoc("The amazing specification that is used for configuring " + taskConfig.namePrefix() + " task.\n" +
+            .addJavadoc("Specification that is used for configuring " + taskConfig.namePrefix() + " task.\n" +
                 taskConfig.taskJavadoc());
         for (ParameterConfig parameter: taskConfig.parameters()) {
             if (parameter.internal()) {
@@ -73,7 +73,7 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addJavadoc(parameter.javadoc() + "\n@return " + parameter.javadoc())
                 .returns(createGradleProperty(parameter));
-            if (parameter.isPOJO()){
+            if (parameter.isPOJO()) {
                 propBuilder.addAnnotation("org.gradle.api.tasks.Nested");
             }
             builder.addMethod(propBuilder.build());

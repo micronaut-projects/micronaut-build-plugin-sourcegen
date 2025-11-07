@@ -15,7 +15,6 @@
  */
 package io.micronaut.sourcegen.generator.visitors;
 
-import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
@@ -27,12 +26,9 @@ import io.micronaut.inject.ast.MethodElement;
 import io.micronaut.inject.ast.ParameterElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
-import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
-import io.micronaut.sourcegen.annotations.PluginTaskParameter;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity;
-import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.ClassTypeDef.ClassDefType;
 import io.micronaut.sourcegen.model.ClassTypeDef.ClassElementType;
@@ -45,7 +41,6 @@ import io.micronaut.sourcegen.model.VariableDef;
 import io.micronaut.sourcegen.model.VariableDef.Local;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -208,6 +203,7 @@ public class PluginUtils {
      * @param type The type to use for generated property
      * @param pathSensitivity The path sensitivity
      * @param isPOJO Whether the property is a POJO
+     * @param pojoParameters The nested parameters belonging to POJO
      */
     public record ParameterConfig(
         @NonNull PropertyElement source,
