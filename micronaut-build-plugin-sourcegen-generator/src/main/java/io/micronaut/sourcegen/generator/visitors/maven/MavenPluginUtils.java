@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.type.Argument;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
@@ -27,15 +26,14 @@ import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.GenerateMavenMojo;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
-import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utils class for Maven plugin generation.
@@ -93,13 +91,11 @@ public final class MavenPluginUtils {
                 + annotation.stringValue("source"));
         }
 
-        List<GeneratedModel> generatedModels = new ArrayList<>();
+        MavenModelBuilder modelBuilder = new MavenModelBuilder(element.getPackageName() + ".model");
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
         for (PropertyElement property: source.getBeanProperties()) {
-            TypeDef type = ModelUtils.getType(context, element.getPackageName() + ".model",
-                property.getType(), generatedModels);
-            parameters.add(PluginUtils.getParameterConfig(javadoc, property, type));
+            parameters.add(modelBuilder.getParameterConfig(context, javadoc, property));
         }
 
         String namePrefix = annotation.stringValue("namePrefix").orElse(element.getSimpleName());
@@ -117,12 +113,28 @@ public final class MavenPluginUtils {
             namePrefix,
             annotation.booleanValue("micronautPlugin").orElse(true),
             parameterPrefix,
-            annotation.get("globalParameters", Argument.listOf(String.class)).orElse(Collections.emptyList()),
+            createGlobalParameters(annotation.get("globalParameters", String[].class).orElse(null)),
             annotation.stringValue("enabledPropertyName").orElse(parameterPrefix + ".enabled"),
             javadoc.javadoc().orElse(namePrefix + " Maven Mojo."),
             methodJavadoc,
-            generatedModels
+            modelBuilder
         );
+    }
+
+    private static Map<String, String> createGlobalParameters(@Nullable String[] values) {
+        if (values == null || values.length == 0) {
+            return Collections.emptyMap();
+        }
+        Map<String, String> globalParameters = new HashMap<>();
+        for (String value : values) {
+            int index = value.indexOf('=');
+            if (index > -1) {
+                globalParameters.put(value.substring(0, index), value.substring(index + 1));
+            } else {
+                globalParameters.put(value, value);
+            }
+        }
+        return globalParameters;
     }
 
     /**
@@ -139,7 +151,7 @@ public final class MavenPluginUtils {
      * @param enabledPropertyName The name of the enabled property
      * @param taskJavadoc The javadoc for the whole task
      * @param methodJavadoc The javadoc for the executable method
-     * @param generatedModels Additional generated models
+     * @param modelBuilder The model builder
      */
     public record MavenTaskConfig(
         ClassElement source,
@@ -149,11 +161,11 @@ public final class MavenPluginUtils {
         @NonNull String namePrefix,
         boolean micronautPlugin,
         @Nullable String parameterPrefix,
-        @NonNull List<String> globalParameters,
+        @NonNull Map<String, String> globalParameters,
         @Nullable String enabledPropertyName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,
-        @NonNull List<GeneratedModel> generatedModels
+        @NonNull MavenModelBuilder modelBuilder
     ) {
     }
 

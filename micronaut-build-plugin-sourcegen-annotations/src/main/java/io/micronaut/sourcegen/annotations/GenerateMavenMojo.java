@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,11 @@ public @interface GenerateMavenMojo {
 
     /**
      * Specify which properties should be defined as parameters.
-     * Parameters will be configured with {@code @Property(parameter = )} in Maven.
+     * Parameters will be configured with {@code @Property(parameter = )} in Maven. All the
+     * parameters will be prefixed with {@link #parameterPrefix()};<br />
+     *
+     * To specify an alternative parameter name, provide it by an equals sign,
+     * like {@code "myProperty=my-property"}.
      *
      * @return The parameters list
      */

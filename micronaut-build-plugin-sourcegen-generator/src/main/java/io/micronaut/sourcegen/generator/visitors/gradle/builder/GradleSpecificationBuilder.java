@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,9 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .addJavadoc(parameter.javadoc() + "\n@return " + parameter.javadoc())
                 .returns(createGradleProperty(parameter));
+            if (parameter.isPOJO()) {
+                propBuilder.addAnnotation("org.gradle.api.tasks.Nested");
+            }
             builder.addMethod(propBuilder.build());
         }
         return builder.build();

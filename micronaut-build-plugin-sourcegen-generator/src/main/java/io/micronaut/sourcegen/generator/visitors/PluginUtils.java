@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,11 @@
  */
 package io.micronaut.sourcegen.generator.visitors;
 
-import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.FieldElement;
 import io.micronaut.inject.ast.MethodElement;
@@ -26,11 +27,14 @@ import io.micronaut.inject.ast.ParameterElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
-import io.micronaut.sourcegen.annotations.PluginTaskParameter;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity;
 import io.micronaut.sourcegen.model.ClassTypeDef;
+import io.micronaut.sourcegen.model.ClassTypeDef.ClassDefType;
+import io.micronaut.sourcegen.model.ClassTypeDef.ClassElementType;
+import io.micronaut.sourcegen.model.EnumDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
+import io.micronaut.sourcegen.model.ExpressionDef.Constant;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
 import io.micronaut.sourcegen.model.VariableDef;
@@ -70,51 +74,6 @@ public class PluginUtils {
             throw new ProcessingException(source, "Expected @PluginTaskExecutable to have void return type");
         }
         return executables.get(0);
-    }
-
-    /**
-     * Get configuration for a plugin parameter.
-     *
-     * @param sourceJavadoc The javadoc for the task type
-     * @param property The property representing the parameter
-     * @param type The type to use for parameter
-     * @return THe configuration
-     */
-    public static @NonNull ParameterConfig getParameterConfig(
-            @NonNull JavadocUtils.TypeJavadoc sourceJavadoc, @NonNull PropertyElement property, @Nullable TypeDef type
-    ) {
-        AnnotationValue<PluginTaskParameter> annotation = property.getAnnotation(PluginTaskParameter.class);
-        String javadoc = sourceJavadoc.elements().get(property.getName());
-        if (javadoc == null) {
-            javadoc = "Configurable " + property.getName() + " parameter.";
-        }
-        if (type == null) {
-            type = TypeDef.of(property.getType());
-        }
-        if (annotation == null) {
-            return new ParameterConfig(
-                property,
-                false,
-                null,
-                false,
-                false,
-                OutputType.NONE,
-                javadoc,
-                type,
-                PathSensitivity.ABSOLUTE
-            );
-        }
-        return new ParameterConfig(
-            property,
-            annotation.booleanValue("required").orElse(false),
-            annotation.stringValue("defaultValue").orElse(null),
-            annotation.booleanValue("internal").orElse(false),
-            annotation.booleanValue("directory").orElse(false),
-            annotation.enumValue("output", OutputType.class).orElse(OutputType.NONE),
-            javadoc,
-            type,
-            annotation.enumValue("pathSensitivity", PathSensitivity.class).orElse(PathSensitivity.ABSOLUTE)
-        );
     }
 
     /**
@@ -212,6 +171,26 @@ public class PluginUtils {
     }
 
     /**
+     * A utility method for getting the default value.
+     *
+     * @param type The required type
+     * @param value The default value as string
+     * @return The default expression
+     */
+    public static ExpressionDef createDefault(TypeDef type, String value) {
+        if (type instanceof ClassElementType classElementType) {
+            return ExpressionDef.constant(classElementType.classElement(), type, value);
+        } else if (type instanceof TypeDef.Primitive primitiveType) {
+            return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
+                ConversionService.SHARED.convert(value, t)
+            ).map(o -> new Constant(type, o)).orElse(null);
+        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
+            return classDefType.getStaticField(value, type);
+        }
+        throw new UnsupportedOperationException("Cannot create default value of type " + type);
+    }
+
+    /**
      * Configuration for a plugin parameter.
      *
      * @param source The source parameter
@@ -223,6 +202,8 @@ public class PluginUtils {
      * @param javadoc The javadoc for property
      * @param type The type to use for generated property
      * @param pathSensitivity The path sensitivity
+     * @param isPOJO Whether the property is a POJO
+     * @param pojoParameters The nested parameters belonging to POJO
      */
     public record ParameterConfig(
         @NonNull PropertyElement source,
@@ -233,7 +214,9 @@ public class PluginUtils {
         @NonNull OutputType output,
         @NonNull String javadoc,
         @NonNull TypeDef type,
-        @NonNull PathSensitivity pathSensitivity
-        ) {
+        @NonNull PathSensitivity pathSensitivity,
+        boolean isPOJO,
+        @NonNull List<ParameterConfig> pojoParameters
+    ) {
     }
 }

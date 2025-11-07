@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.naming.NameUtils;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
+import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradlePluginConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradleTaskConfig;
@@ -212,7 +213,10 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
                 for (ParameterConfig parameter: taskConfig.parameters()) {
                     String getterName = "get" + NameUtils.capitalize(parameter.source().getName());
                     TypeDef getterType = createGradleProperty(parameter);
-                    if (!parameter.internal()) {
+                    if (parameter.isPOJO()) {
+                        statements.add(t.field(specField).invoke(getterName, getterType)
+                            .invoke("copyTo", TypeDef.VOID, task.invoke(getterName, getterType)));
+                    } else if (!parameter.internal()) {
                         StatementDef convention = task
                             .invoke(getterName, getterType)
                             .invoke("convention", getterType, t.field(specField).invoke(getterName, getterType));
@@ -263,7 +267,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
                 TypeDef type = parameter.type();
                 StatementDef convention = params.get(0)
                     .invoke(getterName, getterType)
-                    .invoke("convention", getterType, GradleTaskBuilder.createDefault(type, parameter.defaultValue()));
+                    .invoke("convention", getterType, PluginUtils.createDefault(type, parameter.defaultValue()));
                 statements.add(convention);
             }
         }

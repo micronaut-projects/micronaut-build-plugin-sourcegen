@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.GenerateMavenMojo;
 import io.micronaut.sourcegen.generator.SourceGenerator;
 import io.micronaut.sourcegen.generator.SourceGenerators;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
+import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.maven.MavenPluginUtils.MavenTaskConfig;
 import io.micronaut.sourcegen.model.ObjectDef;
 
@@ -100,7 +100,7 @@ public final class MavenMojoGenerationTriggerAnnotationVisitor implements TypeEl
         List<ObjectDef> definitions = new ArrayList<>();
         List<MavenTaskConfig> taskConfigs = MavenPluginUtils.getTaskConfigs(element, context);
         for (MavenTaskConfig taskConfig : taskConfigs) {
-            definitions.addAll(taskConfig.generatedModels().stream().map(GeneratedModel::model).toList());
+            definitions.addAll(taskConfig.modelBuilder().getGeneratedModels().stream().map(GeneratedModel::model).toList());
             definitions.add(new MavenMojoBuilder().build(taskConfig));
         }
         return definitions;

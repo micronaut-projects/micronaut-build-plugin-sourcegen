@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,9 @@ import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.GenerateGradleTas
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
+import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
-import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,15 +85,12 @@ public final class GradlePluginUtils {
                 + annotation.stringValue("source"));
         }
 
-        List<GeneratedModel> generatedModels = new ArrayList<>();
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
+        ModelBuilder modelBuilder = new GradleModelBuilder(element.getPackageName() + ".model");
         for (PropertyElement property: source.getBeanProperties()) {
-            TypeDef type = ModelUtils.getType(context, element.getPackageName() + ".model",
-                property.getType(), generatedModels);
-            parameters.add(PluginUtils.getParameterConfig(javadoc, property, type));
+            parameters.add(modelBuilder.getParameterConfig(context, javadoc, property));
         }
-
         String namePrefix = annotation.stringValue("namePrefix").orElse(source.getSimpleName());
         String methodName = PluginUtils.getTaskExecutable(source).getName();
         String methodJavadoc = javadoc.elements().get(methodName + "()");
@@ -110,8 +105,8 @@ public final class GradlePluginUtils {
             annotation.stringValue("extensionMethodName").orElse(methodName),
             javadoc.javadoc().orElse(namePrefix + " Gradle task."),
             methodJavadoc,
-            generatedModels,
-            annotation.booleanValue("cacheable").orElse(true)
+            annotation.booleanValue("cacheable").orElse(true),
+            modelBuilder
         );
     }
 
@@ -147,8 +142,8 @@ public final class GradlePluginUtils {
      * @param extensionMethodName The method name for gradle extension
      * @param methodJavadoc The javadoc for executable method
      * @param taskJavadoc The javadoc for the whole task
-     * @param generatedModels Additional generated models
      * @param cacheable Whether the task should be cacheable
+     * @param modelBuilder The model builder
      */
     public record GradleTaskConfig (
         @NonNull ClassElement source,
@@ -158,8 +153,8 @@ public final class GradlePluginUtils {
         @NonNull String extensionMethodName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,
-        @NonNull List<GeneratedModel> generatedModels,
-        boolean cacheable
+        boolean cacheable,
+        ModelBuilder modelBuilder
     ) {
     }
 

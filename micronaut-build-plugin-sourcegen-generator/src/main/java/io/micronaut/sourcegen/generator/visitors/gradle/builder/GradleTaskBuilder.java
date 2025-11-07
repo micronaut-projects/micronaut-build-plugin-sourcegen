@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 original authors
+ * Copyright 2017-2025 original authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,12 @@ package io.micronaut.sourcegen.generator.visitors.gradle.builder;
 
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.core.convert.ConversionService;
 import io.micronaut.core.naming.NameUtils;
-import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils.GeneratedModel;
+import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradlePluginConfig;
@@ -34,11 +31,7 @@ import io.micronaut.sourcegen.model.AnnotationDef;
 import io.micronaut.sourcegen.model.ClassDef;
 import io.micronaut.sourcegen.model.ClassDef.ClassDefBuilder;
 import io.micronaut.sourcegen.model.ClassTypeDef;
-import io.micronaut.sourcegen.model.ClassTypeDef.ClassDefType;
-import io.micronaut.sourcegen.model.ClassTypeDef.ClassElementType;
-import io.micronaut.sourcegen.model.EnumDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
-import io.micronaut.sourcegen.model.ExpressionDef.Constant;
 import io.micronaut.sourcegen.model.FieldDef;
 import io.micronaut.sourcegen.model.InterfaceDef;
 import io.micronaut.sourcegen.model.InterfaceDef.InterfaceDefBuilder;
@@ -130,13 +123,15 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
         return List.of(builder.build());
     }
 
-    private MethodDef createParameterGetter(ParameterConfig parameter) {
+    public static MethodDef createParameterGetter(ParameterConfig parameter) {
         MethodDefBuilder propBuilder = MethodDef
             .builder("get" + NameUtils.capitalize(parameter.source().getName()))
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
             .addJavadoc(parameter.javadoc())
             .returns(createGradleProperty(parameter));
-        if (parameter.output() != OutputType.NONE) {
+        if (parameter.isPOJO()) {
+            propBuilder.addAnnotation("org.gradle.api.tasks.Nested");
+        } else if (parameter.output() != OutputType.NONE) {
             if (parameter.source().getType().isAssignable(File.class)) {
                 if (parameter.directory()) {
                     propBuilder.addAnnotation(AnnotationDef.builder(ClassTypeDef.of("org.gradle.api.tasks.OutputDirectory")).build());
@@ -191,13 +186,18 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                         String getterName = "get" + NameUtils.capitalize(parameter.source().getName());
                         TypeDef getterType = createGradleProperty(parameter);
                         ExpressionDef def = t.field(taskField).invoke(getterName, getterType);
+                        if (parameter.isPOJO()) {
+                            statements.add(def.invoke("copyTo", TypeDef.VOID,
+                                params.get(0).invoke(getterName, getterType)));
+                            continue;
+                        }
                         if (!parameter.required()) {
                             if (parameter.defaultValue() != null) {
                                 TypeDef type = parameter.type();
                                 def = def.invoke(
                                     "orElse",
                                     type,
-                                    createDefault(type, parameter.defaultValue())
+                                    PluginUtils.createDefault(type, parameter.defaultValue())
                                 );
                             } else {
                                 def = def.invoke("getOrNull", parameter.type());
@@ -212,19 +212,6 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                 })
             )
             .build();
-    }
-
-    static ExpressionDef createDefault(TypeDef type, String value) {
-        if (type instanceof ClassElementType classElementType) {
-            return ExpressionDef.constant(classElementType.classElement(), type, value);
-        } else if (type instanceof TypeDef.Primitive primitiveType) {
-            return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
-                ConversionService.SHARED.convert(value, t)
-            ).map(o -> new Constant(type, o)).orElse(null);
-        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
-            return classDefType.getStaticField(value, type);
-        }
-        throw new UnsupportedOperationException("Cannot create default value of type " + type);
     }
 
     private ClassDef createClasspathConfigurator(TypeDef taskType, GradleTaskConfig taskConfig) {
@@ -264,6 +251,9 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                 .builder("get" + NameUtils.capitalize(parameter.source().getName()))
                 .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                 .returns(createGradleProperty(parameter));
+            if (parameter.isPOJO()) {
+                propBuilder.addAnnotation("org.gradle.api.tasks.Nested");
+            }
             builder.addMethod(propBuilder.build());
         }
         return builder.build();
@@ -283,7 +273,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                 parametersType
             ))
             .addJavadoc("The work action that actually runs the task logic.")
-            .addMethods(taskConfig.generatedModels().stream().map(GeneratedModel::convertorMethod).toList())
+            .addMethods(taskConfig.modelBuilder().getGeneratedModels().stream().map(GeneratedModel::convertorMethod).toList())
             .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT, Modifier.STATIC)
             .addMethod(executeMethod)
             .build();
@@ -321,14 +311,16 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                     TypeDef.parameterized(ClassTypeDef.of("org.gradle.api.provider.Provider"), File.class)
                 );
             }
-            if (!parameter.required() && parameter.defaultValue() == null) {
-                expression = expression.invoke("getOrNull", parameter.type());
-            } else {
-                expression = expression.invoke("get", parameter.type());
+            if (!parameter.isPOJO()) {
+                if (!parameter.required() && parameter.defaultValue() == null) {
+                    expression = expression.invoke("getOrNull", parameter.type());
+                } else {
+                    expression = expression.invoke("get", parameter.type());
+                }
             }
             params.put(
                 parameter.source().getName(),
-                ModelUtils.convertParameterIfRequired(
+                taskConfig.modelBuilder().convertParameterIfRequired(
                     parameter.source().getType(), parameter.source().getName() + "Param", statements, expression
                 )
             );
@@ -337,7 +329,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
         return StatementDef.multi(statements);
     }
 
-    static TypeDef createGradleProperty(ParameterConfig parameter) {
+    public static TypeDef createGradleProperty(ParameterConfig parameter) {
         ClassElement type = parameter.source().getType();
         if (type.isAssignable(File.class)) {
             if (parameter.directory()) {
@@ -363,6 +355,9 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                     parameterized.typeArguments().get(0)
                 );
             }
+        }
+        if (parameter.isPOJO()) {
+            return parameter.type();
         }
         return TypeDef.parameterized(
             ClassTypeDef.of("org.gradle.api.provider.Property"),

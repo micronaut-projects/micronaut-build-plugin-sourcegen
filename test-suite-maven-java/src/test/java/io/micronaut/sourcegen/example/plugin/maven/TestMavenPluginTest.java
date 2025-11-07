@@ -59,13 +59,9 @@ class TestMavenPluginTest extends AbstractMavenPluginTest {
         mojo.project = project;
         mojo.execute();
 
-        File generated1 = file("META-INF/hello.txt_1");
-        Assertions.assertTrue(generated1.exists());
-        Assertions.assertEquals("Hello!\n", content(generated1));
-
-        File generated2 = file("META-INF/hello.txt_2");
-        Assertions.assertTrue(generated2.exists());
-        Assertions.assertEquals("Hello!\n", content(generated2));
+        File generated = file("META-INF/hello.txt");
+        Assertions.assertTrue(generated.exists());
+        Assertions.assertEquals("Hello\n_Hello\n_Hello\n", content(generated));
 
         Assertions.assertEquals(1, project.getResources().size());
         Assertions.assertEquals(baseDir.getAbsolutePath(), project.getResources().get(0).getTargetPath());

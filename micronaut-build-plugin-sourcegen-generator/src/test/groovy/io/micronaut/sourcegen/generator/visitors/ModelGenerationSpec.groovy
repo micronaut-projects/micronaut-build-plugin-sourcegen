@@ -135,81 +135,36 @@ public enum Color {
         """)
 
         then:
-        var recordContent = stripImports(files.get("test.model.Tail").getCharContent(false))
+        var recordContent = stripImports(files.get("test.model.TailSpec").getCharContent(false))
         recordContent == """/**
  * A record representing Jaguar's tail.
  */
-public class Tail implements Serializable {
+public interface TailSpec {
   /**
    * Detailed tail description.
    */
-  private String description;
+  @Input
+  @Optional
+  Property<String> getDescription();
 
   /**
    * The length of the tail.
    */
-  private float length;
+  @Input
+  @Optional
+  Property<Float> getLength();
 
   /**
    * The color.
    */
-  private Color color;
+  @Input
+  @Optional
+  Property<Color> getColor();
 
-  public Tail(String description, float length, Color color) {
-    this.description = description;
-    this.length = length;
-    this.color = color;
-  }
-
-  public Tail() {
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public float getLength() {
-    return this.length;
-  }
-
-  public void setLength(float length) {
-    this.length = length;
-  }
-
-  public Color getColor() {
-    return this.color;
-  }
-
-  public void setColor(Color color) {
-    this.color = color;
-  }
-
-  /**
-   * Create a copy and set description.
-   * Detailed tail description.
-   */
-  public Tail withDescription(String description) {
-    return new test.model.Tail(description, this.length, this.color);
-  }
-
-  /**
-   * Create a copy and set length.
-   * The length of the tail.
-   */
-  public Tail withLength(float length) {
-    return new test.model.Tail(this.description, length, this.color);
-  }
-
-  /**
-   * Create a copy and set color.
-   * The color.
-   */
-  public Tail withColor(Color color) {
-    return new test.model.Tail(this.description, this.length, color);
+  default void copyTo(TailSpec arg1) {
+    arg1.getDescription().convention(this.getDescription().getOrNull());
+    arg1.getLength().convention(this.getLength().getOrNull());
+    arg1.getColor().convention(this.getColor().getOrNull());
   }
 }"""
 
@@ -229,19 +184,19 @@ public class Tail implements Serializable {
       }
     }
 
-    Tail convertTail(test.model.Tail value) {
+    Tail convertTail(TailSpec value) {
       if (value == null) {
         return null;
       } else {
-        Color ColorParam = this.convertColor(value.getColor());
-        Tail result = new test.Tail(value.getDescription(), value.getLength(), ColorParam);
+        Color ColorParam = this.convertColor(value.getColor().getOrNull());
+        Tail result = new test.Tail(value.getDescription().getOrNull(), value.getLength().getOrNull(), ColorParam);
         return result;
       }
     }
 
     public void execute() {
       JaguarWorkActionParameters parameters = this.getParameters();
-      Tail tailParam = this.convertTail(parameters.getTail().get());
+      Tail tailParam = this.convertTail(parameters.getTail());
       Jaguar task = new test.Jaguar(tailParam);
       task.meow();
     }
