@@ -119,26 +119,6 @@ public final class GradlePluginUtils {
     }
 
     /**
-     * A utility method for getting the default value.
-     *
-     * @param type The required type
-     * @param value The default value as string
-     * @return The default expression
-     */
-    public static ExpressionDef createDefault(TypeDef type, String value) {
-        if (type instanceof ClassElementType classElementType) {
-            return ExpressionDef.constant(classElementType.classElement(), type, value);
-        } else if (type instanceof TypeDef.Primitive primitiveType) {
-            return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
-                ConversionService.SHARED.convert(value, t)
-            ).map(o -> new Constant(type, o)).orElse(null);
-        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
-            return classDefType.getStaticField(value, type);
-        }
-        throw new UnsupportedOperationException("Cannot create default value of type " + type);
-    }
-
-    /**
      * Configuration for a gradle plugin.
      *
      * @param tasks The task configuration

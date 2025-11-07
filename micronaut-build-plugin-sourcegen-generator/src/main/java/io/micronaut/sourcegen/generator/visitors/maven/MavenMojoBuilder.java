@@ -29,6 +29,7 @@ import io.micronaut.sourcegen.model.ClassDef.ClassDefBuilder;
 import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
 import io.micronaut.sourcegen.model.FieldDef;
+import io.micronaut.sourcegen.model.FieldDef.FieldDefBuilder;
 import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
@@ -106,6 +107,7 @@ public class MavenMojoBuilder {
             addParameter(taskConfig, parameter, builder);
         }
         builder.addMethods(taskConfig.modelBuilder().getGeneratedModels().stream().map(GeneratedModel::convertorMethod).toList());
+        builder.addMethods(taskConfig.modelBuilder().getDefaultsMethods());
         builder.addMethod(createExecuteMethod(taskConfig));
         builder.addJavadoc(taskConfig.taskJavadoc());
 
@@ -133,13 +135,15 @@ public class MavenMojoBuilder {
                 ann.addMember("property", taskConfig.parameterPrefix()
                     + "." + taskConfig.globalParameters().get(parameter.source().getName()));
             }
-            FieldDef field = FieldDef.builder(parameter.source().getName())
+            FieldDefBuilder field = FieldDef.builder(parameter.source().getName())
                 .ofType(parameter.type())
                 .addModifiers(Modifier.PROTECTED)
                 .addAnnotation(ann.build())
-                .addJavadoc(parameter.javadoc())
-                .build();
-            builder.addField(field);
+                .addJavadoc(parameter.javadoc());
+            if (parameter.isPOJO() && parameter.type() instanceof ClassTypeDef classType) {
+                field.initializer(classType.instantiate());
+            }
+            builder.addField(field.build());
         }
     }
 
@@ -155,7 +159,7 @@ public class MavenMojoBuilder {
             .build((t, params) -> {
                 List<StatementDef> mainStatements = new ArrayList<>();
                 for (ParameterConfig parameter : taskConfig.parameters()) {
-                    addExecuteStatementsForParameter(parameter, t, mainStatements);
+                    addExecuteStatementsForParameter(taskConfig, parameter, t, mainStatements);
                 }
                 mainStatements.add(runTask(taskConfig, t).doTry()
                     .doCatch(IllegalArgumentException.class, (e) ->
@@ -173,9 +177,12 @@ public class MavenMojoBuilder {
     }
 
     private void addExecuteStatementsForParameter(
-            ParameterConfig parameter, VariableDef.This t, List<StatementDef> statements
+            MavenTaskConfig taskConfig, ParameterConfig parameter, VariableDef.This t, List<StatementDef> statements
     ) {
         ExpressionDef value = getParameterValue(parameter, t);
+        if (parameter.isPOJO() && value instanceof VariableDef.Field field) {
+            statements.add(field.assign(taskConfig.modelBuilder().invokeSetDefaultsMethod(parameter, field)));
+        }
         if (parameter.source().getType().isAssignable(File.class)) {
             value = value.invoke("getAbsolutePath", TypeDef.STRING);
         }

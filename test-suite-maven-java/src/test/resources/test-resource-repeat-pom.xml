@@ -14,11 +14,11 @@
                 <configuration>
                     <enabled>true</enabled>
                     <fileName>META-INF/hello.txt</fileName>
-                    <content>Hello!</content>
+                    <content>Hello</content>
                     <ending>NEWLINE</ending>
                     <repeat>
                         <number>3</number>
-                        <repeatSuffix>_</repeatSuffix>
+                        <delimiter>_</delimiter>
                         <ending>EVERY</ending>
                     </repeat>
                 </configuration>

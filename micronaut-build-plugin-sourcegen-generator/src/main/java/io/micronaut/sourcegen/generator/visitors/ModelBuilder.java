@@ -39,10 +39,13 @@ import io.micronaut.sourcegen.model.EnumDef.EnumDefBuilder;
 import io.micronaut.sourcegen.model.ExpressionDef;
 import io.micronaut.sourcegen.model.ExpressionDef.ComparisonOperation.OpType;
 import io.micronaut.sourcegen.model.ExpressionDef.MathBinaryOperation;
+import io.micronaut.sourcegen.model.FieldDef;
+import io.micronaut.sourcegen.model.FieldDef.FieldDefBuilder;
 import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.ObjectDef;
 import io.micronaut.sourcegen.model.ParameterDef;
 import io.micronaut.sourcegen.model.PropertyDef;
+import io.micronaut.sourcegen.model.PropertyDef.PropertyDefBuilder;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
 import io.micronaut.sourcegen.model.VariableDef;
@@ -227,7 +230,7 @@ public class ModelBuilder {
      * @param element The element to copy
      * @return The type of copied POJO
      */
-    protected TypeDef copyPOJO(
+    protected ClassTypeDef copyPOJO(
             VisitorContext context, ClassElement element, List<ParameterConfig> parameters
     ) {
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
@@ -235,31 +238,34 @@ public class ModelBuilder {
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(javadoc.javadoc().orElse(element.getName() + " class."))
             .addSuperinterface(TypeDef.of(Serializable.class));
-        List<PropertyDef> properties = new ArrayList<>();
-        for (PropertyElement property: element.getBeanProperties()) {
-            String propertyDoc = javadoc.elements().containsKey(property.getName()) ?
-                javadoc.elements().get(property.getName()) :
-                property.getName() + " property.";
-            TypeDef type = getType(context, property.getType());
-            PropertyDef propertyDef = PropertyDef.builder(property.getName())
-                    .addModifiers(Modifier.PUBLIC)
-                    .ofType(type)
-                    .addJavadoc(propertyDoc)
-                    .build();
-            properties.add(propertyDef);
-            classDefBuilder.addProperty(propertyDef);
+        List<FieldDef> fields = new ArrayList<>();
+        for (ParameterConfig parameter: parameters) {
+            PropertyElement property = parameter.source();
+            FieldDefBuilder fieldDefBuilder = FieldDef.builder(property.getName())
+                    .addModifiers(Modifier.PRIVATE)
+                    .ofType(parameter.type())
+                    .addJavadoc(parameter.javadoc());
+            if (parameter.defaultValue() != null) {
+                fieldDefBuilder.initializer(PluginUtils.createDefault(parameter.type(), parameter.defaultValue()));
+            }
+            FieldDef fieldDef = fieldDefBuilder.build();
+            fields.add(fieldDef);
+            classDefBuilder.addField(fieldDef);
         }
-        for (int i = 0; i < properties.size(); i++) {
-            classDefBuilder.addMethod(createWither(
-                properties, javadoc.elements().get(properties.get(i).getName()), i
-            ));
+        for (int i = 0; i < fields.size(); i++) {
+            String fieldJavadoc = javadoc.elements().get(fields.get(i).getName());
+            classDefBuilder.addMethod(createGetter(fields.get(i), fieldJavadoc));
+            classDefBuilder.addMethod(createWither(fields, fieldJavadoc, i));
+            classDefBuilder.addMethod(createSetter(fields.get(i), fieldJavadoc));
         }
         ClassDef classDef = classDefBuilder
             .addAllFieldsConstructor(Modifier.PUBLIC)
             .addConstructor(Collections.emptyList(), Modifier.PUBLIC)
             .build();
         ClassTypeDef type = classDef.asTypeDef();
-        generatedModels.put(element.getName(), new GeneratedModel(classDef, element, convertPOJOMethod(type, element), type));
+        generatedModels.put(element.getName(), new GeneratedModel(
+            classDef, element, convertPOJOMethod(type, element, parameters), type
+        ));
         return type;
     }
 
@@ -333,33 +339,64 @@ public class ModelBuilder {
     /**
      * Create a wither method.
      *
-     * @param properties The properties
+     * @param fields The properties
      * @param javadoc The javadoc for property
      * @param index The property index
      * @return The wither method
      */
-    protected static MethodDef createWither(List<PropertyDef> properties, @Nullable String javadoc, int index) {
-        PropertyDef property = properties.get(index);
-        return MethodDef.builder("with" + NameUtils.capitalize(property.getName()))
-            .addJavadoc("Create a copy and set " + property.getName() + "."
+    protected static MethodDef createWither(List<FieldDef> fields, @Nullable String javadoc, int index) {
+        FieldDef field = fields.get(index);
+        return MethodDef.builder("with" + NameUtils.capitalize(field.getName()))
+            .addJavadoc("Create a copy and set " + field.getName() + "."
                 + (javadoc != null ? "\n" + javadoc : "")
             )
-            .addParameter(ParameterDef.of(property.getName(), property.getType()))
+            .addParameter(ParameterDef.of(field.getName(), field.getType()))
             .addModifiers(Modifier.PUBLIC)
             .returns(TypeDef.THIS)
             .build((t, params) -> {
                 List<ExpressionDef> constructorValues = new ArrayList<>();
-                for (int j = 0; j < properties.size(); j++) {
+                for (int j = 0; j < fields.size(); j++) {
                     if (index == j) {
                         constructorValues.add(params.get(0));
                     } else {
                         constructorValues.add(t.field(
-                            properties.get(j).getName(), properties.get(j).getType()
+                            fields.get(j).getName(), fields.get(j).getType()
                         ));
                     }
                 }
                 return new StatementDef.Return(TypeDef.THIS.instantiate(constructorValues));
             });
+    }
+
+    /**
+     * Create a getter method.
+     *
+     * @param field The field
+     * @param javadoc The javadoc for property
+     * @return The getter method
+     */
+    protected static MethodDef createGetter(FieldDef field, @Nullable String javadoc) {
+        return MethodDef.builder("get" + NameUtils.capitalize(field.getName()))
+            .addJavadoc("Get " + field.getName() + "." + (javadoc != null ? "\n" + javadoc : ""))
+            .addModifiers(Modifier.PUBLIC)
+            .returns(field.getType())
+            .build((t, params) -> new StatementDef.Return(t.field(field)));
+    }
+
+    /**
+     * Create a setter method.
+     *
+     * @param field The field
+     * @param javadoc The javadoc for property
+     * @return The setter method
+     */
+    protected static MethodDef createSetter(FieldDef field, @Nullable String javadoc) {
+        return MethodDef.builder("set" + NameUtils.capitalize(field.getName()))
+            .addJavadoc("Set " + field.getName() + "." + (javadoc != null ? "\n" + javadoc : ""))
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(ParameterDef.of(field.getName(), field.getType()))
+            .returns(TypeDef.VOID)
+            .build((t, params) -> t.field(field).assign(params.get(0)));
     }
 
     /**
@@ -387,14 +424,15 @@ public class ModelBuilder {
     /**
      * Method to create an expression for converting a property of POJO.
      *
-     * @param property The property with type to convert to
+     * @param parameter The parameter configuration information
      * @param statements The statements
      * @param owner The owner of the property
      * @return The expression
      */
     protected ExpressionDef convertPOJOParameter(
-        PropertyElement property, List<StatementDef> statements, ExpressionDef owner
+        ParameterConfig parameter, List<StatementDef> statements, ExpressionDef owner
     ) {
+        PropertyElement property = parameter.source();
         return convertParameterIfRequired(
             property.getType(),
             NameUtils.capitalize(property.getName()) + "Param",
@@ -408,9 +446,10 @@ public class ModelBuilder {
      *
      * @param type The generate POJO type to convert from
      * @param requiredType The required type to convert to
+     * @param parameters The parameter configurations
      * @return The method definition
      */
-    protected MethodDef convertPOJOMethod(TypeDef type, ClassElement requiredType) {
+    protected MethodDef convertPOJOMethod(ClassTypeDef type, ClassElement requiredType, List<ParameterConfig> parameters) {
         String simpleName = getSimpleName(requiredType);
         return MethodDef.builder(CONVERT_METHOD_PREFIX + simpleName)
             .returns(TypeDef.of(requiredType))
@@ -418,8 +457,8 @@ public class ModelBuilder {
             .build((t, params) -> {
                 List<StatementDef> statements = new ArrayList<>();
                 Map<String, ExpressionDef> args = new HashMap<>();
-                for (PropertyElement property: requiredType.getBeanProperties()) {
-                    args.put(property.getName(), convertPOJOParameter(property, statements, params.get(0)));
+                for (ParameterConfig param : parameters) {
+                    args.put(param.source().getName(), convertPOJOParameter(param, statements, params.get(0)));
                 }
                 Local result = PluginUtils.instantiateType(requiredType, "result", args, statements);
                 statements.add(result.returning());

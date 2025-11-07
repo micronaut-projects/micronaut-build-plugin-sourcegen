@@ -204,7 +204,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                                 def = def.invoke(
                                     "orElse",
                                     type,
-                                    GradlePluginUtils.createDefault(type, parameter.defaultValue())
+                                    PluginUtils.createDefault(type, parameter.defaultValue())
                                 );
                             } else {
                                 def = def.invoke("getOrNull", parameter.type());

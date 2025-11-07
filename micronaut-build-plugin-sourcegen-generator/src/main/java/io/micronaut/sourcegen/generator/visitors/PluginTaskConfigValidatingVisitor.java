@@ -131,8 +131,8 @@ public final class PluginTaskConfigValidatingVisitor implements TypeElementVisit
         }
 
         @Override
-        protected TypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
-            return TypeDef.of(element.getType());
+        protected ClassTypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
+            return ClassTypeDef.of(element.getType());
         }
 
         @Override

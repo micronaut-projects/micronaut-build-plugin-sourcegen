@@ -26,12 +26,8 @@ import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.GenerateMavenMojo;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
-import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
-import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
-import io.micronaut.sourcegen.model.MethodDef;
-import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,7 +91,7 @@ public final class MavenPluginUtils {
                 + annotation.stringValue("source"));
         }
 
-        ModelBuilder modelBuilder = new ModelBuilder(element.getPackageName() + ".model");
+        MavenModelBuilder modelBuilder = new MavenModelBuilder(element.getPackageName() + ".model");
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
         for (PropertyElement property: source.getBeanProperties()) {
@@ -169,7 +165,7 @@ public final class MavenPluginUtils {
         @Nullable String enabledPropertyName,
         @NonNull String taskJavadoc,
         @NonNull String methodJavadoc,
-        @NonNull ModelBuilder modelBuilder
+        @NonNull MavenModelBuilder modelBuilder
     ) {
     }
 

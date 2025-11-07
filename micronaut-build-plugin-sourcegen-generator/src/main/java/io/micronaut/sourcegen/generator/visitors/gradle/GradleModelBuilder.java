@@ -18,20 +18,17 @@ package io.micronaut.sourcegen.generator.visitors.gradle;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.naming.NameUtils;
 import io.micronaut.inject.ast.ClassElement;
-import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.visitor.VisitorContext;
-import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
-import io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
-import io.micronaut.sourcegen.generator.visitors.ModelUtils;
+import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
 import io.micronaut.sourcegen.model.InterfaceDef;
 import io.micronaut.sourcegen.model.InterfaceDef.InterfaceDefBuilder;
 import io.micronaut.sourcegen.model.MethodDef;
-import io.micronaut.sourcegen.model.MethodDef.MethodDefBuilder;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
 
@@ -59,7 +56,7 @@ public class GradleModelBuilder extends ModelBuilder {
     }
 
     @Override
-    protected TypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
+    protected ClassTypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
         String simpleName = getSimpleName(element);
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
         InterfaceDefBuilder builder = InterfaceDef.builder(packageName + "." + simpleName + SPECIFICATION_NAME_SUFFIX)
@@ -72,19 +69,19 @@ public class GradleModelBuilder extends ModelBuilder {
         builder.addMethod(copyPOJOMethod(parameters));
         InterfaceDef interfaceDef = builder.build();
         generatedModels.put(element.getName(), new GeneratedModel(
-            interfaceDef, element, convertPOJOMethod(interfaceDef.asTypeDef(), element), interfaceDef.asTypeDef()
+            interfaceDef, element, convertPOJOMethod(interfaceDef.asTypeDef(), element, parameters), interfaceDef.asTypeDef()
         ));
         return interfaceDef.asTypeDef();
     }
 
     @Override
     protected ExpressionDef convertPOJOParameter(
-        PropertyElement property, List<StatementDef> statements, ExpressionDef owner
+        ParameterConfig parameter, List<StatementDef> statements, ExpressionDef owner
     ) {
-        ExpressionDef ownerProperty = owner.invoke("get" + NameUtils.capitalize(property.getName()), TypeDef.OBJECT);
+        ExpressionDef ownerProperty = owner.invoke("get" + NameUtils.capitalize(parameter.source().getName()), TypeDef.OBJECT);
         return convertParameterIfRequired(
-            property.getType(),
-            NameUtils.capitalize(property.getName()) + "Param",
+            parameter.source().getType(),
+            NameUtils.capitalize(parameter.source().getName()) + "Param",
             statements,
             ownerProperty.invoke("getOrNull", TypeDef.OBJECT)
         );
@@ -107,7 +104,7 @@ public class GradleModelBuilder extends ModelBuilder {
                             def = def.invoke(
                                 "orElse",
                                 type,
-                                GradlePluginUtils.createDefault(type, parameter.defaultValue())
+                                PluginUtils.createDefault(type, parameter.defaultValue())
                             );
                         } else {
                             def = def.invoke("getOrNull", parameter.type());

@@ -19,6 +19,8 @@ import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.FieldElement;
 import io.micronaut.inject.ast.MethodElement;
@@ -32,7 +34,11 @@ import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.model.ClassTypeDef;
+import io.micronaut.sourcegen.model.ClassTypeDef.ClassDefType;
+import io.micronaut.sourcegen.model.ClassTypeDef.ClassElementType;
+import io.micronaut.sourcegen.model.EnumDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
+import io.micronaut.sourcegen.model.ExpressionDef.Constant;
 import io.micronaut.sourcegen.model.StatementDef;
 import io.micronaut.sourcegen.model.TypeDef;
 import io.micronaut.sourcegen.model.VariableDef;
@@ -167,6 +173,26 @@ public class PluginUtils {
         Local task = instantiateType(source, "task", arguments, statements);
         statements.add(task.invoke(methodName, TypeDef.VOID));
         return StatementDef.multi(statements);
+    }
+
+    /**
+     * A utility method for getting the default value.
+     *
+     * @param type The required type
+     * @param value The default value as string
+     * @return The default expression
+     */
+    public static ExpressionDef createDefault(TypeDef type, String value) {
+        if (type instanceof ClassElementType classElementType) {
+            return ExpressionDef.constant(classElementType.classElement(), type, value);
+        } else if (type instanceof TypeDef.Primitive primitiveType) {
+            return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
+                ConversionService.SHARED.convert(value, t)
+            ).map(o -> new Constant(type, o)).orElse(null);
+        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
+            return classDefType.getStaticField(value, type);
+        }
+        throw new UnsupportedOperationException("Cannot create default value of type " + type);
     }
 
     /**
