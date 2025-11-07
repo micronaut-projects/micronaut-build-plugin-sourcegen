@@ -18,7 +18,6 @@ package io.micronaut.sourcegen.generator.visitors.maven;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.naming.NameUtils;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
-import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
 import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.maven.MavenPluginUtils.MavenTaskConfig;
@@ -199,10 +198,9 @@ public class MavenMojoBuilder {
         List<StatementDef> statements = new ArrayList<>();
         for (ParameterConfig parameter: taskConfig.parameters()) {
             ExpressionDef expression = getParameterValue(parameter, t);
-            ModelBuilder modelBuilder = new ModelBuilder();
             params.put(
                 parameter.source().getName(),
-                modelBuilder.convertParameterIfRequired(
+                taskConfig.modelBuilder().convertParameterIfRequired(
                     parameter.source().getType(), parameter.source().getName() + "Param", statements, expression
                 )
             );

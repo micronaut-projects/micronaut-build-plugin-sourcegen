@@ -25,10 +25,12 @@ import io.micronaut.inject.ast.MethodElement;
 import io.micronaut.inject.ast.ParameterElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
+import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.PluginTaskExecutable;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity;
+import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.ExpressionDef;
 import io.micronaut.sourcegen.model.StatementDef;
@@ -37,6 +39,7 @@ import io.micronaut.sourcegen.model.VariableDef;
 import io.micronaut.sourcegen.model.VariableDef.Local;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,54 +73,6 @@ public class PluginUtils {
             throw new ProcessingException(source, "Expected @PluginTaskExecutable to have void return type");
         }
         return executables.get(0);
-    }
-
-    /**
-     * Get configuration for a plugin parameter.
-     *
-     * @param sourceJavadoc The javadoc for the task type
-     * @param property The property representing the parameter
-     * @param type The type to use for parameter
-     * @return THe configuration
-     */
-    public static @NonNull ParameterConfig getParameterConfig(
-            @NonNull JavadocUtils.TypeJavadoc sourceJavadoc, @NonNull PropertyElement property, @Nullable TypeDef type
-    ) {
-        AnnotationValue<PluginTaskParameter> annotation = property.getAnnotation(PluginTaskParameter.class);
-        String javadoc = sourceJavadoc.elements().get(property.getName());
-        if (javadoc == null) {
-            javadoc = "Configurable " + property.getName() + " parameter.";
-        }
-        if (type == null) {
-            type = TypeDef.of(property.getType());
-        }
-        boolean isPojo = ModelUtils.isPOJO(property.getType());
-        if (annotation == null) {
-            return new ParameterConfig(
-                property,
-                false,
-                null,
-                false,
-                false,
-                OutputType.NONE,
-                javadoc,
-                type,
-                PathSensitivity.ABSOLUTE,
-                isPojo
-            );
-        }
-        return new ParameterConfig(
-            property,
-            annotation.booleanValue("required").orElse(false),
-            annotation.stringValue("defaultValue").orElse(null),
-            annotation.booleanValue("internal").orElse(false),
-            annotation.booleanValue("directory").orElse(false),
-            annotation.enumValue("output", OutputType.class).orElse(OutputType.NONE),
-            javadoc,
-            type,
-            annotation.enumValue("pathSensitivity", PathSensitivity.class).orElse(PathSensitivity.ABSOLUTE),
-            isPojo
-        );
     }
 
     /**
@@ -238,7 +193,8 @@ public class PluginUtils {
         @NonNull String javadoc,
         @NonNull TypeDef type,
         @NonNull PathSensitivity pathSensitivity,
-        boolean isPOJO
+        boolean isPOJO,
+        @NonNull List<ParameterConfig> pojoParameters
     ) {
     }
 }

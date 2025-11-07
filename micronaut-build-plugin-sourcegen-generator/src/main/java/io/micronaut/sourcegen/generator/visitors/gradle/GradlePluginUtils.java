@@ -18,6 +18,8 @@ package io.micronaut.sourcegen.generator.visitors.gradle;
 import io.micronaut.core.annotation.AnnotationValue;
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.convert.ConversionService;
+import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
@@ -30,6 +32,11 @@ import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.model.ClassTypeDef.ClassDefType;
+import io.micronaut.sourcegen.model.ClassTypeDef.ClassElementType;
+import io.micronaut.sourcegen.model.EnumDef;
+import io.micronaut.sourcegen.model.ExpressionDef;
+import io.micronaut.sourcegen.model.ExpressionDef.Constant;
 import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
@@ -88,13 +95,10 @@ public final class GradlePluginUtils {
 
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
-        ModelBuilder modelBuilder = new GradleModelBuilder();
+        ModelBuilder modelBuilder = new GradleModelBuilder(element.getPackageName() + ".model");
         for (PropertyElement property: source.getBeanProperties()) {
-            TypeDef type = modelBuilder.getType(context, element.getPackageName() + ".model",
-                property.getType());
-            parameters.add(PluginUtils.getParameterConfig(javadoc, property, type));
+            parameters.add(modelBuilder.getParameterConfig(context, javadoc, property));
         }
-
         String namePrefix = annotation.stringValue("namePrefix").orElse(source.getSimpleName());
         String methodName = PluginUtils.getTaskExecutable(source).getName();
         String methodJavadoc = javadoc.elements().get(methodName + "()");
@@ -112,6 +116,26 @@ public final class GradlePluginUtils {
             annotation.booleanValue("cacheable").orElse(true),
             modelBuilder
         );
+    }
+
+    /**
+     * A utility method for getting the default value.
+     *
+     * @param type The required type
+     * @param value The default value as string
+     * @return The default expression
+     */
+    public static ExpressionDef createDefault(TypeDef type, String value) {
+        if (type instanceof ClassElementType classElementType) {
+            return ExpressionDef.constant(classElementType.classElement(), type, value);
+        } else if (type instanceof TypeDef.Primitive primitiveType) {
+            return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
+                ConversionService.SHARED.convert(value, t)
+            ).map(o -> new Constant(type, o)).orElse(null);
+        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
+            return classDefType.getStaticField(value, type);
+        }
+        throw new UnsupportedOperationException("Cannot create default value of type " + type);
     }
 
     /**

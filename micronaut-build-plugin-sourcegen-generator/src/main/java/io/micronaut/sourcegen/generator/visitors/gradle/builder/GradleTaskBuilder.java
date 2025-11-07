@@ -27,6 +27,7 @@ import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradlePluginConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradleTaskConfig;
 import io.micronaut.sourcegen.model.AnnotationDef;
@@ -203,7 +204,7 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                                 def = def.invoke(
                                     "orElse",
                                     type,
-                                    createDefault(type, parameter.defaultValue())
+                                    GradlePluginUtils.createDefault(type, parameter.defaultValue())
                                 );
                             } else {
                                 def = def.invoke("getOrNull", parameter.type());
@@ -218,19 +219,6 @@ public class GradleTaskBuilder implements GradleTypeBuilder {
                 })
             )
             .build();
-    }
-
-    static ExpressionDef createDefault(TypeDef type, String value) {
-        if (type instanceof ClassElementType classElementType) {
-            return ExpressionDef.constant(classElementType.classElement(), type, value);
-        } else if (type instanceof TypeDef.Primitive primitiveType) {
-            return ClassUtils.getPrimitiveType(primitiveType.name()).flatMap(t ->
-                ConversionService.SHARED.convert(value, t)
-            ).map(o -> new Constant(type, o)).orElse(null);
-        } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
-            return classDefType.getStaticField(value, type);
-        }
-        throw new UnsupportedOperationException("Cannot create default value of type " + type);
     }
 
     private ClassDef createClasspathConfigurator(TypeDef taskType, GradleTaskConfig taskConfig) {

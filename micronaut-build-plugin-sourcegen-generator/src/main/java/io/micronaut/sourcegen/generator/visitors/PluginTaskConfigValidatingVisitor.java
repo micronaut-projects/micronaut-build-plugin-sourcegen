@@ -25,10 +25,12 @@ import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.PluginTask;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.model.ClassTypeDef;
 import io.micronaut.sourcegen.model.TypeDef;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -66,9 +68,10 @@ public final class PluginTaskConfigValidatingVisitor implements TypeElementVisit
 
         // Verify that method is present
         PluginUtils.getTaskExecutable(element);
+        ModelBuilder modelBuilder = new EmptyModelBuilder();
         for (PropertyElement property: element.getBeanProperties()) {
-            ParameterConfig parameter = PluginUtils.getParameterConfig(
-                JavadocUtils.getTaskJavadoc(context, element), property, TypeDef.of(property.getType())
+            ParameterConfig parameter = modelBuilder.getParameterConfig(
+                context, JavadocUtils.getTaskJavadoc(context, element), property
             );
             validateParameter(parameter, property, context);
         }
@@ -116,6 +119,26 @@ public final class PluginTaskConfigValidatingVisitor implements TypeElementVisit
                     throw new ProcessingException(element, "Failed to generate '" + fileName + "': " + e.getMessage(), e);
                 }
             });
+    }
+
+    private class EmptyModelBuilder extends ModelBuilder {
+
+        /**
+         * Create the model builder.
+         */
+        public EmptyModelBuilder() {
+            super(null);
+        }
+
+        @Override
+        protected TypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
+            return TypeDef.of(element.getType());
+        }
+
+        @Override
+        protected ClassTypeDef copyEnum(VisitorContext context, ClassElement element) {
+            return ClassTypeDef.of(element.getType());
+        }
     }
 
 }

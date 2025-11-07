@@ -62,7 +62,7 @@ public class GradleSpecificationBuilder implements GradleTypeBuilder {
     private ObjectDef buildForTask(String packageName, GradleTaskConfig taskConfig) {
         InterfaceDefBuilder builder = InterfaceDef.builder(packageName + "." + taskConfig.namePrefix() + SPECIFICATION_NAME_SUFFIX)
             .addModifiers(Modifier.PUBLIC)
-            .addJavadoc("Specification that is used for configuring " + taskConfig.namePrefix() + " task.\n" +
+            .addJavadoc("The amazing specification that is used for configuring " + taskConfig.namePrefix() + " task.\n" +
                 taskConfig.taskJavadoc());
         for (ParameterConfig parameter: taskConfig.parameters()) {
             if (parameter.internal()) {

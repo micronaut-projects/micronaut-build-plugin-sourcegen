@@ -97,6 +97,7 @@ class TestPluginTest extends AbstractPluginTest {
         buildFile("""
         import io.micronaut.sourcegen.example.plugin.gradle.model.RepeatSpec
         import io.micronaut.sourcegen.example.plugin.gradle.model.Ending
+        import io.micronaut.sourcegen.example.plugin.gradle.model.RepeatEnding
 
         plugins {
             id "io.micronaut.sourcegen.test"
@@ -106,10 +107,11 @@ class TestPluginTest extends AbstractPluginTest {
         test {
             generateSimpleResource("generateHello", spec -> {
                 spec.getFileName().set("META-INF/hello.txt")
-                spec.getContent().set("Hello!")
-                spec.getRepeat().getNumber().set(2)
-                spec.getRepeat().getRepeatSuffix().set("_")
-                spec.getRepeat().getEnding().set(Ending.NEWLINE)
+                spec.getContent().set("Hello")
+                spec.getEnding().set(Ending.NEWLINE)
+                spec.getRepeat().getNumber().set(3)
+                spec.getRepeat().getDelimiter().set("_")
+                spec.getRepeat().getEnding().set(RepeatEnding.EVERY)
             });
         }
 
@@ -121,13 +123,9 @@ class TestPluginTest extends AbstractPluginTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":generateHello").getOutcome());
 
-        File generatedResource1 = file("build/generated/generateHello/resources/META-INF/hello.txt_1");
-        assertTrue(generatedResource1.exists());
-        assertEquals("Hello!\n", content(generatedResource1));
-
-        File generatedResource2 = file("build/generated/generateHello/resources/META-INF/hello.txt_2");
-        assertTrue(generatedResource2.exists());
-        assertEquals("Hello!\n", content(generatedResource2));
+        File generatedResource = file("build/generated/generateHello/resources/META-INF/hello.txt");
+        assertTrue(generatedResource.exists());
+        assertEquals("Hello\n_Hello\n_Hello\n", content(generatedResource));
     }
 
     @Test

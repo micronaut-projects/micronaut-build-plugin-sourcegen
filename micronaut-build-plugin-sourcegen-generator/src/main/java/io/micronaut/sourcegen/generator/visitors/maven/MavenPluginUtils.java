@@ -30,6 +30,7 @@ import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
 import io.micronaut.sourcegen.generator.visitors.ModelBuilder.GeneratedModel;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.model.MethodDef;
 import io.micronaut.sourcegen.model.TypeDef;
 
 import java.util.ArrayList;
@@ -94,14 +95,11 @@ public final class MavenPluginUtils {
                 + annotation.stringValue("source"));
         }
 
-        ModelBuilder modelBuilder = new ModelBuilder();
-
+        ModelBuilder modelBuilder = new ModelBuilder(element.getPackageName() + ".model");
         TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
         for (PropertyElement property: source.getBeanProperties()) {
-            TypeDef type = modelBuilder.getType(context, element.getPackageName() + ".model",
-                property.getType());
-            parameters.add(PluginUtils.getParameterConfig(javadoc, property, type));
+            parameters.add(modelBuilder.getParameterConfig(context, javadoc, property));
         }
 
         String namePrefix = annotation.stringValue("namePrefix").orElse(element.getSimpleName());

@@ -63,7 +63,7 @@ public final class GenerateSimpleResourceTask {
     private Ending ending;
 
     /**
-     * Configure generating repeated file.
+     * Configure generating repeated file content.
      */
     @PluginTaskParameter()
     private Repeat repeat;
@@ -74,22 +74,25 @@ public final class GenerateSimpleResourceTask {
      */
     @PluginTaskExecutable
     public void generateSimpleResource() {
-        generateOne(fileName, ending);
+        LOG.info("Generating resource {}", fileName);
 
-        if (repeat.number != null) {
-            for (int i = 0; i < repeat.number; ++i) {
-                generateOne(fileName + repeat.repeatSuffix + (i + 1), repeat.ending);
+        StringBuilder fileContent = new StringBuilder();
+        for (int i = 0; i < repeat.number(); i++) {
+            if (i != 0 && repeat.delimiter() != null) {
+                fileContent.append(repeat.delimiter());
+            }
+            fileContent.append(content);
+            if (ending == Ending.NEWLINE) {
+                if (i == repeat.number() - 1 || repeat.ending == RepeatEnding.EVERY) {
+                    fileContent.append("\n");
+                }
             }
         }
-    }
-
-    private void generateOne(String fileName, Ending ending) {
-        LOG.info("Generating resource {}", fileName);
 
         File outputFile = new File(outputFolder.getAbsolutePath() + File.separator + fileName);
         outputFile.getParentFile().mkdirs();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-            writer.write(content + (ending == Ending.NEWLINE ? "\n" : ""));
+            writer.write(fileContent.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -126,16 +129,25 @@ public final class GenerateSimpleResourceTask {
     }
 
     /**
-     * Configuration for repeating the file.
+     * Configuration for repeating the file content.
      *
      * @param number Number of repeats
-     * @param repeatSuffix The suffix to use
+     * @param delimiter The file delimiter
      * @param ending The file ending
      */
     public record Repeat(
+        @PluginTaskParameter(defaultValue = "1")
         Integer number,
-        String repeatSuffix,
-        Ending ending
+        String delimiter,
+        @PluginTaskParameter(defaultValue = "ONCE")
+        RepeatEnding ending
     ) {
+    }
+
+    /**
+     * A configuration specifying how to repeat the ending.
+     */
+    public enum RepeatEnding {
+        EVERY, ONCE
     }
 }

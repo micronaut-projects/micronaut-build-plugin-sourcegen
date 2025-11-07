@@ -22,6 +22,8 @@ import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.PathSensitivity;
+import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
+import io.micronaut.sourcegen.generator.visitors.JavadocUtils.TypeJavadoc;
 import io.micronaut.sourcegen.generator.visitors.ModelBuilder;
 import io.micronaut.sourcegen.generator.visitors.ModelUtils;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
@@ -47,38 +49,32 @@ import static io.micronaut.sourcegen.generator.visitors.gradle.builder.GradleTas
 @Internal
 public class GradleModelBuilder extends ModelBuilder {
 
+    /**
+     * Create the model builder.
+     *
+     * @param packageName The package name to use for new created models
+     */
+    public GradleModelBuilder(String packageName) {
+        super(packageName);
+    }
+
     @Override
-    protected TypeDef copyPOJO(VisitorContext context, String packageName, ClassElement element) {
+    protected TypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
         String simpleName = getSimpleName(element);
+        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
         InterfaceDefBuilder builder = InterfaceDef.builder(packageName + "." + simpleName + SPECIFICATION_NAME_SUFFIX)
             .addModifiers(Modifier.PUBLIC)
-            .addJavadoc(element.getSimpleName() + " specification that used for configuring tasks.");
-        for (PropertyElement property: element.getBeanProperties()) {
-            ParameterConfig parameter = createParameter(property, context, packageName);
+            .addJavadoc(javadoc.javadoc().orElse(element.getName() + " specification that used for configuring tasks."));
+        for (ParameterConfig parameter : parameters) {
             MethodDef getter = createParameterGetter(parameter);
             builder.addMethod(getter);
         }
-        builder.addMethod(copyPOJOMethod(element, context, packageName));
+        builder.addMethod(copyPOJOMethod(parameters));
         InterfaceDef interfaceDef = builder.build();
         generatedModels.put(element.getName(), new GeneratedModel(
             interfaceDef, element, convertPOJOMethod(interfaceDef.asTypeDef(), element), interfaceDef.asTypeDef()
         ));
         return interfaceDef.asTypeDef();
-    }
-
-    private ParameterConfig createParameter(PropertyElement property, VisitorContext context, String packageName) {
-        return new ParameterConfig(
-            property,
-            false,
-            null,
-            false,
-            false,
-            OutputType.NONE,
-            property.getDocumentation().orElse(property.getName() + " configuration property."),
-            getType(context, packageName, property.getType()),
-            PathSensitivity.RELATIVE,
-            ModelUtils.isPOJO(property.getType())
-        );
     }
 
     @Override
@@ -94,18 +90,30 @@ public class GradleModelBuilder extends ModelBuilder {
         );
     }
 
-    private MethodDef copyPOJOMethod(ClassElement element, VisitorContext context, String packageName) {
+    private MethodDef copyPOJOMethod(List<ParameterConfig> parameters) {
         return MethodDef.builder("copyTo")
             .addParameter(TypeDef.THIS)
             .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
             .returns(TypeDef.VOID)
             .build((t, p) -> {
                 List<StatementDef> statements = new ArrayList<>();
-                for (PropertyElement property: element.getBeanProperties()) {
-                    ParameterConfig parameter = createParameter(property, context, packageName);
+                for (ParameterConfig parameter: parameters) {
                     String getterName = "get" + NameUtils.capitalize(parameter.source().getName());
                     TypeDef getterType = createGradleProperty(parameter);
                     ExpressionDef def = t.invoke(getterName, getterType);
+                    if (!parameter.required()) {
+                        if (parameter.defaultValue() != null) {
+                            TypeDef type = parameter.type();
+                            def = def.invoke(
+                                "orElse",
+                                type,
+                                GradlePluginUtils.createDefault(type, parameter.defaultValue())
+                            );
+                        } else {
+                            def = def.invoke("getOrNull", parameter.type());
+                        }
+                    }
+
                     statements.add(p.get(0).invoke(getterName, getterType)
                         .invoke("convention", TypeDef.VOID, def));
                 }

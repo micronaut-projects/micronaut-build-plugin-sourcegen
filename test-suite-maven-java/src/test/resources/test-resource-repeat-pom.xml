@@ -15,10 +15,11 @@
                     <enabled>true</enabled>
                     <fileName>META-INF/hello.txt</fileName>
                     <content>Hello!</content>
+                    <ending>NEWLINE</ending>
                     <repeat>
-                        <number>2</number>
+                        <number>3</number>
                         <repeatSuffix>_</repeatSuffix>
-                        <ending>NEWLINE</ending>
+                        <ending>EVERY</ending>
                     </repeat>
                 </configuration>
             </plugin>

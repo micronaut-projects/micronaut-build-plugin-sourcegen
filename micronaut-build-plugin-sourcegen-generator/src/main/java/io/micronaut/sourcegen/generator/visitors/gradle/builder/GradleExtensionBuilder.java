@@ -22,6 +22,7 @@ import io.micronaut.core.naming.NameUtils;
 import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.Type;
 import io.micronaut.sourcegen.annotations.PluginTaskParameter.OutputType;
 import io.micronaut.sourcegen.generator.visitors.PluginUtils.ParameterConfig;
+import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradlePluginConfig;
 import io.micronaut.sourcegen.generator.visitors.gradle.GradlePluginUtils.GradleTaskConfig;
 import io.micronaut.sourcegen.model.ClassDef;
@@ -266,7 +267,7 @@ public class GradleExtensionBuilder implements GradleTypeBuilder {
                 TypeDef type = parameter.type();
                 StatementDef convention = params.get(0)
                     .invoke(getterName, getterType)
-                    .invoke("convention", getterType, GradleTaskBuilder.createDefault(type, parameter.defaultValue()));
+                    .invoke("convention", getterType, GradlePluginUtils.createDefault(type, parameter.defaultValue()));
                 statements.add(convention);
             }
         }
