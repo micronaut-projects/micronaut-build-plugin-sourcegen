@@ -85,7 +85,7 @@ public final class GradlePluginUtils {
                 + annotation.stringValue("source"));
         }
 
-        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
+        TypeJavadoc javadoc = JavadocUtils.getEncodedJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
         ModelBuilder modelBuilder = new GradleModelBuilder(element.getPackageName() + ".model");
         for (PropertyElement property: source.getBeanProperties()) {

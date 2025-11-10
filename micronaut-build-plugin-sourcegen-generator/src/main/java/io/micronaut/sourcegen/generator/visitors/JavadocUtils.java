@@ -55,14 +55,15 @@ public class JavadocUtils {
     public static final String META_INF_EXTENSION = ".javadoc.txt";
 
     /**
-     * Get the javadoc for a task. Task class element may be in a dependency.
+     * Get the javadoc for a class. Task class element may be in a dependency.
      * It will read the {@code .javadoc.txt} file written by plugin task visitor.
+     * @see #writeJavadocInfo
      *
      * @param context The visitor context
      * @param element The element annotated with {@link io.micronaut.sourcegen.annotations.PluginTask}.
      * @return The javadoc
      */
-    public static @NonNull TypeJavadoc getTaskJavadoc(VisitorContext context, ClassElement element) {
+    public static @NonNull TypeJavadoc getEncodedJavadoc(VisitorContext context, ClassElement element) {
         String javadocMetaPath = "META-INF/" + META_INF_FOLDER + element.getName() + META_INF_EXTENSION;
         ClassLoader classLoader = JavadocUtils.class.getClassLoader();
 
@@ -139,7 +140,12 @@ public class JavadocUtils {
         return result.toString();
     }
 
-    private static @NonNull TypeJavadoc getSourceJavadoc(ClassElement element) {
+    /**
+     * Get Javadoc representation from sources.
+     * @param element The element
+     * @return The javadoc info
+     */
+    public static @NonNull TypeJavadoc getSourceJavadoc(ClassElement element) {
         Javadoc parsed = StaticJavaParser.parseJavadoc(element.getDocumentation().orElse(""));
         String javadoc = parsed.getDescription().toText();
         Map<String, String> elements = new LinkedHashMap<>();

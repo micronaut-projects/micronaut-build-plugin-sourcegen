@@ -17,7 +17,6 @@ package io.micronaut.sourcegen.generator.visitors.gradle;
 
 import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.naming.NameUtils;
-import io.micronaut.core.reflect.ClassUtils;
 import io.micronaut.inject.ast.ClassElement;
 import io.micronaut.inject.visitor.VisitorContext;
 import io.micronaut.sourcegen.generator.visitors.JavadocUtils;
@@ -79,7 +78,7 @@ public class GradleModelBuilder extends ModelBuilder {
     @Override
     protected ClassTypeDef copyPOJO(VisitorContext context, ClassElement element, List<ParameterConfig> parameters) {
         String simpleName = getSimpleName(element);
-        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
+        TypeJavadoc javadoc = JavadocUtils.getEncodedJavadoc(context, element);
         InterfaceDefBuilder builder = InterfaceDef.builder(packageName + "." + simpleName + SPECIFICATION_NAME_SUFFIX)
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(javadoc.javadoc().orElse(element.getName() + " specification that used for configuring tasks."));

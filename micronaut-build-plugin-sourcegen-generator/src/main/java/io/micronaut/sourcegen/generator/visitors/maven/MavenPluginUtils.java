@@ -92,7 +92,7 @@ public final class MavenPluginUtils {
         }
 
         MavenModelBuilder modelBuilder = new MavenModelBuilder(element.getPackageName() + ".model");
-        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, source);
+        TypeJavadoc javadoc = JavadocUtils.getEncodedJavadoc(context, source);
         List<ParameterConfig> parameters = new ArrayList<>();
         for (PropertyElement property: source.getBeanProperties()) {
             parameters.add(modelBuilder.getParameterConfig(context, javadoc, property));
