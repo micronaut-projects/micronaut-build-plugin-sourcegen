@@ -27,7 +27,7 @@ The following sources will be generated based on this:
 
 You can see the javadoc for the generated sources in this example in link:{api}/io/micronaut/sourcegen/example/plugin/gradle/package-summary.html[io.micronaut.sourcegen.example.plugin.maven package javadoc].
 
-See documentation for link:{api}/io/micronaut/sourcegen/annotations/GenerateGradleTask.html[GenerateGradleTask] to view all the configurable properties.
+See documentation for link:{api}/io/micronaut/sourcegen/annotations/GenerateGradlePlugin.html[GenerateGradlePlugin] to view all the configurable properties.
 
 === Plugin Customization
 

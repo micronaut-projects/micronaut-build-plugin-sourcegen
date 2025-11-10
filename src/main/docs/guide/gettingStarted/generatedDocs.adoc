@@ -1,0 +1,7 @@
+As part of processing, AsciiDoc documentation is generated in the build `META-INF/docs` folder. The documentation describes all properties available for configuration. For example see this snippet based on the `GenerateSimpleRecordTask` class:
+
+_build/classes/java/main/META-INF/docs/GenerateSimpleRecordTask.adoc:_
+
+****
+include::test-suite-common-java/build/classes/java/main/META-INF/docs/GenerateSimpleRecordTask.adoc[]
+****

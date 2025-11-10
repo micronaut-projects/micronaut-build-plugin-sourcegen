@@ -152,7 +152,7 @@ public class ModelBuilder {
         }
 
         List<ParameterConfig> pojoParameters = new ArrayList<>();
-        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
+        TypeJavadoc javadoc = JavadocUtils.getEncodedJavadoc(context, element);
         for (PropertyElement property: element.getBeanProperties()) {
             pojoParameters.add(getParameterConfig(context, javadoc, property));
         }
@@ -203,7 +203,7 @@ public class ModelBuilder {
     protected ClassTypeDef copyEnum(
             VisitorContext context, ClassElement element
     ) {
-        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
+        TypeJavadoc javadoc = JavadocUtils.getEncodedJavadoc(context, element);
         EnumDefBuilder enumDefBuilder = EnumDef.builder(packageName + "." + getSimpleName(element))
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(javadoc.javadoc().orElse(element.getName() + " enum."));
@@ -233,7 +233,7 @@ public class ModelBuilder {
     protected ClassTypeDef copyPOJO(
             VisitorContext context, ClassElement element, List<ParameterConfig> parameters
     ) {
-        TypeJavadoc javadoc = JavadocUtils.getTaskJavadoc(context, element);
+        TypeJavadoc javadoc = JavadocUtils.getEncodedJavadoc(context, element);
         ClassDefBuilder classDefBuilder = ClassDef.builder(packageName + "." + getSimpleName(element))
             .addModifiers(Modifier.PUBLIC)
             .addJavadoc(javadoc.javadoc().orElse(element.getName() + " class."))

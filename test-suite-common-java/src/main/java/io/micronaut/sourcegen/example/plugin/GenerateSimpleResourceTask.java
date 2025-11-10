@@ -29,9 +29,8 @@ import java.io.IOException;
 
 /**
  * This is a configuration for another plugin task run.
- * In this case it is a class instead of a record.
+ * In this case it is a resource instead of a record.
  * The properties are parameters and the single method defines the task execution.
- * The plugin generates a simple record.
  */
 @PluginTask
 public final class GenerateSimpleResourceTask {

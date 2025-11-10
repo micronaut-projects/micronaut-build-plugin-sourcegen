@@ -6,5 +6,6 @@ gettingStarted:
   commonModule: Common Module
   gradleModule: Gradle Module
   mavenModule: Maven Module
+  generatedDocs: Generated Documentation
 repository: Repository
 
