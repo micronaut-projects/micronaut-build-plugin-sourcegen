@@ -93,6 +93,8 @@
         
         <div class="toc-item" style="margin-left:10px" id="toc-item-mavenModule"><a href="#mavenModule"><strong>3.3</strong><span>Maven Module</span></a></div>
         
+        <div class="toc-item" style="margin-left:10px" id="toc-item-generatedDocs"><a href="#generatedDocs"><strong>3.4</strong><span>Generated Documentation</span></a></div>
+        
         <div class="toc-item" style="margin-left:0px" id="toc-item-repository"><a href="#repository"><strong>4</strong><span>Repository</span></a></div>
         
         </div>
@@ -504,7 +506,7 @@ public final class GeneratePluginTrigger {
 <p>You can see the javadoc for the generated sources in this example in <a href="../api/io/micronaut/sourcegen/example/plugin/gradle/package-summary.html">io.micronaut.sourcegen.example.plugin.maven package javadoc</a>.</p>
 </div>
 <div class="paragraph">
-<p>See documentation for <a href="../api/io/micronaut/sourcegen/annotations/GenerateGradleTask.html">GenerateGradleTask</a> to view all the configurable properties.</p>
+<p>See documentation for <a href="../api/io/micronaut/sourcegen/annotations/GenerateGradlePlugin.html">GenerateGradlePlugin</a> to view all the configurable properties.</p>
 </div>
 <div class="sect2">
 <h3 id="_plugin_customization">Plugin Customization</h3>
@@ -772,6 +774,80 @@ public class GenerateSimpleRecordMojo extends AbstractGenerateSimpleRecordMojo {
 <td><i class="conum" data-value="2"></i><b>2</b></td>
 <td>Add the default value for the <code>outputFolder</code> parameter.</td>
 </tr>
+</table>
+</div>
+</div>
+
+<h2 id="generatedDocs"><a class="anchor" href="#generatedDocs"></a>3.4 Generated Documentation</h2>
+
+<div class='contribute-btn'>
+    <button type='button' class='btn btn-default' onclick='window.location.href="https://github.com/micronaut-projects/micronaut-build-plugin-sourcegen/edit/0.0.x/src/main/docs/guide/gettingStarted/generatedDocs.adoc"'>
+        <i class='fa fa-pencil-square-o'></i> Improve this doc
+    </button>
+</div>
+
+
+<div class="paragraph">
+<p>As part of processing, AsciiDoc documentation is generated in the build <code>META-INF/docs</code> folder. The documentation describes all properties available for configuration. For example see this snippet based on the <code>GenerateSimpleRecordTask</code> class:</p>
+</div>
+<div class="paragraph">
+<p><em>build/classes/java/main/META-INF/docs/GenerateSimpleRecordTask.adoc:</em></p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<div class="title">Configuration for GenerateSimpleRecordTask</div>
+<p>This is a configuration for a plugin task run.
+ The properties are parameters and the single method defines the task execution.
+ The plugin generates a simple record.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Property</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Description</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">javadoc</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The javadoc.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">outputFolder</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The output folder.</p>
+<p class="tableblock"><strong>Required</strong>.</p>
+<p class="tableblock">Will be added to Java sources.</p>
+<p class="tableblock">Supply directory path.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">packageName</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">com.example</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The package name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">properties</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The properties.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">typeName</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The generated class name.</p>
+<p class="tableblock"><strong>Required</strong>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">version</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The version.</p></td>
+</tr>
+</tbody>
 </table>
 </div>
 </div>

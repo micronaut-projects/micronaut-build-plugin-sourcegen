@@ -162,14 +162,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getTaskJavadoc(io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.ClassElement)" class="member-name-link">getTaskJavadoc</a><wbr>(io.micronaut.inject.visitor.VisitorContext&nbsp;context,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getEncodedJavadoc(io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.ClassElement)" class="member-name-link">getEncodedJavadoc</a><wbr>(io.micronaut.inject.visitor.VisitorContext&nbsp;context,
  io.micronaut.inject.ast.ClassElement&nbsp;element)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Get the javadoc for a task.</div>
+<div class="block">Get the javadoc for a class.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeJavadocInfo(io.micronaut.inject.ast.ClassElement)" class="member-name-link">writeJavadocInfo</a><wbr>(io.micronaut.inject.ast.ClassElement&nbsp;element)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static @NonNull <a href="JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSourceJavadoc(io.micronaut.inject.ast.ClassElement)" class="member-name-link">getSourceJavadoc</a><wbr>(io.micronaut.inject.ast.ClassElement&nbsp;element)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Get Javadoc representation from sources.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeJavadocInfo(io.micronaut.inject.ast.ClassElement)" class="member-name-link">writeJavadocInfo</a><wbr>(io.micronaut.inject.ast.ClassElement&nbsp;element)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Write javadoc meta info that could be parsed from a file.</div>
 </div>
 </div>
@@ -242,12 +247,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getTaskJavadoc(io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.ClassElement)">
-<h3>getTaskJavadoc</h3>
+<section class="detail" id="getEncodedJavadoc(io.micronaut.inject.visitor.VisitorContext,io.micronaut.inject.ast.ClassElement)">
+<h3>getEncodedJavadoc</h3>
 <div class="member-signature"><span class="annotations">@NonNull
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">@NonNull <a href="JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></span>&nbsp;<span class="element-name">getTaskJavadoc</span><wbr><span class="parameters">(io.micronaut.inject.visitor.VisitorContext&nbsp;context,
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">@NonNull <a href="JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></span>&nbsp;<span class="element-name">getEncodedJavadoc</span><wbr><span class="parameters">(io.micronaut.inject.visitor.VisitorContext&nbsp;context,
  io.micronaut.inject.ast.ClassElement&nbsp;element)</span></div>
-<div class="block">Get the javadoc for a task. Task class element may be in a dependency.
+<div class="block">Get the javadoc for a class. Task class element may be in a dependency.
  It will read the <code>.javadoc.txt</code> file written by plugin task visitor.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -255,6 +260,12 @@ loadScripts(document, 'script');</script>
 <dd><code>element</code> - The element annotated with <a href="../../annotations/PluginTask.html" title="annotation interface in io.micronaut.sourcegen.annotations"><code>PluginTask</code></a>.</dd>
 <dt>Returns:</dt>
 <dd>The javadoc</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><a href="#writeJavadocInfo(io.micronaut.inject.ast.ClassElement)"><code>writeJavadocInfo(io.micronaut.inject.ast.ClassElement)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>
@@ -268,6 +279,20 @@ loadScripts(document, 'script');</script>
 <dd><code>element</code> - The source element.</dd>
 <dt>Returns:</dt>
 <dd>The info</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getSourceJavadoc(io.micronaut.inject.ast.ClassElement)">
+<h3>getSourceJavadoc</h3>
+<div class="member-signature"><span class="annotations">@NonNull
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type">@NonNull <a href="JavadocUtils.TypeJavadoc.html" title="class in io.micronaut.sourcegen.generator.visitors">JavadocUtils.TypeJavadoc</a></span>&nbsp;<span class="element-name">getSourceJavadoc</span><wbr><span class="parameters">(io.micronaut.inject.ast.ClassElement&nbsp;element)</span></div>
+<div class="block">Get Javadoc representation from sources.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>element</code> - The element</dd>
+<dt>Returns:</dt>
+<dd>The javadoc info</dd>
 </dl>
 </section>
 </li>
