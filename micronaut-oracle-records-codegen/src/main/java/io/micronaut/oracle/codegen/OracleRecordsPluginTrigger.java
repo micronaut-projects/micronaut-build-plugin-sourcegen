@@ -20,46 +20,29 @@ import io.micronaut.sourcegen.annotations.GenerateGradlePlugin.GenerateGradleTas
 import io.micronaut.sourcegen.annotations.GenerateMavenMojo;
 
 /**
- * Triggers generation of Gradle and Maven plugins for Oracle->Java records codegen.
+ * Triggers generation of Gradle and Maven plugins for generating Java records from Oracle JSON schema sources.
  *
- * Gradle:
- * - Creates an extension with two methods: generateOracleDomains and generateOracleDualityViews
- * - Creates two tasks and their specs.
- *
- * Maven:
- * - Generates two mojos (domains and duality views). Users must bind executions explicitly.
+ * Single task/mojo with a 'source' parameter to choose between DOMAIN_DEFINITION and DUALITY_VIEW.
  */
 @GenerateGradlePlugin(
-    namePrefix = "OracleRecords",
+    namePrefix = "GenerateOracleJsonRecords",
     micronautPlugin = false,
     tasks = {
         @GenerateGradleTask(
-            namePrefix = "GenerateOracleDomains",
-            extensionMethodName = "generateOracleDomains",
-            source = "io.micronaut.oracle.codegen.GenerateOracleDomainsTask"
-        ),
-        @GenerateGradleTask(
-            namePrefix = "GenerateOracleDualityViews",
-            extensionMethodName = "generateOracleDualityViews",
-            source = "io.micronaut.oracle.codegen.GenerateOracleDualityViewsTask"
+            namePrefix = "GenerateOracleJsonRecords",
+            extensionMethodName = "generateOracleRecords",
+            source = "io.micronaut.oracle.codegen.GenerateJavaRecordFromOracleJsonSchemaTask"
         )
     }
 )
 @GenerateMavenMojo(
-    namePrefix = "AbstractGenerateOracleDomains",
+    namePrefix = "AbstractGenerateOracleJsonRecords",
     micronautPlugin = false,
-    source = "io.micronaut.oracle.codegen.GenerateOracleDomainsTask",
-    parameterPrefix = "oracle.codegen.domains",
-    // Common parameters users may want to set via -Doracle.codegen.domains.*
-    globalParameters = { "jdbcUrl", "username", "password", "schema", "targetPackage", "skip" },
-    enabledPropertyName = "oracle.codegen.enabled"
-)
-@GenerateMavenMojo(
-    namePrefix = "AbstractGenerateOracleDualityViews",
-    micronautPlugin = false,
-    source = "io.micronaut.oracle.codegen.GenerateOracleDualityViewsTask",
-    parameterPrefix = "oracle.codegen.duality",
-    globalParameters = { "jdbcUrl", "username", "password", "schema", "targetPackage", "skip" },
+    source = "io.micronaut.oracle.codegen.GenerateJavaRecordFromOracleJsonSchemaTask",
+    parameterPrefix = "oracle.codegen",
+    // Common parameters users may want to set via -Doracle.codegen.*
+    // Including 'source' to allow switching DOMAIN_DEFINITION vs DUALITY_VIEW from properties
+    globalParameters = { "source", "sources", "jdbcUrl", "username", "password", "schema", "targetPackage", "skip" },
     enabledPropertyName = "oracle.codegen.enabled"
 )
 public final class OracleRecordsPluginTrigger {
