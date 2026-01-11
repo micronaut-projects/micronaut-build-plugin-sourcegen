@@ -26,7 +26,7 @@ spock = "2.3-groovy-4.0"
 gradle-plugins-api = "8.11.1"
 maven-plugin-annotations = "3.15.1"
 maven-core = "3.9.11"
-maven-plugin-testing-harness = "3.3.0"
+maven-plugin-testing-harness = "3.5.0"
 
 # Managed versions appear in the BOM
 # managed-somelib = "1.0"
