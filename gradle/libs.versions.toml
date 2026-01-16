@@ -16,17 +16,17 @@
 # a managed version (a version which alias starts with "managed-"
 
 [versions]
-micronaut = "4.10.6"
+micronaut = "5.0.0-M8"
 micronaut-docs = "3.0.0"
 micronaut-test = "4.7.0"
-micronaut-sourcegen = "1.8.2"
+micronaut-sourcegen = "1.8.4"
 
 groovy = "4.0.24"
 spock = "2.3-groovy-4.0"
 gradle-plugins-api = "8.11.1"
-maven-plugin-annotations = "3.15.1"
-maven-core = "3.9.11"
-maven-plugin-testing-harness = "3.3.0"
+maven-plugin-annotations = "3.15.2"
+maven-core = "3.9.12"
+maven-plugin-testing-harness = "3.5.0"
 
 # Managed versions appear in the BOM
 # managed-somelib = "1.0"
