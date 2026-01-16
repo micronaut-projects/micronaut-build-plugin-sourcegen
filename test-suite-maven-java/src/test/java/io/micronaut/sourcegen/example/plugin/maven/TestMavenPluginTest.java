@@ -12,7 +12,7 @@ class TestMavenPluginTest extends AbstractMavenPluginTest {
     void generateSimpleRecord() throws Exception {
         File pom = new File("src/test/resources/test-pom.xml");
 
-        GenerateSimpleRecordMojo mojo = (GenerateSimpleRecordMojo) findConfiguredMojo("generateSimpleRecord", pom);
+        GenerateSimpleRecordMojo mojo = findConfiguredMojo(GenerateSimpleRecordMojo.class, pom);
         mojo.project = project;
         mojo.execute();
 
@@ -39,7 +39,7 @@ class TestMavenPluginTest extends AbstractMavenPluginTest {
     void generateSimpleResource() throws Exception {
         File pom = new File("src/test/resources/test-resource-pom.xml");
 
-        GenerateSimpleResourceMojo mojo = (GenerateSimpleResourceMojo) findConfiguredMojo("generateSimpleResource", pom);
+        GenerateSimpleResourceMojo mojo = findConfiguredMojo(GenerateSimpleResourceMojo.class, pom);
         mojo.project = project;
         mojo.execute();
 
@@ -55,7 +55,7 @@ class TestMavenPluginTest extends AbstractMavenPluginTest {
     void generateSimpleResourceWithRepeat() throws Exception {
         File pom = new File("src/test/resources/test-resource-repeat-pom.xml");
 
-        GenerateSimpleResourceMojo mojo = (GenerateSimpleResourceMojo) findConfiguredMojo("generateSimpleResource", pom);
+        GenerateSimpleResourceMojo mojo = findConfiguredMojo(GenerateSimpleResourceMojo.class, pom);
         mojo.project = project;
         mojo.execute();
 
