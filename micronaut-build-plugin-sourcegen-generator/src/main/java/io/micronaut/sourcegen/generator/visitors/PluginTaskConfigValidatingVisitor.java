@@ -19,6 +19,7 @@ import io.micronaut.core.annotation.Internal;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.inject.ast.ClassElement;
+import io.micronaut.inject.ast.EnumElement;
 import io.micronaut.inject.ast.PropertyElement;
 import io.micronaut.inject.processing.ProcessingException;
 import io.micronaut.inject.visitor.TypeElementVisitor;
@@ -37,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The visitor that validates a PluginTaskConfig annotated type.
@@ -170,6 +172,12 @@ public final class PluginTaskConfigValidatingVisitor implements TypeElementVisit
                 }
                 if (property.parameter().required()) {
                     result.append("\n\n*Required*.");
+                }
+                if (property.parameter().source().getType() instanceof EnumElement enumElement) {
+                    result.append("\n\nOne of: ");
+                    result.append(enumElement.elements().stream()
+                        .map(v -> "`" + v.getName() + "`")
+                        .collect(Collectors.joining(", ")));
                 }
                 switch (property.parameter.output()) {
                     case JAVA_SOURCES: result.append("\n\nWill be added to Java sources."); break;
