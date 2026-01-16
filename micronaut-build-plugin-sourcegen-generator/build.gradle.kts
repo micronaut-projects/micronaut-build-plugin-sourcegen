@@ -24,3 +24,8 @@ dependencies {
     testImplementation(libs.maven.core)
 }
 
+micronautBuild {
+    descriptor {
+        parentModuleId = "io.micronaut.build.plugin.sourcegen:micronaut-build-plugin-sourcegen-generator"
+    }
+}
