@@ -186,6 +186,20 @@ public class PluginUtils {
             ).map(o -> new Constant(type, o)).orElse(null);
         } else if (type instanceof ClassDefType classDefType && classDefType.objectDef() instanceof EnumDef) {
             return classDefType.getStaticField(value, type);
+        } else if (type instanceof ClassTypeDef classTypeDef && classTypeDef.getName().startsWith("java.lang.")) {
+            Class<?> primitiveType = switch(classTypeDef.getSimpleName()) {
+                case "Boolean" -> boolean.class;
+                case "Integer" -> int.class;
+                case "Character" -> char.class;
+                case "Byte" -> byte.class;
+                case "Short" -> short.class;
+                case "Long" -> long.class;
+                case "Float" -> float.class;
+                case "Double" -> double.class;
+                default -> throw new IllegalArgumentException("Unsupported primitive type wrapper " + classTypeDef.getName());
+            };
+            return ConversionService.SHARED.convert(value, primitiveType)
+                .map(o -> new Constant(type, o)).orElse(null);
         }
         throw new UnsupportedOperationException("Cannot create default value of type " + type);
     }
